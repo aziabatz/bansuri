@@ -1,0 +1,18 @@
+include README.md
+include LICENSE
+include pyproject.toml
+include setup.py
+
+# Include documentation
+recursive-include doc *.md *.png *.sh *.json
+
+# Include example scripts
+recursive-include examples *.py *.json
+
+# Exclude unnecessary files
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude __pycache__
+global-exclude .DS_Store
+global-exclude *.so
+global-exclude .git*

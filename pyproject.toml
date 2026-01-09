@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bansuri"
+version = "0.1.0"
+description = "Task orchestration and management system for running and monitoring multiple scripts"
+readme = "README.md"
+requires-python = ">=3.6"
+license = {text = "BSD-3-Clause"}
+authors = [
+    {name = "Blackburn"},
+    {name = "Blackburn", email = "blackburn.dev@atomicmail.io"}
+]
+keywords = ["task-runner", "orchestration", "process-manager", "automation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Build Tools",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = []
+
+[project.optional-dependencies]
+unify = [
+    "asn1crypto>=1.5.1",
+    "certifi>=2025.4.26",
+    "charset-normalizer>=2.0.12",
+    "idna>=3.10",
+    "pg8000>=1.26.0",
+    "requests>=2.27.1",
+    "scramp>=1.4.1",
+    "urllib3>=1.26.20",
+]
+dev = [
+    "pytest>=7.0",
+    "black>=22.0",
+    "flake8>=4.0",
+    "mypy>=0.950",
+]
+
+[project.scripts]
+bansuri = "bansuri.master:main"
+
+[project.urls]
+Homepage = "https://github.com/aziabatz/bansuri"
+Documentation = "https://github.com/aziabatz/bansuri/blob/main/README.md"
+Repository = "https://github.com/aziabatz/bansuri"
+Issues = "https://github.com/aziabatz/bansuri/issues"
+
+[tool.setuptools]
+packages = ["bansuri", "bansuri.base", "bansuri.base.config", "bansuri.base.misc"]
+
+[tool.setuptools.package-data]
+bansuri = ["py.typed"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false

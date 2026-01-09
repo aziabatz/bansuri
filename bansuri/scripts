@@ -1,0 +1,14 @@
+{
+    "version": "0.1",
+        {
+            "name": "psql-maintenance",
+            "description": "Daily Database Maintenance",
+            "command": "python3 psql.py",
+            "working-directory": "/home/ahmed/PycharmProjects/bansuri",
+            "schedule-cron": "0 3 * * *",
+            "timeout": "1h",
+            "on-fail": "stop",
+            "stdout": "/home/ahmed/PycharmProjects/bansuri/logs/psql.log"
+        }
+    ]
+}
