@@ -23,9 +23,10 @@ class Orchestrator:
         signal.signal(signal.SIGTERM, self.signal_handler)
         signal.signal(signal.SIGINT, self.signal_handler)
 
-        self._log("Orchestrator initialized")
+        self._log("Orchestrator initialized") 
 
     def _log(self, message):
+        # TODO add pluggable logger
         print(
             f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] [MASTER] {message}",
             flush=True,
@@ -37,6 +38,19 @@ class Orchestrator:
         sys.exit(0)
 
     def sync_tasks(self):
+        """
+        Synchronize tasks from config file.
+        
+
+        NOT IMPLEMENTED:
+        - Detecting changes on existing tasks and restarting them
+        - depends-on (task dependencies)
+        - user switching
+        - priority (nice values)
+        - environment-file
+        - success-codes (custom exit codes)
+        - notify (notifications)
+        """
 
         try:
             config = BansuriConfig.load_from_file(self.config_file)
@@ -59,11 +73,27 @@ class Orchestrator:
         # start added tasks
         for name in new_names - current_names:
             self._log(f"New task found: {name}")
+
+            # Check for NOT IMPLEMENTED features
+            cfg = new_configs[name]
+            if cfg.depends_on:
+                self._log(f"WARNING [{name}]: depends-on NOT IMPLEMENTED")
+            if cfg.user:
+                self._log(f"WARNING [{name}]: user switching NOT IMPLEMENTED")
+            if cfg.priority:
+                self._log(f"WARNING [{name}]: priority (nice) NOT IMPLEMENTED")
+            if cfg.environment_file:
+                self._log(f"WARNING [{name}]: environment-file NOT IMPLEMENTED")
+            if cfg.success_codes:
+                self._log(f"WARNING [{name}]: success-codes NOT IMPLEMENTED")
+            if cfg.notify:
+                self._log(f"WARNING [{name}]: notify NOT IMPLEMENTED")
+
             runner = TaskRunner(new_configs[name])
             self.runners[name] = runner
             runner.start()
 
-        # TODO detect changes on existing tasks and restart if needed
+        # NOT IMPLEMENTED: detect changes on existing tasks and restart if needed
 
     def stop_all(self):
         self._log("Stopping all tasks...")

@@ -8,13 +8,27 @@ Bansuri is a flexible system for running and monitoring multiple scripts with co
 
 ## Features
 
-- Task orchestration with configurable restart policies
-- Automatic task monitoring and recovery
-- Flexible timeout management
-- Comprehensive logging support
-- Support for both Python scripts and shell commands
-- Dependency management between tasks
-- Cron-like scheduling support
+### Implemented
+- ✅ Task orchestration with configurable restart policies
+- ✅ Automatic task monitoring and recovery
+- ✅ Flexible timeout management
+- ✅ Comprehensive logging support
+- ✅ Support for Python scripts implementing AbstractTask interface
+- ✅ Graceful shutdown handling (SIGTERM/SIGINT)
+- ✅ Process group management
+- ✅ Stdout/stderr redirection
+- ✅ Timer-based execution (timer) - runs task at fixed intervals
+
+### NOT Implemented (See [NOT_IMPLEMENTED.md](doc/NOT_IMPLEMENTED.md))
+- ❌ Cron-like scheduling support (schedule-cron)
+- ❌ Task dependencies (depends-on)
+- ❌ User switching (user)
+- ❌ Process priority (priority/nice)
+- ❌ Environment file loading (environment-file)
+- ❌ Custom success codes (success-codes)
+- ❌ Notifications (notify)
+- ❌ Plain shell command support (no-interface)
+- ❌ Hot reload / change detection
 
 ## Installation
 
