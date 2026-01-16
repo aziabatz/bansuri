@@ -6,8 +6,7 @@ import signal
 import sys
 import importlib.util
 from datetime import datetime
-from typing import Optional
-from pathlib import Path
+from typing import Optional, Any
 from bansuri.base.config_manager import ScriptConfig
 
 
@@ -18,15 +17,23 @@ class TaskRunner:
     """
 
     def __init__(self, config: ScriptConfig):
-        self.config = config
-        self.process: Optional[subprocess.Popen] = None
-        self.thread: Optional[threading.Thread] = None
-        self.stop_event = threading.Event()
-        self.attempts = 0
+        """
+        TaskRunner initializer
+
+        :param config: The configuration meant for the task
+        """
+        self.config = config  # The configuration from the JSON as dataclass
+        self.process: Optional[subprocess.Popen] = None  # The process fo the script
+        self.thread: Optional[threading.Thread] = (
+            None  # The thread responsible for spawning the child process
+        )
+        self.stop_event = threading.Event()  # The event signal for START/STOP the child process
+        self.attempts = 0  # Total attemps done
         self.watchdog_timeout = 120  # seconds to wait before force killing
 
     def log(self, message: str):
         """Fallback formatted log output"""
+        # print(self.config)
         print(
             f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] [{self.config.name}] {message}",
             flush=True,
@@ -58,18 +65,15 @@ class TaskRunner:
         """Main loop: executes the task and handles job stop-start events
 
         Supports:
-        - timer: Fixed interval execution (e.g., "30s", "5m", "1h")
-
-        NOT IMPLEMENTED:
-        - schedule-cron support
+        - timer: Fixed interval execution
         """
         if self.config.schedule_cron:
-            self.log("WARNING: schedule-cron NOT IMPLEMENTED. Running once.")
-            self._run_process()
+            self._cron_execution_loop()
             return
 
         # Check if timer is configured
-        if self.config.timer and self.config.timer != 'none':
+        # Treat "0", 0, "none" as disabled timer -> treat as service/dameon
+        if self.config.timer and str(self.config.timer).lower() not in ["none", "0"]:
             self._timer_execution_loop()
         else:
             self._simple_execution_loop()
@@ -78,7 +82,12 @@ class TaskRunner:
         """Simple execution loop without timer"""
         while not self.stop_event.is_set():
             # Attempts control
-            if self.config.times > 0 and self.attempts >= self.config.times:
+            try:
+                max_times = int(self.config.times)
+            except (ValueError, TypeError):
+                max_times = 1
+
+            if max_times > 0 and self.attempts >= max_times:
                 self.log("Reached max attempts. Giving up...")
                 break
 
@@ -88,8 +97,10 @@ class TaskRunner:
             if self.stop_event.is_set():
                 break
 
-            if self.config.on_fail != "restart":
-                self.log("Task stopped. No automatic restart set")
+            if self.config.on_fail.lower() != "restart":
+                self.log(
+                    f"Task stopped. No automatic restart set (on_fail='{self.config.on_fail}')"
+                )
                 break
 
             self.log("Restarting in 5 secs...")
@@ -108,7 +119,12 @@ class TaskRunner:
 
         while not self.stop_event.is_set():
             # Attempts control
-            if self.config.times > 0 and self.attempts >= self.config.times:
+            try:
+                max_times = int(self.config.times)
+            except (ValueError, TypeError):
+                max_times = 1
+
+            if max_times > 0 and self.attempts >= max_times:
                 self.log("Reached max attempts. Giving up...")
                 break
 
@@ -120,26 +136,69 @@ class TaskRunner:
 
             # Wait for timer interval before next execution
             self.log(f"Waiting {self.config.timer} until next execution...")
-            for _ in range(timer_seconds):
-                if self.stop_event.is_set():
+            # Use stop_event.wait for an efficient, interruptible sleep
+            if self.stop_event.wait(timeout=timer_seconds):
+                break  # Stop waiting if stop event is set
+
+    def _cron_execution_loop(self):
+        """Cron-based execution loop using croniter"""
+        try:
+            from croniter import croniter
+        except ImportError:
+            self.log(
+                "ERROR: 'croniter' library is missing. Please install it: pip install croniter"
+            )
+            return
+
+        if not croniter.is_valid(self.config.schedule_cron):
+            self.log(f"ERROR: Invalid cron expression '{self.config.schedule_cron}'")
+            return
+
+        self.log(f"Cron configured: '{self.config.schedule_cron}'")
+
+        while not self.stop_event.is_set():
+            # Attempts control
+            try:
+                max_times = int(self.config.times)
+            except (ValueError, TypeError):
+                max_times = 1
+
+            if max_times > 0 and self.attempts >= max_times:
+                self.log("Reached max attempts. Giving up...")
+                break
+
+            # Calculate next run from NOW
+            # We re-calculate relative to now to avoid 'catch-up' storms if a task takes too long
+            now = datetime.now()
+            iter_cron = croniter(self.config.schedule_cron, now)
+            next_run = iter_cron.get_next(datetime)
+            delay = (next_run - now).total_seconds()
+
+            if delay > 0:
+                self.log(
+                    f"Next execution at {next_run.strftime('%Y-%m-%d %H:%M:%S')} (in {int(delay)}s)"
+                )
+                if self.stop_event.wait(timeout=delay):
                     break
-                time.sleep(1)
+
+            self.attempts += 1
+            self._run_process()
 
     def _run_process(self):
-        """Launches the subprocess or AbstractTask depending on no-interface setting."""
+        """Launches the subprocess or AbstractTask"""
         if self.config.no_interface:
             # Plain command execution (shell/bash)
-            self._run_shell_command()
+            self._run_command()
         else:
-            # Smart script: Import and run AbstractTask
-            self._run_smart_script()
+            # Smart script (inherits AbstractTask) later...
+            self._run_command()
+            # self._run_smart_script() IGNORED FOR NOW!
 
-    def _run_shell_command(self):
-        """Executes command directly as shell process (no-interface: true)."""
+    def _run_command(self):
+        """Executes command directly as shell process"""
         cmd = self.config.command
         cwd = self.config.working_directory
 
-        # Log config
         stdout_dest = subprocess.PIPE
         stderr_dest = subprocess.PIPE
         stdout_f, stderr_f = None, None
@@ -148,14 +207,26 @@ class TaskRunner:
 
         try:
             if self.config.stdout:
-                stdout_f = open(self.config.stdout, "a")
+                stdout_path = self.config.stdout
+                if cwd and not os.path.isabs(stdout_path):
+                    stdout_path = os.path.join(cwd, stdout_path)
+
+                stdout_f = open(stdout_path, "a")
                 stdout_dest = stdout_f
+                self.log(f"Redirecting stdout to {stdout_path}")
 
             if self.config.stderr and self.config.stderr != "combined":
-                stderr_f = open(self.config.stderr, "a")
+                stderr_path = self.config.stderr
+                if cwd and not os.path.isabs(stderr_path):
+                    stderr_path = os.path.join(cwd, stderr_path)
+
+                stderr_f = open(stderr_path, "a")
                 stderr_dest = stderr_f
+                self.log(f"Redirecting stderr to {stderr_path}")
+
             elif self.config.stderr == "combined":
                 stderr_dest = subprocess.STDOUT
+                self.log("Redirecting stderr to stdout")
 
             self.log(f"Executing shell command: {cmd}")
             self.process = subprocess.Popen(
@@ -172,6 +243,19 @@ class TaskRunner:
             while not self.stop_event.is_set():
                 if self.process.poll() is not None:
                     self.log(f"Process finished with code {self.process.returncode}")
+
+                    if (
+                        self.process.returncode != 0
+                        or self.process.returncode not in self.config.success_codes
+                    ):
+                        try:
+                            outs, errs = self.process.communicate(timeout=1)
+                            if outs:
+                                self.log(f"Output:\n{outs.strip()}")
+                            if errs:
+                                self.log(f"Error:\n{errs.strip()}")
+                        except Exception:
+                            pass
                     break
 
                 if timeout_seconds and (time.time() - start_time > timeout_seconds):
@@ -193,92 +277,7 @@ class TaskRunner:
                 stderr_f.close()
 
     def _run_smart_script(self):
-        """Imports Python script and runs AbstractTask (no-interface: false)."""
-        try:
-            # Parse command to extract script path
-            script_path = self._extract_script_path(self.config.command)
-            if not script_path:
-                self.log(f"ERROR: Could not extract script path from command: {self.config.command}")
-                return
-
-            # Make path absolute if needed
-            if self.config.working_directory and not os.path.isabs(script_path):
-                script_path = os.path.join(self.config.working_directory, script_path)
-
-            if not os.path.exists(script_path):
-                self.log(f"ERROR: Script not found: {script_path}")
-                return
-
-            # Import the module
-            self.log(f"Loading smart script: {script_path}")
-            spec = importlib.util.spec_from_file_location("task_module", script_path)
-            if not spec or not spec.loader:
-                self.log(f"ERROR: Could not load module spec from {script_path}")
-                return
-
-            module = importlib.util.module_from_spec(spec)
-            sys.modules["task_module"] = module
-
-            # Add working directory to path
-            if self.config.working_directory:
-                sys.path.insert(0, self.config.working_directory)
-
-            spec.loader.exec_module(module)
-
-            # Find AbstractTask subclass
-            task_class = self._find_abstract_task_class(module)
-            if not task_class:
-                self.log(f"ERROR: No AbstractTask subclass found in {script_path}")
-                return
-
-            # Instantiate task
-            self.log(f"Instantiating {task_class.__name__}")
-            task_instance = task_class()
-
-            # Get TaskConfig from task (if available)
-            if hasattr(task_instance, 'get_task_config'):
-                task_config = task_instance.get_task_config()
-                self.log(f"Task config loaded from script: {task_config}")
-                # TODO: Merge/override with JSON config if needed
-
-            # Run the task
-            self.log(f"Running {task_class.__name__}.run()")
-            exit_code = task_instance.run()
-            self.log(f"Task finished with exit code: {exit_code}")
-
-        except Exception as e:
-            self.log(f"ERROR running smart script: {e}")
-            import traceback
-            self.log(traceback.format_exc())
-        finally:
-            # Cleanup sys.path
-            if self.config.working_directory and self.config.working_directory in sys.path:
-                sys.path.remove(self.config.working_directory)
-
-    def _extract_script_path(self, command: str) -> Optional[str]:
-        """Extracts script path from command string."""
-        # Handle cases like:
-        # "python script.py"
-        # "python /path/to/script.py"
-        # "script.py"
-        parts = command.strip().split()
-
-        for part in parts:
-            if part.endswith('.py'):
-                return part
-
-        return None
-
-    def _find_abstract_task_class(self, module):
-        """Finds the AbstractTask subclass in the module."""
-        from bansuri.base.abstract_task import AbstractTask
-
-        for name in dir(module):
-            obj = getattr(module, name)
-            if isinstance(obj, type) and issubclass(obj, AbstractTask) and obj is not AbstractTask:
-                return obj
-
-        return None
+        pass
 
     def _kill_process(self):
         """Kills the process gracefully (SIGTERM) -> [watchdog timer...] -> forcefully (SIGKILL)."""

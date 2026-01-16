@@ -6,15 +6,23 @@ import sys
 from datetime import datetime
 from typing import Dict
 
-from .base.misc.header import HEADER
-from .base.misc.help import print_help
-from .base.config_manager import BansuriConfig
-from .task_runner import TaskRunner
+
+from bansuri.base.misc.header import HEADER
+from bansuri.base.misc.help import print_help
+from bansuri.base.config_manager import BansuriConfig
+from bansuri.task_runner import TaskRunner
+
 
 
 class Orchestrator:
 
     def __init__(self, config_file="scripts.json", check_interval=30):
+        """Orchestrator init
+
+        Args:
+            config_file (str, optional): Path to config file. Defaults to "scripts.json".
+            check_interval (int, optional): Check interval in seconds. Defaults to 30.
+        """
         self.config_file = config_file
         self.check_interval = check_interval
         self.runners: Dict[str, TaskRunner] = {}
@@ -23,7 +31,7 @@ class Orchestrator:
         signal.signal(signal.SIGTERM, self.signal_handler)
         signal.signal(signal.SIGINT, self.signal_handler)
 
-        self._log("Orchestrator initialized") 
+        self._log("Orchestrator initialized")
 
     def _log(self, message):
         # TODO add pluggable logger
@@ -33,26 +41,24 @@ class Orchestrator:
         )
 
     def signal_handler(self, signum, frame):
+        """
+        POSIX signal handling
+
+        :param signum: Signal identifier
+        :param frame: Unused
+        """
         self._log(f"Received signal {signum}, shutting down...")
+        # TODO shutdown only on SIGTERM
         self.stop_all()
         sys.exit(0)
 
     def sync_tasks(self):
         """
         Synchronize tasks from config file.
-        
-
-        NOT IMPLEMENTED:
-        - Detecting changes on existing tasks and restarting them
-        - depends-on (task dependencies)
-        - user switching
-        - priority (nice values)
-        - environment-file
-        - success-codes (custom exit codes)
-        - notify (notifications)
         """
 
         try:
+
             config = BansuriConfig.load_from_file(self.config_file)
         except Exception as e:
             self._log(f"Error loading config: {e}")
@@ -70,7 +76,24 @@ class Orchestrator:
             self.runners[name].stop()
             del self.runners[name]
 
-        # start added tasks
+        # Check for updates in existing tasks
+        for name in current_names.intersection(new_names):
+            current_runner = self.runners[name]
+            new_config = new_configs[name]
+
+            if current_runner.config != new_config:
+                self._log(f"Configuration changed for task: {name}. Restarting...")
+                current_runner.stop()
+                del self.runners[name]
+                # It will be re-added in the next loop (actually no, we must add it here or treat it as new)
+                # Better approach: restart it immediately here
+                runner = TaskRunner(new_config)
+                self.runners[name] = runner
+                runner.start()
+
+        # Start added tasks
+        # The set 'new_names - current_names' is strictly for NEW task names.
+        # The updated ones are handled above.
         for name in new_names - current_names:
             self._log(f"New task found: {name}")
 
@@ -81,19 +104,20 @@ class Orchestrator:
             if cfg.user:
                 self._log(f"WARNING [{name}]: user switching NOT IMPLEMENTED")
             if cfg.priority:
-                self._log(f"WARNING [{name}]: priority (nice) NOT IMPLEMENTED")
+                self._log(f"WARNING [{name}]: priority NOT IMPLEMENTED")
             if cfg.environment_file:
+                # TODO implement
                 self._log(f"WARNING [{name}]: environment-file NOT IMPLEMENTED")
             if cfg.success_codes:
+                # TODO implement
                 self._log(f"WARNING [{name}]: success-codes NOT IMPLEMENTED")
             if cfg.notify:
+                # TODO implement
                 self._log(f"WARNING [{name}]: notify NOT IMPLEMENTED")
 
             runner = TaskRunner(new_configs[name])
             self.runners[name] = runner
             runner.start()
-
-        # NOT IMPLEMENTED: detect changes on existing tasks and restart if needed
 
     def stop_all(self):
         self._log("Stopping all tasks...")
@@ -101,7 +125,7 @@ class Orchestrator:
             runner.stop()
 
     def run(self):
-        #print(HEADER)
+        # print(HEADER)
         self._log("=" * 40)
         self._log("BANSURI ORCHESTRATOR STARTED")
         self._log("=" * 40)
@@ -116,6 +140,7 @@ class Orchestrator:
                 time.sleep(self.check_interval)
 
 
+# TODO add -c option for specifying configfile
 def main():
     config_path = os.path.join(os.path.dirname(__file__), "scripts.json")
 
