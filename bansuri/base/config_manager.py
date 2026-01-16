@@ -7,14 +7,11 @@ from typing import List, Optional, Union, Any
 @dataclass
 class ScriptConfig:
     """
-    Represents the configuration of a task.
-    Uses dataclasses for a clear and typed definition.
+    Represents the configuration of a task
     """
 
     name: str
     command: str
-    # Optional fields: For Python scripts they can be empty (will be read from the script).
-    # For plain scripts (.sh), it will be validated that the necessary ones exist.
     user: Optional[str] = None
     working_directory: Optional[str] = None
     no_interface: bool = False
@@ -34,21 +31,22 @@ class ScriptConfig:
 
     @property
     def is_smart_script(self) -> bool:
-        """
-        Heuristic: If the command contains '.py', we assume it is a script
-        that can contain its own configuration (TaskConfig).
-        """
-        return ".py" in self.command or "python" in self.command.lower()
+        return False
+        # return ".py" in self.command or "python" in self.command.lower()
 
     def validate(self):
         """
         Applies differentiated validation rules depending on the script type.
         """
-        if not self.is_smart_script:
-            # --- Strict Validation for Plain Scripts (.sh, binaries) ---
+        if self.name is None:
+            # FIXME log warning and set name to command basename
+            pass
 
-            # 1. Must have their execution defined (Cron, Timer or be dependent on another)
-            has_schedule = self.schedule_cron or (self.timer and self.timer != "none")
+        if not self.is_smart_script:
+            # The execution method MUST be defined (cron, timer, ...)
+            has_schedule = self.schedule_cron or (
+                self.timer is not None and str(self.timer).lower() != "none"
+            )
             has_dependency = bool(self.depends_on)
 
             if not (has_schedule or has_dependency):
@@ -59,15 +57,14 @@ class ScriptConfig:
 
 @dataclass
 class BansuriConfig:
+    "Represents the current loaded definitions for Bansuri"
     version: str
     scripts: List[ScriptConfig]
 
     @classmethod
     def load_from_file(cls, file_path: str) -> "BansuriConfig":
         if not os.path.exists(file_path):
-            raise FileNotFoundError(
-                f"Configuration file not found: {file_path}"
-            )
+            raise FileNotFoundError(f"Configuration file not found: {file_path}")
 
         with open(file_path, "r", encoding="utf-8") as f:
             try:
@@ -80,16 +77,13 @@ class BansuriConfig:
         parsed_scripts = []
 
         for item in scripts_data:
-            # Normalization: convert 'kebab-case' (JSON) to 'snake_case' (Python)
-            # Example: 'working-directory' -> 'working_directory'
+            # all hyphens to pythonic "-" to "_"
             normalized_item = {k.replace("-", "_"): v for k, v in item.items()}
 
-            # Filter only keys that match the dataclass to avoid errors
+            # check only keys that match to avoid errors
             # TODO add warnings on unmatched keys
             valid_keys = ScriptConfig.__annotations__.keys()
-            filtered_item = {
-                k: v for k, v in normalized_item.items() if k in valid_keys
-            }
+            filtered_item = {k: v for k, v in normalized_item.items() if k in valid_keys}
 
             try:
                 script = ScriptConfig(**filtered_item)
@@ -103,5 +97,3 @@ class BansuriConfig:
                 raise ValueError(f"Validation error in '{item.get('name')}': {e}")
 
         return cls(version=version, scripts=parsed_scripts)
-
-
