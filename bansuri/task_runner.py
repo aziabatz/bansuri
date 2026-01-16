@@ -7,7 +7,9 @@ import sys
 import importlib.util
 from datetime import datetime
 from typing import Optional, Any
-from bansuri.base.config_manager import ScriptConfig
+from bansuri.base.config_manager import BansuriConfig, ScriptConfig
+from bansuri.alerts.notifier import FailureInfo, Notifier
+from bansuri.alerts.cmd_notifier import CommandNotifier
 
 
 class TaskRunner:
@@ -16,13 +18,15 @@ class TaskRunner:
     It handles process execution, log redirection, and other policies.
     """
 
-    def __init__(self, config: ScriptConfig):
+    def __init__(self, config: ScriptConfig, bansuri_config: BansuriConfig):
         """
         TaskRunner initializer
 
         :param config: The configuration meant for the task
+        :param bansuri_config: global Bansuri configuration
         """
         self.config = config  # The configuration from the JSON as dataclass
+        self.bansuri_config = bansuri_config  # Global config
         self.process: Optional[subprocess.Popen] = None  # The process fo the script
         self.thread: Optional[threading.Thread] = (
             None  # The thread responsible for spawning the child process
@@ -30,6 +34,7 @@ class TaskRunner:
         self.stop_event = threading.Event()  # The event signal for START/STOP the child process
         self.attempts = 0  # Total attemps done
         self.watchdog_timeout = 120  # seconds to wait before force killing
+        self.notifier: Optional[Notifier] = self._create_notifier()
 
     def log(self, message: str):
         """Fallback formatted log output"""
@@ -72,23 +77,77 @@ class TaskRunner:
             return
 
         # Check if timer is configured
-        # Treat "0", 0, "none" as disabled timer -> treat as service/dameon
+        # Treat "0", 0, "none" as service/dameon
         if self.config.timer and str(self.config.timer).lower() not in ["none", "0"]:
             self._timer_execution_loop()
         else:
             self._simple_execution_loop()
 
+    def _check_max_attempts(self) -> bool:
+        """Check if max attempts reached. Returns True if should stop."""
+        try:
+            max_times = int(self.config.times)
+        except (ValueError, TypeError):
+            max_times = 1
+
+        if max_times > 0 and self.attempts >= max_times:
+            self.log("Reached max attempts. Giving up...")
+            return True
+        return False
+
+    def _create_notifier(self) -> Optional[Notifier]:
+        """Create the appropriate notifier based on config."""
+        if self.config.notify.lower() != "mail":
+            return None
+
+        notify_cmd = self.bansuri_config.notify_command
+        if not notify_cmd:
+            self.log("Notify is 'mail' but no notify_command configured. Notifications disabled.")
+            return None
+
+        return CommandNotifier(notify_cmd)
+
+    def _handle_notify(self, return_code: int, output: str, error: str):
+        """Handle notify policy after task failure.
+
+        :param return_code: The process return code
+        :param output: The stdout output from the failed process
+        :param error: The stderr output from the failed process
+        """
+        if not self.notifier:
+            return
+
+        failure_info = FailureInfo(
+            task_name=self.config.name,
+            command=self.config.command,
+            working_directory=self.config.working_directory,
+            return_code=return_code,
+            attempt=self.attempts,
+            max_attempts=self.config.times,
+            timestamp=datetime.now(),
+            description=self.config.description,
+            stdout=output,
+            stderr=error,
+        )
+
+        self.log("Sending notification...")
+        if self.notifier.notify(failure_info):
+            self.log("Notification sent successfully")
+        else:
+            self.log("Failed to send notification")
+
+    def _handle_on_fail(self) -> bool:
+        """Handle on_fail policy after task completion. Returns True if should stop."""
+        if self.config.on_fail.lower() != "restart":
+            self.log(f"Task stopped. No automatic restart set (on_fail='{self.config.on_fail}')")
+
+            return True
+        return False
+
     def _simple_execution_loop(self):
         """Simple execution loop without timer"""
         while not self.stop_event.is_set():
-            # Attempts control
-            try:
-                max_times = int(self.config.times)
-            except (ValueError, TypeError):
-                max_times = 1
-
-            if max_times > 0 and self.attempts >= max_times:
-                self.log("Reached max attempts. Giving up...")
+            if self._check_max_attempts():
                 break
 
             self.attempts += 1
@@ -97,14 +156,12 @@ class TaskRunner:
             if self.stop_event.is_set():
                 break
 
-            if self.config.on_fail.lower() != "restart":
-                self.log(
-                    f"Task stopped. No automatic restart set (on_fail='{self.config.on_fail}')"
-                )
+            if self._handle_on_fail():
                 break
 
             self.log("Restarting in 5 secs...")
-            time.sleep(5)
+            if self.stop_event.wait(timeout=5):
+                break
 
     def _timer_execution_loop(self):
         """Timer-based execution loop - runs task at fixed intervals"""
@@ -118,14 +175,7 @@ class TaskRunner:
         self.log(f"Timer configured: running every {self.config.timer} ({timer_seconds}s)")
 
         while not self.stop_event.is_set():
-            # Attempts control
-            try:
-                max_times = int(self.config.times)
-            except (ValueError, TypeError):
-                max_times = 1
-
-            if max_times > 0 and self.attempts >= max_times:
-                self.log("Reached max attempts. Giving up...")
+            if self._check_max_attempts():
                 break
 
             self.attempts += 1
@@ -134,11 +184,9 @@ class TaskRunner:
             if self.stop_event.is_set():
                 break
 
-            # Wait for timer interval before next execution
             self.log(f"Waiting {self.config.timer} until next execution...")
-            # Use stop_event.wait for an efficient, interruptible sleep
             if self.stop_event.wait(timeout=timer_seconds):
-                break  # Stop waiting if stop event is set
+                break
 
     def _cron_execution_loop(self):
         """Cron-based execution loop using croniter"""
@@ -146,29 +194,20 @@ class TaskRunner:
             from croniter import croniter
         except ImportError:
             self.log(
-                "ERROR: 'croniter' library is missing. Please install it: pip install croniter"
+                "ERROR: 'croniter' library is missing"
             )
             return
 
-        if not croniter.is_valid(self.config.schedule_cron):
+        if not self.config.schedule_cron or not croniter.is_valid(self.config.schedule_cron):
             self.log(f"ERROR: Invalid cron expression '{self.config.schedule_cron}'")
             return
 
         self.log(f"Cron configured: '{self.config.schedule_cron}'")
 
         while not self.stop_event.is_set():
-            # Attempts control
-            try:
-                max_times = int(self.config.times)
-            except (ValueError, TypeError):
-                max_times = 1
-
-            if max_times > 0 and self.attempts >= max_times:
-                self.log("Reached max attempts. Giving up...")
+            if self._check_max_attempts():
                 break
 
-            # Calculate next run from NOW
-            # We re-calculate relative to now to avoid 'catch-up' storms if a task takes too long
             now = datetime.now()
             iter_cron = croniter(self.config.schedule_cron, now)
             next_run = iter_cron.get_next(datetime)
@@ -248,6 +287,7 @@ class TaskRunner:
                         self.process.returncode != 0
                         or self.process.returncode not in self.config.success_codes
                     ):
+                        outs, errs = "", ""
                         try:
                             outs, errs = self.process.communicate(timeout=1)
                             if outs:
@@ -256,11 +296,13 @@ class TaskRunner:
                                 self.log(f"Error:\n{errs.strip()}")
                         except Exception:
                             pass
+                        self._handle_notify(self.process.returncode, outs, errs)
                     break
 
                 if timeout_seconds and (time.time() - start_time > timeout_seconds):
                     self.log(f"Timeout exceeded ({self.config.timeout}). Killing process.")
                     self._kill_process()
+                    self._handle_notify(-1, "", f"Timeout exceeded ({self.config.timeout})")
                     break
                 time.sleep(1)
 
@@ -300,7 +342,7 @@ class TaskRunner:
             self.log(f"Error killing process: {e}")
 
     def _parse_timeout(self, timeout_str: Optional[str]) -> Optional[int]:
-        """Parses a timeout string (e.g., '30s', '5m', '1h') into seconds."""
+        """Parses a timeout string (e.g., '30s', '5m') into seconds."""
         if not timeout_str:
             return None
         try:

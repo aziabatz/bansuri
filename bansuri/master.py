@@ -87,7 +87,7 @@ class Orchestrator:
                 del self.runners[name]
                 # It will be re-added in the next loop (actually no, we must add it here or treat it as new)
                 # Better approach: restart it immediately here
-                runner = TaskRunner(new_config)
+                runner = TaskRunner(new_config, config)
                 self.runners[name] = runner
                 runner.start()
 
@@ -115,7 +115,7 @@ class Orchestrator:
                 # TODO implement
                 self._log(f"WARNING [{name}]: notify NOT IMPLEMENTED")
 
-            runner = TaskRunner(new_configs[name])
+            runner = TaskRunner(new_configs[name], config)
             self.runners[name] = runner
             runner.start()
 
