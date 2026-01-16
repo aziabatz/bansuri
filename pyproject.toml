@@ -29,19 +29,11 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 
-dependencies = []
+dependencies = [
+    "croniter>=6.0.0"
+]
 
 [project.optional-dependencies]
-unify = [
-    "asn1crypto>=1.5.1",
-    "certifi>=2025.4.26",
-    "charset-normalizer>=2.0.12",
-    "idna>=3.10",
-    "pg8000>=1.26.0",
-    "requests>=2.27.1",
-    "scramp>=1.4.1",
-    "urllib3>=1.26.20",
-]
 dev = [
     "pytest>=7.0",
     "black>=22.0",
