@@ -54,12 +54,12 @@ class ScriptConfig:
                     f"Plain script '{self.name}' requires 'schedule-cron', 'timer' or 'depends-on' defined in the JSON."
                 )
 
-
 @dataclass
 class BansuriConfig:
     "Represents the current loaded definitions for Bansuri"
     version: str
     scripts: List[ScriptConfig]
+    notify_command: Optional[str] = '' # command <text>
 
     @classmethod
     def load_from_file(cls, file_path: str) -> "BansuriConfig":
