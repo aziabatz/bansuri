@@ -25,6 +25,8 @@ class CommandNotifier(Notifier):
             
             print(f"returncode: {result.returncode}")
             if result.returncode == 0:
+                print(f"stdout: {result.stdout}")
+                print(f"stderr: {result.stderr}")
                 return True
             else:
                 print(f"stdout: {result.stdout}")
@@ -39,7 +41,7 @@ class CommandNotifier(Notifier):
             It supports multiline text
         """
         lines = [
-            f"=== [Bansuri] Task Failure ===",
+            f"=== Task Failure ===",
             "",
             f"Task '{info.task_name}' has failed.",
             "",
@@ -61,10 +63,11 @@ class CommandNotifier(Notifier):
         if info.stderr:
             lines.extend(["", "--- Error ---", info.stderr.strip()])
 
-        lines.extend(["", "---", "This is an automated message from Bansuri Orchestrator."])
+        lines.extend(["", "---", "This is an automated message from orchestrator."])
 
         message = "\\n".join(lines)
         message = message.replace("'", "'\"'\"'")  # ' -> '"'"'
+        # FIXME ESCAPE ALL CHARACTERS!
 
         full_cmd = f"\"printf '%b' '{message}'\""
         #print(full_cmd)
