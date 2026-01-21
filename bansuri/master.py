@@ -58,7 +58,6 @@ class Orchestrator:
         """
 
         try:
-
             config = BansuriConfig.load_from_file(self.config_file)
         except Exception as e:
             self._log(f"Error loading config: {e}")
@@ -108,12 +107,6 @@ class Orchestrator:
             if cfg.environment_file:
                 # TODO implement
                 self._log(f"WARNING [{name}]: environment-file NOT IMPLEMENTED")
-            if cfg.success_codes:
-                # TODO implement
-                self._log(f"WARNING [{name}]: success-codes NOT IMPLEMENTED")
-            if cfg.notify:
-                # TODO implement
-                self._log(f"WARNING [{name}]: notify NOT IMPLEMENTED")
 
             runner = TaskRunner(new_configs[name], config)
             self.runners[name] = runner
