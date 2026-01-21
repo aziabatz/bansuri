@@ -2,6 +2,7 @@ import subprocess
 
 from bansuri.alerts.notifier import FailureInfo, Notifier
 
+
 class CommandNotifier(Notifier):
     """Notify via shell command execution."""
 
@@ -22,7 +23,7 @@ class CommandNotifier(Notifier):
                 text=True,
                 timeout=self.timeout,
             )
-            
+
             print(f"returncode: {result.returncode}")
             if result.returncode == 0:
                 print(f"stdout: {result.stdout}")
@@ -38,12 +39,12 @@ class CommandNotifier(Notifier):
 
     def _build_output_command(self, info: FailureInfo) -> str:
         """Build command with message
-            It supports multiline text
+        It supports multiline text
         """
         lines = [
             f"=== Task Failure ===",
             "",
-            f"Task '{info.task_name}' has failed.",
+            f"Task {info.task_name} has failed.",
             "",
             "--- Task Details ---",
             f"Name:              {info.task_name}",
@@ -63,12 +64,10 @@ class CommandNotifier(Notifier):
         if info.stderr:
             lines.extend(["", "--- Error ---", info.stderr.strip()])
 
-        lines.extend(["", "---", "This is an automated message from orchestrator."])
+        lines.extend(["", "---", "This is an automated message from Orchestrator."])
 
-        message = "\\n".join(lines)
-        message = message.replace("'", "'\"'\"'")  # ' -> '"'"'
-        # FIXME ESCAPE ALL CHARACTERS!
+        message = "\\\\n".join(lines)
+        # TODO ESCAPE ALL CHARACTERS!
 
-        full_cmd = f"\"printf '%b' '{message}'\""
-        #print(full_cmd)
+        full_cmd = f"\\\"printf %b \\\'{message}\\\'\\\""
         return full_cmd
