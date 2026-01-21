@@ -54,12 +54,14 @@ class ScriptConfig:
                     f"Plain script '{self.name}' requires 'schedule-cron', 'timer' or 'depends-on' defined in the JSON."
                 )
 
+
 @dataclass
 class BansuriConfig:
     "Represents the current loaded definitions for Bansuri"
+
     version: str
     scripts: List[ScriptConfig]
-    notify_command: Optional[str] = '' # command <text>
+    notify_command: Optional[str] = None  # command <text> TODO: make <text> replaceable
 
     @classmethod
     def load_from_file(cls, file_path: str) -> "BansuriConfig":
@@ -72,7 +74,8 @@ class BansuriConfig:
             except json.JSONDecodeError as e:
                 raise ValueError(f"Error decoding JSON in {file_path}: {e}")
 
-        version = data.get("version", "0.0")
+        version = data.get("version", "UNKNOWN")
+        notify_command = data.get("notify_command")
         scripts_data = data.get("scripts", [])
         parsed_scripts = []
 
@@ -96,4 +99,4 @@ class BansuriConfig:
             except ValueError as e:
                 raise ValueError(f"Validation error in '{item.get('name')}': {e}")
 
-        return cls(version=version, scripts=parsed_scripts)
+        return cls(version=version, scripts=parsed_scripts, notify_command=notify_command)
