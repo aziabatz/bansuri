@@ -1,48 +1,131 @@
 Configuration
-=============
+==============
 
-Bansuri is highly configurable to suit various orchestration needs. The core configuration is managed through JSON files that define the scripts, their schedules, and execution parameters.
+How to configure tasks in Bansuri.
 
-Scripts Definition
+Configuration File
 ------------------
 
-The heart of Bansuri's operation lies in the ``scripts.json`` file. This file acts as the registry for all tasks that the system is aware of.
+Bansuri uses **JSON** configuration files to define tasks.
 
-File Location
-~~~~~~~~~~~~~
+**Default Location**: ``scripts.json`` in current directory
 
-By default, Bansuri looks for the configuration at ``scripts.json`` in the current working directory, or at ``bansuri/scripts.json``.
+**Example**:
 
-Structure
-~~~~~~~~~
+.. code-block:: json
 
-The configuration file follows a strict schema to ensure the Orchestrator can parse tasks correctly. Below is the current configuration used in the project:
+    {
+      "version": "1.0",
+      "notify_command": "mail -s 'Alert' admin@example.com",
+      "scripts": [
+        {
+          "name": "task-1",
+          "command": "python script.py",
+          "timer": "300"
+        }
+      ]
+    }
 
-.. literalinclude:: ../bansuri/scripts.json
-   :language: json
-   :caption: Current bansuri/scripts.json configuration
-   :linenos:
+Minimal Task
+~~~~~~~~~~~~
 
-Parameters Explained
+Only **name** and **command** are required:
+
+.. code-block:: json
+
+    {
+      "version": "1.0",
+      "scripts": [
+        {
+          "name": "my-task",
+          "command": "bash do_something.sh"
+        }
+      ]
+    }
+
+Task Parameters Reference
+--------------------------
+
+**Scheduling** (pick one):
+
+=====================  ====================  =====================================================
+Parameter              Example               Description
+=====================  ====================  =====================================================
+``timer``              ``"300"`` or ``"5m"`` Run task every N seconds/minutes/hours
+``schedule-cron``      ``"0 2 * * *"``       Run task on cron schedule (requires croniter)
+=====================  ====================  =====================================================
+
+**Execution Control**:
+
+=====================  ====================  =====================================================
+Parameter              Example               Description
+=====================  ====================  =====================================================
+``timeout``            ``"30s"`` or ``"5m"`` Kill task if it runs longer than this
+``on-fail``            ``"restart"``         What to do on failure: ``"stop"`` or ``"restart"``
+``times``              ``3``                 Max attempts (default: 1)
+``success-codes``      ``[0, 1, 2]``         Exit codes to treat as success (default: [0])
+=====================  ====================  =====================================================
+
+**Output & Logs**:
+
+=====================  ====================  =====================================================
+Parameter              Example               Description
+=====================  ====================  =====================================================
+``stdout``             ``"task.log"``        File to save stdout
+``stderr``             ``"combined"``        File for stderr or "combined" (default: combined)
+``working-directory``  ``"/app/scripts"``    Directory to run command in
+``description``        ``"Daily backup"``    Human-readable description
+=====================  ====================  =====================================================
+
+**Advanced** (not yet implemented):
+
+=====================  ====================  =====================================================
+Parameter              Example               Description
+=====================  ====================  =====================================================
+``depends-on``         ``["task-1"]``        ❌ Run after other tasks complete
+``user``               ``"postgres"``        ❌ Run as different user
+``priority``           ``10``                ❌ Process priority (nice value)
+``environment-file``   ``"/etc/env.json"``   ❌ Load environment variables from file
+=====================  ====================  =====================================================
+
+Time Format Examples
 ~~~~~~~~~~~~~~~~~~~~
 
-Each entry in the configuration supports the following keys:
+.. code-block:: json
 
-- **name**: Unique identifier for the task.
-- **command**: The actual shell command or script path to execute.
-- **schedule-cron**: Cron expression for scheduling (e.g., ``"*/5 * * * *"``). NOT IMPLEMENTED.
-- **timer**: Fixed interval execution in seconds (e.g., ``"300"`` for 5 minutes).
-- **timeout**: Maximum execution time (e.g., ``"30s"``, ``"5m"``, ``"1h"``).
-- **times**: Number of execution attempts (default: 1).
-- **on-fail**: Action on failure - ``"stop"`` or ``"restart"`` (default: ``"stop"``).
-- **working-directory**: Working directory for task execution (optional).
-- **stdout**: File path for stdout redirection (optional).
-- **stderr**: File path for stderr redirection or ``"combined"`` (default: ``"combined"``).
-- **no-interface**: Auto-detect if task is AbstractTask or shell command (default: ``false``).
-- **depends-on**: List of task dependencies. NOT IMPLEMENTED.
-- **user**: User to run the task as. NOT IMPLEMENTED.
-- **priority**: Process priority/nice value. NOT IMPLEMENTED.
-- **environment-file**: Environment file to load. NOT IMPLEMENTED.
-- **success-codes**: List of success exit codes (default: ``[0]``).
-- **notify**: Notification policy (``"none"`` or ``"mail"``). IMPLEMENTED - see :doc:`notifications` for details.
-- **description**: Human-readable task description (optional).
+    {
+      "timer": "30",      // Every 30 seconds
+      "timer": "5m",      // Every 5 minutes
+      "timer": "1h",      // Every hour
+      "timeout": "60s",   // Timeout after 60 seconds
+      "timeout": "30m",   // Timeout after 30 minutes
+      "schedule-cron": "*/5 * * * *"   // Every 5 minutes (cron)
+    }
+
+Complete Example
+~~~~~~~~~~~~~~~~
+
+.. code-block:: json
+
+    {
+      "version": "1.0",
+      "notify_command": "mail -s 'Bansuri: {task}' admin@example.com",
+      "scripts": [
+        {
+          "name": "database-backup",
+          "command": "pg_dump mydb | gzip > backup.sql.gz",
+          "working-directory": "/backups",
+          "timer": "86400",
+          "timeout": "1h",
+          "times": 2,
+          "on-fail": "restart",
+          "stdout": "backup.log",
+          "stderr": "combined",
+          "notify": "mail",
+          "success-codes": [0],
+          "description": "Daily PostgreSQL backup"
+        }
+      ]
+    }
+
+See :doc:`reference` for more examples and :doc:`advanced-config` for complex setups.

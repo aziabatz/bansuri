@@ -41,39 +41,37 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Start Here</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Understanding Bansuri</span></p>
+<p class="caption" role="heading"><span class="caption-text">Core Concepts</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts and Terminology</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Configuration</span></p>
+<p class="caption" role="heading"><span class="caption-text">Configuration &amp; Usage</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced-config.html">Advanced Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced-config.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<p class="caption" role="heading"><span class="caption-text">Features &amp; Extensions</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notifications.html">Notifications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="custom-tasks.html">Creating Custom Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Operations</span></p>
+<p class="caption" role="heading"><span class="caption-text">Running Bansuri</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="troubleshooting-detailed.html">Troubleshooting Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Project Info</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to Bansuri</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 </ul>
 
@@ -103,42 +101,52 @@
              
   <section id="bansuri-documentation">
 <h1>Bansuri Documentation<a class="headerlink" href="#bansuri-documentation" title="Link to this heading"></a></h1>
-<p>Task orchestration and management system for running and monitoring multiple scripts.</p>
+<p><strong>Task Orchestration &amp; Management System</strong></p>
+<p>Bansuri is a flexible, easy-to-use system for running and monitoring multiple scripts with configurable scheduling, timeouts, retries, and notifications.</p>
+<dl class="simple">
+<dt>✅ <strong>What You Can Do</strong>:</dt><dd><ul class="simple">
+<li><p>Run shell commands on timers or cron schedules</p></li>
+<li><p>Retry failed tasks automatically</p></li>
+<li><p>Monitor task execution with detailed logs</p></li>
+<li><p>Send alerts on failures</p></li>
+<li><p>Manage multiple tasks from one configuration file</p></li>
+</ul>
+</dd>
+</dl>
+<p>⚠️ <strong>What’s Coming</strong>: Task dependencies, user switching, hot-reload, and more.</p>
+<p>See <span class="xref std std-ref">Feature Status</span> for implementation details.</p>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<p class="caption" role="heading"><span class="caption-text">Start Here</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#your-first-task">Your First Task</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#useful-examples">Useful Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#common-tasks">Common Tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#verify-your-configuration">Verify Your Configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#next-steps">Next Steps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#tips-and-tricks">Tips and Tricks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#troubleshooting">Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#getting-support">Getting Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#what-just-happened">What Just Happened?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#backup-database-every-hour">Backup Database Every Hour</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#run-health-checks-every-minute">Run Health Checks Every Minute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#data-sync-with-retries">Data Sync with Retries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#complete-beginner-configuration">Complete Beginner Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#prerequisites">Prerequisites</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-from-source">Installing from source</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#basic-usage">Basic Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#from-source-recommended-for-development">From Source (Recommended for Development)</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Understanding Bansuri</span></p>
+<p class="caption" role="heading"><span class="caption-text">Core Concepts</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts and Terminology</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="concepts.html#core-concepts">Core Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="concepts.html#configuration-hierarchy">Configuration Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#core-components">Core Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#execution-models">Execution Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#execution-control">Execution Control</a></li>
 <li class="toctree-l2"><a class="reference internal" href="concepts.html#task-lifecycle">Task Lifecycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#configuration-synchronization">Configuration Synchronization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#configuration-hierarchy">Configuration Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts.html#id1">Task Lifecycle</a></li>
 <li class="toctree-l2"><a class="reference internal" href="concepts.html#failure-policies">Failure Policies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="concepts.html#output-management">Output Management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="concepts.html#resource-management">Resource Management</a></li>
@@ -167,10 +175,25 @@
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Configuration</span></p>
+<p class="caption" role="heading"><span class="caption-text">Configuration &amp; Usage</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="configuration.html#scripts-definition">Scripts Definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#configuration-file">Configuration File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#task-parameters-reference">Task Parameters Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#quick-configuration-examples">Quick Configuration Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#parameter-reference">Parameter Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#time-format-reference">Time Format Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#command-line-reference">Command-Line Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#common-mistakes">Common Mistakes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#configuration-examples">Configuration Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#exit-codes-reference">Exit Codes Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#testing-patterns">Testing Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#debugging-checklist">Debugging Checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#performance-tuning-checklist">Performance Tuning Checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#common-commands-cheat-sheet">Common Commands Cheat Sheet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="advanced-config.html">Advanced Configuration</a><ul>
@@ -186,21 +209,15 @@
 <li class="toctree-l2"><a class="reference internal" href="advanced-config.html#debugging-configuration-issues">Debugging Configuration Issues</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#configuration-quick-reference">Configuration Quick Reference</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#command-line-reference">Command Line Reference</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#configuration-examples">Configuration Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#exit-codes-reference">Exit Codes Reference</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#testing-patterns">Testing Patterns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#debugging-checklist">Debugging Checklist</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#performance-tuning-checklist">Performance Tuning Checklist</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#common-commands-cheat-sheet">Common Commands Cheat Sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#basic-usage">Basic Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#configuration">Configuration</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<p class="caption" role="heading"><span class="caption-text">Features &amp; Extensions</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notifications.html">Notifications</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="notifications.html#overview">Overview</a></li>
@@ -224,10 +241,24 @@
 <li class="toctree-l2"><a class="reference internal" href="custom-tasks.html#integration-with-bansuri">Integration with Bansuri</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#quick-configuration-examples">Quick Configuration Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#parameter-reference">Parameter Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#time-format-reference">Time Format Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#command-line-reference">Command-Line Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#common-mistakes">Common Mistakes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#configuration-examples">Configuration Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#exit-codes-reference">Exit Codes Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#testing-patterns">Testing Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#debugging-checklist">Debugging Checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#performance-tuning-checklist">Performance Tuning Checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#common-commands-cheat-sheet">Common Commands Cheat Sheet</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Operations</span></p>
+<p class="caption" role="heading"><span class="caption-text">Running Bansuri</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="deployment.html#systemd-service-setup">Systemd Service Setup</a></li>
@@ -240,21 +271,17 @@
 <li class="toctree-l2"><a class="reference internal" href="deployment.html#troubleshooting-deployment-issues">Troubleshooting Deployment Issues</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="troubleshooting-detailed.html">Troubleshooting Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting-detailed.html#task-execution-issues">Task Execution Issues</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting-detailed.html#configuration-issues">Configuration Issues</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting-detailed.html#performance-issues">Performance Issues</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting-detailed.html#logging-and-debugging">Logging and Debugging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting-detailed.html#notification-issues">Notification Issues</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting-detailed.html#connection-issues">Connection Issues</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting-detailed.html#restart-issues">Restart Issues</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting-detailed.html#getting-help">Getting Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#task-issues">Task Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#configuration-issues">Configuration Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#restart-recovery">Restart / Recovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#getting-help">Getting Help</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Project Info</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to Bansuri</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#setting-up-the-development-environment">Setting up the Development Environment</a></li>
@@ -263,17 +290,16 @@
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#documentation">Documentation</a></li>
 </ul>
 </li>
-</ul>
-</div>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api.html#core-components">Core Components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#base-classes-for-extensions">Base Classes for Extensions</a></li>
 </ul>
 </li>
 </ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Check <span class="xref std std-doc">NOT_IMPLEMENTED.md</span> for feature status and workarounds.</p>
 </div>
 </section>
 <section id="indices-and-tables">

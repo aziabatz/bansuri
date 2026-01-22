@@ -19,8 +19,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Notifications" href="notifications.html" />
-    <link rel="prev" title="Advanced Configuration" href="advanced-config.html" /> 
+    <link rel="next" title="Advanced Configuration" href="advanced-config.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,35 +42,106 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Start Here</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Understanding Bansuri</span></p>
+<p class="caption" role="heading"><span class="caption-text">Core Concepts</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts and Terminology</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Configuration</span></p>
+<p class="caption" role="heading"><span class="caption-text">Configuration &amp; Usage</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced-config.html">Advanced Configuration</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#configuration-quick-reference">Configuration Quick Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quick-configuration-examples">Quick Configuration Examples</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#minimal-task">Minimal Task</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#complete-task-with-all-options">Complete Task with All Options</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#configuration-parameters-reference">Configuration Parameters Reference</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#timeout-formats">Timeout Formats</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#common-timer-values">Common Timer Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#timer-based-task-every-5-minutes">Timer-Based Task (Every 5 Minutes)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cron-scheduled-task-daily-at-2-am">Cron-Scheduled Task (Daily at 2 AM)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#task-with-retry-logic">Task with Retry Logic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#complete-task-example">Complete Task Example</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#command-line-reference">Command Line Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#parameter-reference">Parameter Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#required-parameters">Required Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optional-scheduling">Optional Scheduling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optional-execution-control">Optional Execution Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optional-output">Optional Output</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#time-format-reference">Time Format Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#common-intervals">Common Intervals</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-reference">Command-Line Reference</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#start-bansuri">Start Bansuri</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#validation">Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing-commands">Testing Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#common-mistakes">Common Mistakes</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#view-logs">View Logs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#system-management">System Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-examples">Configuration Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-1-simple-health-check">Example 1: Simple Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-2-database-backup-with-retry">Example 2: Database Backup with Retry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-3-multiple-tasks">Example 3: Multiple Tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exit-codes-reference">Exit Codes Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing-patterns">Testing Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debugging-checklist">Debugging Checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-tuning-checklist">Performance Tuning Checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common-commands-cheat-sheet">Common Commands Cheat Sheet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#useful-aliases">Useful Aliases</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced-config.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features &amp; Extensions</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="notifications.html">Notifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-tasks.html">Creating Custom Tasks</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quick-configuration-examples">Quick Configuration Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#minimal-task">Minimal Task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#timer-based-task-every-5-minutes">Timer-Based Task (Every 5 Minutes)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cron-scheduled-task-daily-at-2-am">Cron-Scheduled Task (Daily at 2 AM)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#task-with-retry-logic">Task with Retry Logic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#complete-task-example">Complete Task Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#parameter-reference">Parameter Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#required-parameters">Required Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optional-scheduling">Optional Scheduling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optional-execution-control">Optional Execution Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optional-output">Optional Output</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#time-format-reference">Time Format Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#common-intervals">Common Intervals</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-reference">Command-Line Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#start-bansuri">Start Bansuri</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#validation">Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing-commands">Testing Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#common-mistakes">Common Mistakes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#view-logs">View Logs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#system-management">System Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Validation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#testing">Testing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
 </ul>
@@ -92,22 +163,14 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Features</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="notifications.html">Notifications</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom-tasks.html">Creating Custom Tasks</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Operations</span></p>
+<p class="caption" role="heading"><span class="caption-text">Running Bansuri</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="troubleshooting-detailed.html">Troubleshooting Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Project Info</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to Bansuri</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 </ul>
 
@@ -137,52 +200,191 @@
              
   <section id="reference">
 <h1>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h1>
-<p>Quick reference for Bansuri configuration and commands.</p>
-<section id="configuration-quick-reference">
-<h2>Configuration Quick Reference<a class="headerlink" href="#configuration-quick-reference" title="Link to this heading"></a></h2>
+<p>Complete reference for configuration and command-line usage.</p>
+<section id="quick-configuration-examples">
+<h2>Quick Configuration Examples<a class="headerlink" href="#quick-configuration-examples" title="Link to this heading"></a></h2>
 <section id="minimal-task">
 <h3>Minimal Task<a class="headerlink" href="#minimal-task" title="Link to this heading"></a></h3>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-name&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;command-to-run&quot;</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scripts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my-task&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;echo &#39;hello&#39;&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
+<p><strong>Result</strong>: Task runs once at startup.</p>
+<p>—</p>
 </section>
-<section id="complete-task-with-all-options">
-<h3>Complete Task with All Options<a class="headerlink" href="#complete-task-with-all-options" title="Link to this heading"></a></h3>
+<section id="timer-based-task-every-5-minutes">
+<h3>Timer-Based Task (Every 5 Minutes)<a class="headerlink" href="#timer-based-task-every-5-minutes" title="Link to this heading"></a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;monitor&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python monitor.py&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;300&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>—</p>
+</section>
+<section id="cron-scheduled-task-daily-at-2-am">
+<h3>Cron-Scheduled Task (Daily at 2 AM)<a class="headerlink" href="#cron-scheduled-task-daily-at-2-am" title="Link to this heading"></a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;backup&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bash backup.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;schedule-cron&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0 2 * * *&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Requirements</strong>: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">croniter</span></code></p>
+<p>—</p>
+</section>
+<section id="task-with-retry-logic">
+<h3>Task with Retry Logic<a class="headerlink" href="#task-with-retry-logic" title="Link to this heading"></a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api-call&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;curl -f https://api.example.com/sync&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3600&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;30s&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;success-codes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Behavior</strong>: Runs hourly, retries 3 times on failure, kills if &gt; 30s.</p>
+<p>—</p>
+</section>
+<section id="complete-task-example">
+<h3>Complete Task Example<a class="headerlink" href="#complete-task-example" title="Link to this heading"></a></h3>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;notify_command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail -s &#39;Alert&#39; admin@example.com&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;notify_command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail -s &#39;Alert: {task}&#39; admin@example.com&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;scripts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;example-task&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/script.sh&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;working-directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/home/user/workdir&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;300&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5m&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;database-maintenance&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python /app/maintenance.py&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;working-directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/app&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;86400&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2h&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
 <span class="w">      </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;stdout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/task.log&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;stdout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/maintenance.log&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="nt">&quot;stderr&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;combined&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="nt">&quot;notify&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;success-codes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">],</span>
-<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Task description&quot;</span>
+<span class="w">      </span><span class="nt">&quot;success-codes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Daily database maintenance&quot;</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </section>
-<section id="configuration-parameters-reference">
-<h3>Configuration Parameters Reference<a class="headerlink" href="#configuration-parameters-reference" title="Link to this heading"></a></h3>
 </section>
-<section id="timeout-formats">
-<h3>Timeout Formats<a class="headerlink" href="#timeout-formats" title="Link to this heading"></a></h3>
+<section id="parameter-reference">
+<h2>Parameter Reference<a class="headerlink" href="#parameter-reference" title="Link to this heading"></a></h2>
+<section id="required-parameters">
+<h3>Required Parameters<a class="headerlink" href="#required-parameters" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">version</span></code></p></td>
+<td><p>Config version (usually “1.0”)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">scripts</span></code></p></td>
+<td><p>Array of task definitions</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code> (per-task)</p></td>
+<td><p>Unique task identifier</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">command</span></code></p></td>
+<td><p>Command or script to execute</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="optional-scheduling">
+<h3>Optional Scheduling<a class="headerlink" href="#optional-scheduling" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timer</span></code></p></td>
+<td><p>Interval in seconds (e.g., “300”, “5m”)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">schedule-cron</span></code></p></td>
+<td><p>Cron expression (e.g., “0 2 * * <a href="#id1"><span class="problematic" id="id2">*</span></a>”)</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note</strong>: Pick ONE scheduling method. If none specified, runs once at startup.</p>
+</section>
+<section id="optional-execution-control">
+<h3>Optional Execution Control<a class="headerlink" href="#optional-execution-control" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Default        Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timeout</span></code></p></td>
+<td><p>None           Max execution time (e.g., “5m”)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">on-fail</span></code></p></td>
+<td><p>“stop”         Behavior: “stop” or “restart”</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">times</span></code></p></td>
+<td><p>1              Max attempts</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">success-codes</span></code></p></td>
+<td><p>[0]            Acceptable exit codes (array)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="optional-output">
+<h3>Optional Output<a class="headerlink" href="#optional-output" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Default        Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">stdout</span></code></p></td>
+<td><p>None           File to save stdout</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">stderr</span></code></p></td>
+<td><p>“combined”     File for stderr or “combined”</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">working-directory</span></code></p></td>
+<td><p>None           Directory to run command in</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>“”             Human-readable description</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="time-format-reference">
+<h2>Time Format Reference<a class="headerlink" href="#time-format-reference" title="Link to this heading"></a></h2>
+<p>All time-based parameters support flexible formats:</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Format</p></th>
-<th class="head"><p>Equivalent</p></th>
+<th class="head"><p>Means</p></th>
 </tr>
 </thead>
 <tbody>
@@ -193,60 +395,135 @@
 <td><p>30 seconds</p></td>
 </tr>
 <tr class="row-even"><td><p>“5m”</p></td>
-<td><p>5 minutes (300s)</p></td>
+<td><p>5 minutes (= 300 seconds)</p></td>
 </tr>
 <tr class="row-odd"><td><p>“1h”</p></td>
-<td><p>1 hour (3600s)</p></td>
+<td><p>1 hour (= 3600 seconds)</p></td>
+</tr>
+<tr class="row-even"><td><p>“86400”</p></td>
+<td><p>1 day in seconds</p></td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="common-timer-values">
-<h3>Common Timer Values<a class="headerlink" href="#common-timer-values" title="Link to this heading"></a></h3>
+<section id="common-intervals">
+<h3>Common Intervals<a class="headerlink" href="#common-intervals" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Interval</p></th>
 <th class="head"><p>Timer Value</p></th>
+<th class="head"><p>Alternative Formats</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Every 5 seconds</p></td>
-<td><p>“5”</p></td>
+<tr class="row-even"><td><p>Every 30 seconds</p></td>
+<td><p>“30”</p></td>
+<td><p>“30s”</p></td>
 </tr>
 <tr class="row-odd"><td><p>Every minute</p></td>
 <td><p>“60”</p></td>
+<td><p>“1m”</p></td>
 </tr>
 <tr class="row-even"><td><p>Every 5 minutes</p></td>
 <td><p>“300”</p></td>
+<td><p>“5m”</p></td>
 </tr>
 <tr class="row-odd"><td><p>Every hour</p></td>
 <td><p>“3600”</p></td>
+<td><p>“1h”</p></td>
 </tr>
 <tr class="row-even"><td><p>Every day</p></td>
 <td><p>“86400”</p></td>
+<td><p>“24h”</p></td>
 </tr>
 </tbody>
 </table>
 </section>
 </section>
 <section id="command-line-reference">
-<h2>Command Line Reference<a class="headerlink" href="#command-line-reference" title="Link to this heading"></a></h2>
+<h2>Command-Line Reference<a class="headerlink" href="#command-line-reference" title="Link to this heading"></a></h2>
 <section id="start-bansuri">
 <h3>Start Bansuri<a class="headerlink" href="#start-bansuri" title="Link to this heading"></a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Default configuration (scripts.json in current directory)</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use default scripts.json</span>
 bansuri
 
-<span class="c1"># Custom configuration file</span>
-bansuri<span class="w"> </span>--config<span class="w"> </span>/path/to/scripts.json
+<span class="c1"># Use custom config file</span>
+bansuri<span class="w"> </span>--config<span class="w"> </span>/path/to/config.json
 
-<span class="c1"># Help</span>
+<span class="c1"># Show help</span>
 bansuri<span class="w"> </span>--help
-
-<span class="c1"># Version</span>
-bansuri<span class="w"> </span>--version
 </pre></div>
 </div>
 </section>
+<section id="validation">
+<h3>Validation<a class="headerlink" href="#validation" title="Link to this heading"></a></h3>
+<p>Check if config file is valid JSON:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>json.tool<span class="w"> </span>scripts.json
+</pre></div>
+</div>
+<p>Quick Validation Script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">from bansuri.base.config_manager import BansuriConfig</span>
+<span class="s2">try:</span>
+<span class="s2">    config = BansuriConfig.load_from_file(&#39;scripts.json&#39;)</span>
+<span class="s2">    print(&#39;✅ Configuration is valid&#39;)</span>
+<span class="s2">    for task in config.scripts:</span>
+<span class="s2">        print(f&#39;   - {task.name}&#39;)</span>
+<span class="s2">except Exception as e:</span>
+<span class="s2">    print(f&#39;❌ Error: {e}&#39;)</span>
+<span class="s2">&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="testing-commands">
+<h3>Testing Commands<a class="headerlink" href="#testing-commands" title="Link to this heading"></a></h3>
+<p>Before adding to Bansuri, test your command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Test shell command</span>
+bash<span class="w"> </span>-x<span class="w"> </span>/path/to/script.sh
+
+<span class="c1"># Check Python syntax</span>
+python<span class="w"> </span>-m<span class="w"> </span>py_compile<span class="w"> </span>my_script.py
+
+<span class="c1"># Run with timeout</span>
+timeout<span class="w"> </span>30s<span class="w"> </span>python<span class="w"> </span>my_script.py
+</pre></div>
+</div>
+</section>
+</section>
+<section id="common-mistakes">
+<h2>Common Mistakes<a class="headerlink" href="#common-mistakes" title="Link to this heading"></a></h2>
+<ol class="arabic">
+<li><p><strong>Missing croniter library</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ERROR: &#39;croniter&#39; library is missing
+</pre></div>
+</div>
+<p>Fix:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>croniter
+</pre></div>
+</div>
+</li>
+<li><p><strong>Invalid JSON</strong></p>
+<p>Symptom: Task doesn’t start, no error message</p>
+<p>Fix:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>json.tool<span class="w"> </span>scripts.json
+</pre></div>
+</div>
+</li>
+<li><p><strong>Command not found</strong></p>
+<p>Symptom: Exit code 127</p>
+<p>Fix: Use absolute path to script</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/usr/local/bin/my_script.sh&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Permission denied</strong></p>
+<p>Symptom: Exit code 126</p>
+<p>Fix: Make script executable</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chmod<span class="w"> </span>+x<span class="w"> </span>/path/to/script.sh
+</pre></div>
+</div>
+</li>
+</ol>
+<p>See <a class="reference internal" href="troubleshooting.html"><span class="doc">Troubleshooting</span></a> for more help.</p>
 <section id="view-logs">
 <h3>View Logs<a class="headerlink" href="#view-logs" title="Link to this heading"></a></h3>
 <p>For systemd:</p>
@@ -297,8 +574,8 @@ systemctl<span class="w"> </span>disable<span class="w"> </span>bansuri
 </pre></div>
 </div>
 </section>
-<section id="validation">
-<h3>Validation<a class="headerlink" href="#validation" title="Link to this heading"></a></h3>
+<section id="id3">
+<h3>Validation<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <p>Validate configuration syntax:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>json.tool<span class="w"> </span>scripts.json
 </pre></div>
@@ -598,8 +875,8 @@ grep<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;sta
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="advanced-config.html" class="btn btn-neutral float-left" title="Advanced Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="notifications.html" class="btn btn-neutral float-right" title="Notifications" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="configuration.html" class="btn btn-neutral float-left" title="Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced-config.html" class="btn btn-neutral float-right" title="Advanced Configuration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

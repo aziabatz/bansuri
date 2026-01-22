@@ -1,0 +1,31 @@
+{# Bansuri Custom Layout Template #}
+{% extends "!layout.html" %}
+
+{% block extrahead %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bansuri - Task Orchestration and Management System">
+    <meta name="keywords" content="bansuri, task, orchestration, scheduler, cron, timer, management">
+    <meta property="og:title" content="Bansuri Documentation">
+    <meta property="og:description" content="Flexible task orchestration system for running and monitoring scripts">
+    <meta property="og:type" content="website">
+{% endblock %}
+
+{% block footer %}
+    <footer>
+        <div class="footer-content">
+            <p>
+                <strong>Bansuri</strong> - Task Orchestration & Management System
+            </p>
+            <p>
+                Version {{ release }} | 
+                <a href="https://github.com/aziabatz/bansuri" target="_blank">GitHub</a> |
+                <a href="https://github.com/aziabatz/bansuri/issues" target="_blank">Issues</a> |
+                Copyright © 2026, <a href="https://github.com/aziabatz" target="_blank">Ahmed.ZZ</a>
+            </p>
+            <p style="margin-top: 1em; font-size: 0.9em; color: #999;">
+                Built with <a href="https://www.sphinx-doc.org" target="_blank">Sphinx</a> and 
+                <a href="https://sphinx-rtd-theme.readthedocs.io" target="_blank">Read the Docs Theme</a>
+            </p>
+        </div>
+    </footer>
+{% endblock %}

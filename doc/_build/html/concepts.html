@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="System Architecture" href="architecture.html" />
-    <link rel="prev" title="Usage" href="usage.html" /> 
+    <link rel="prev" title="Installation" href="installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,24 +42,26 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Start Here</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Understanding Bansuri</span></p>
+<p class="caption" role="heading"><span class="caption-text">Core Concepts</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Concepts and Terminology</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#core-concepts">Core Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#core-components">Core Components</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#task">Task</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#orchestrator">Orchestrator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#taskrunner">TaskRunner</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#execution-models">Execution Models</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#execution-models">Execution Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#execution-control">Execution Control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#task-lifecycle">Task Lifecycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-synchronization">Configuration Synchronization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#configuration-hierarchy">Configuration Hierarchy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#task-lifecycle">Task Lifecycle</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Task Lifecycle</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#state-transitions">State Transitions</a></li>
 </ul>
 </li>
@@ -84,28 +86,27 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Configuration</span></p>
+<p class="caption" role="heading"><span class="caption-text">Configuration &amp; Usage</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="advanced-config.html">Advanced Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced-config.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<p class="caption" role="heading"><span class="caption-text">Features &amp; Extensions</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notifications.html">Notifications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="custom-tasks.html">Creating Custom Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Operations</span></p>
+<p class="caption" role="heading"><span class="caption-text">Running Bansuri</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="troubleshooting-detailed.html">Troubleshooting Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Project Info</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to Bansuri</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 </ul>
 
@@ -135,71 +136,152 @@
              
   <section id="concepts-and-terminology">
 <h1>Concepts and Terminology<a class="headerlink" href="#concepts-and-terminology" title="Link to this heading"></a></h1>
-<p>Understanding key concepts in Bansuri.</p>
-<section id="core-concepts">
-<h2>Core Concepts<a class="headerlink" href="#core-concepts" title="Link to this heading"></a></h2>
+<section id="core-components">
+<h2>Core Components<a class="headerlink" href="#core-components" title="Link to this heading"></a></h2>
 <section id="task">
 <h3>Task<a class="headerlink" href="#task" title="Link to this heading"></a></h3>
-<p>A <strong>task</strong> is a single unit of work to be executed by Bansuri. Tasks can be:</p>
+<p>A <strong>task</strong> is a unit of work to be executed by Bansuri.</p>
+<p>A task consists of:</p>
 <ul class="simple">
-<li><p><strong>Shell commands</strong>: Simple bash/shell scripts</p></li>
-<li><p><strong>Python scripts</strong>: Python files or modules</p></li>
-<li><p><strong>Custom implementations</strong>: Classes inheriting from <code class="docutils literal notranslate"><span class="pre">AbstractTask</span></code></p></li>
+<li><p><strong>Name</strong>: Unique identifier</p></li>
+<li><p><strong>Command</strong>: What to execute (shell command)</p></li>
+<li><p><strong>Schedule</strong>: When/how often to run (timer, cron, or once)</p></li>
+<li><p><strong>Policies</strong>: Timeout, retries, notifications</p></li>
 </ul>
-<p>Each task has:</p>
-<ul class="simple">
-<li><p>Unique identifier (name)</p></li>
-<li><p>Command to execute</p></li>
-<li><p>Configuration for execution behavior</p></li>
-<li><p>Optional timeout and retry policies</p></li>
-</ul>
-<p>Example task:</p>
+<p>Example:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;backup-database&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pg_dump production | gzip&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pg_dump production | gzip &gt; backup.sql.gz&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;86400&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2h&quot;</span>
+<span class="w">  </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1h&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;notify&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="orchestrator">
 <h3>Orchestrator<a class="headerlink" href="#orchestrator" title="Link to this heading"></a></h3>
-<p>The <strong>Orchestrator</strong> is the central coordinator of Bansuri. It:</p>
+<p>The <strong>Orchestrator</strong> is the main coordinator. It:</p>
 <ul class="simple">
-<li><p>Reads and parses configuration</p></li>
-<li><p>Spawns <code class="docutils literal notranslate"><span class="pre">TaskRunner</span></code> instances for each task</p></li>
-<li><p>Monitors task health and restarts</p></li>
-<li><p>Coordinates task lifecycle</p></li>
-<li><p>Synchronizes configuration changes</p></li>
+<li><p>Reads configuration from <code class="docutils literal notranslate"><span class="pre">scripts.json</span></code></p></li>
+<li><p>Creates <code class="docutils literal notranslate"><span class="pre">TaskRunner</span></code> for each task</p></li>
+<li><p>Monitors all tasks continuously</p></li>
+<li><p>Handles graceful shutdown (SIGTERM/SIGINT)</p></li>
+<li><p>Syncs configuration changes</p></li>
 </ul>
-<p>The Orchestrator runs continuously and manages all tasks in a single process.</p>
+<p>The Orchestrator runs continuously in a single process.</p>
 </section>
 <section id="taskrunner">
 <h3>TaskRunner<a class="headerlink" href="#taskrunner" title="Link to this heading"></a></h3>
-<p>A <strong>TaskRunner</strong> is responsible for managing the execution of a single task. Each task gets its own <code class="docutils literal notranslate"><span class="pre">TaskRunner</span></code> instance that:</p>
+<p>Each task gets its own <strong>TaskRunner</strong> that:</p>
 <ul class="simple">
 <li><p>Runs in a dedicated thread</p></li>
-<li><p>Spawns and manages the task process</p></li>
-<li><p>Handles timeouts</p></li>
-<li><p>Captures output</p></li>
-<li><p>Implements retry policies</p></li>
+<li><p>Spawns the task process</p></li>
+<li><p>Manages timeouts and retries</p></li>
+<li><p>Captures and redirects output</p></li>
 <li><p>Sends notifications on failure</p></li>
 </ul>
 </section>
+</section>
 <section id="execution-models">
-<h3>Execution Models<a class="headerlink" href="#execution-models" title="Link to this heading"></a></h3>
-<p>Bansuri supports different execution models:</p>
-<p><strong>One-shot Execution</strong></p>
-<p>Task runs once:</p>
+<h2>Execution Models<a class="headerlink" href="#execution-models" title="Link to this heading"></a></h2>
+<p>Bansuri supports different scheduling modes:</p>
+<p><strong>One-Time Execution</strong></p>
+<p>Task runs once at startup:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;setup&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;init.sh&quot;</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;initialize&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python init.py&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p><strong>Timer-based Execution</strong></p>
-<p>Task runs at fixed intervals:</p>
+<p><strong>Timer-Based</strong> (Fixed Interval)</p>
+<p>Task runs repeatedly at fixed intervals:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;monitor&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python health_check.py&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;300&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Supported formats:
+- <code class="docutils literal notranslate"><span class="pre">&quot;60&quot;</span></code> → every 60 seconds
+- <code class="docutils literal notranslate"><span class="pre">&quot;5m&quot;</span></code> → every 5 minutes
+- <code class="docutils literal notranslate"><span class="pre">&quot;1h&quot;</span></code> → every hour</p>
+<p><strong>Cron-Based</strong> (Scheduled Times)</p>
+<p>Task runs on cron schedule (requires <code class="docutils literal notranslate"><span class="pre">croniter</span></code>):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;daily-backup&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bash backup.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;schedule-cron&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0 2 * * *&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Cron format: <code class="docutils literal notranslate"><span class="pre">&quot;minute</span> <span class="pre">hour</span> <span class="pre">day</span> <span class="pre">month</span> <span class="pre">weekday&quot;</span></code></p>
+</section>
+<section id="execution-control">
+<h2>Execution Control<a class="headerlink" href="#execution-control" title="Link to this heading"></a></h2>
+<p><strong>Failure Handling</strong></p>
+<p>When a task fails (non-zero exit code):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">on-fail:</span> <span class="pre">&quot;stop&quot;</span></code> → Stop and don’t retry (default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on-fail:</span> <span class="pre">&quot;restart&quot;</span></code> → Retry immediately</p></li>
+</ul>
+<p>Combined with <code class="docutils literal notranslate"><span class="pre">times</span></code> for max retries:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api-sync&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python sync.py&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Timeout Management</strong></p>
+<p>Kill task if it runs too long:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;long-task&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bash slow.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;30m&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Supported formats:
+- <code class="docutils literal notranslate"><span class="pre">&quot;30s&quot;</span></code> → 30 seconds
+- <code class="docutils literal notranslate"><span class="pre">&quot;5m&quot;</span></code> → 5 minutes
+- <code class="docutils literal notranslate"><span class="pre">&quot;1h&quot;</span></code> → 1 hour</p>
+<p><strong>Success Definition</strong></p>
+<p>By default, only exit code 0 is success. Override with:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;exit-handler&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bash script.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;success-codes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Exit codes 1 and 2 won’t trigger retries or notifications.</p>
+</section>
+<section id="task-lifecycle">
+<h2>Task Lifecycle<a class="headerlink" href="#task-lifecycle" title="Link to this heading"></a></h2>
+<p>A task goes through these states:</p>
+<ol class="arabic simple">
+<li><p><strong>PENDING</strong> → Task queued, waiting to start</p></li>
+<li><p><strong>RUNNING</strong> → Process is executing</p></li>
+<li><p><strong>TIMEOUT</strong> → Task exceeded timeout limit</p></li>
+<li><p><strong>SUCCESS</strong> → Task completed with success code</p></li>
+<li><p><strong>FAILED</strong> → Task exited with non-success code</p></li>
+<li><p><strong>RESTARTING</strong> → Task failed, retrying (if <code class="docutils literal notranslate"><span class="pre">on-fail:</span> <span class="pre">restart</span></code>)</p></li>
+<li><p><strong>STOPPED</strong> → Task stopped by user or reached max attempts</p></li>
+</ol>
+</section>
+<section id="configuration-synchronization">
+<h2>Configuration Synchronization<a class="headerlink" href="#configuration-synchronization" title="Link to this heading"></a></h2>
+<p>The Orchestrator monitors <code class="docutils literal notranslate"><span class="pre">scripts.json</span></code> for changes:</p>
+<ul class="simple">
+<li><p><strong>New tasks</strong> → Automatically started</p></li>
+<li><p><strong>Deleted tasks</strong> → Automatically stopped</p></li>
+<li><p><strong>Modified tasks</strong> → ❌ NOT YET (requires hot-reload)</p></li>
+</ul>
+<p>See <span class="xref std std-doc">../NOT_IMPLEMENTED.md</span> for feature status.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;monitor&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;check.sh&quot;</span><span class="p">,</span>
@@ -216,7 +298,6 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-</section>
 </section>
 <section id="configuration-hierarchy">
 <h2>Configuration Hierarchy<a class="headerlink" href="#configuration-hierarchy" title="Link to this heading"></a></h2>
@@ -239,8 +320,8 @@
 </pre></div>
 </div>
 </section>
-<section id="task-lifecycle">
-<h2>Task Lifecycle<a class="headerlink" href="#task-lifecycle" title="Link to this heading"></a></h2>
+<section id="id1">
+<h2>Task Lifecycle<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <p>A task progresses through these states:</p>
 <ol class="arabic simple">
 <li><p><strong>PENDING</strong>: Registered in config, waiting to run</p></li>
@@ -318,7 +399,7 @@ FAILED → STOPPED
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{}</span>
 </pre></div>
 </div>
-<p><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a></p>
+<p><a href="#id2"><span class="problematic" id="id3">``</span></a><a href="#id4"><span class="problematic" id="id5">`</span></a></p>
 <p><strong>File redirection</strong></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;stdout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/task.log&quot;</span><span class="p">,</span>
@@ -645,7 +726,7 @@ FAILED → STOPPED
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="architecture.html" class="btn btn-neutral float-right" title="System Architecture" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

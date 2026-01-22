@@ -4,37 +4,30 @@ Quick Start Guide
 Get Bansuri running in 5 minutes.
 
 Prerequisites
--------------
+~~~~~~~~~~~~~
 
 - Python 3.8 or higher
-- ``git`` installed
+- ``pip`` package manager
 
 Installation
------------
-
-1. Clone the repository:
+~~~~~~~~~~~~
 
 .. code-block:: bash
 
+    # Clone the repository
     git clone https://github.com/aziabatz/bansuri.git
     cd bansuri
 
-2. Install Bansuri:
-
-.. code-block:: bash
-
+    # Install in development mode
     pip install -e .
 
-3. Verify installation:
-
-.. code-block:: bash
-
+    # Verify installation
     bansuri --help
 
 Your First Task
-----------------
+~~~~~~~~~~~~~~~
 
-1. Create a configuration file ``scripts.json``:
+**Step 1: Create** ``scripts.json``:
 
 .. code-block:: json
 
@@ -50,23 +43,35 @@ Your First Task
       ]
     }
 
-2. Run Bansuri:
+**Step 2: Run Bansuri**:
 
 .. code-block:: bash
 
     bansuri
 
-You should see output like:
+**Expected Output**:
 
 .. code-block:: text
 
-    [2026-01-19 10:00:00] [MASTER] Orchestrator initialized
-    [2026-01-19 10:00:00] [MASTER] New task found: hello-world
-    [2026-01-19 10:00:00] [MASTER] Task started: hello-world
-    [2026-01-19 10:00:01] [hello-world] Hello from Bansuri!
-    [2026-01-19 10:00:31] [hello-world] Hello from Bansuri!
+    [2026-01-19 10:00:00] [MASTER] ========================================
+    [2026-01-19 10:00:00] [MASTER] BANSURI ORCHESTRATOR STARTED
+    [2026-01-19 10:00:00] [MASTER] ========================================
+    [2026-01-19 10:00:00] [hello-world] Runner started.
+    [2026-01-19 10:00:01] [hello-world] Timer configured: running every 30s (30s)
+    [2026-01-19 10:00:01] [hello-world] Executing shell command: echo 'Hello from Bansuri!'
+    [2026-01-19 10:00:01] [hello-world] Process finished with code 0
+    [2026-01-19 10:00:31] [hello-world] Executing shell command: echo 'Hello from Bansuri!'
 
-3. Stop with ``Ctrl+C``
+**Step 3: Stop** with ``Ctrl+C``
+
+What Just Happened?
+~~~~~~~~~~~~~~~~~~~
+
+1. Bansuri read ``scripts.json``
+2. Found task ``hello-world``
+3. Started a ``TaskRunner`` thread for the task
+4. Task ran immediately, then every 30 seconds
+5. Logs showed each execution
 
 Useful Examples
 ---------------
