@@ -1,0 +1,317 @@
+# Hot-Reload Script Manager
+# Bansuri Task System
+
+Asynchronous multi-threaded subprocess orchestration with hot-reload capability for SLURM environments.
+This project implements a modular task execution system designed for the Bansuri process manager. It separates configuration data from execution logic using a declarative approach.
+
+## Features
+## Core Components
+
+✅ **Hot Reload**: Add/remove scripts without restarting the master process  
+✅ **Script Agnostic**: Execute Python, Bash, or any command  
+✅ **Async Threading**: Each script runs in isolated thread - no sync needed  
+✅ **Graceful Shutdown**: SIGTERM → 120s watchdog → SIGKILL  
+✅ **Forever Loops**: Scripts run indefinitely until removed from config  
+✅ **Zero Downtime**: Master process never restarts  
+The system is built around two main components defined in `task_base.py`:
+
+## Architecture
+1.  **`TaskConfig`**: A data structure that validates and organizes task settings into logical categories (Identification, Scheduling, Failure Control, Resources, Logging).
+2.  **`AbstractTask`**: An abstract base class that defines the interface (`run`, `stop`) for any executable task.
+
+```
+SLURM Job
+├── master.py (forever loop)
+│   ├── Reads scripts_config.json every 30s
+│   ├── Spawns threads for new scripts
+│   └── Terminates threads for removed scripts
+│
+├── Thread 1 → subprocess → script1.py (forever loop)
+├── Thread 2 → subprocess → script2.sh (forever loop)
+└── Thread 3 → subprocess → script3.py (forever loop)
+```
+## Configuration
+
+## Files
+Tasks are configured using a dictionary (typically loaded from a JSON file) that matches the schema defined in `scripts.config.template.json`.
+
+- `master.py` - Main orchestrator script
+- `scripts_config.json` - Configuration file with list of scripts to run
+- `submit.sh` - SLURM job submission script
+- `example_script1.py` - Example Python script (temperature monitor)
+- `example_script2.py` - Example Python script (humidity monitor)
+- `example_script3.sh` - Example Bash script (system monitor)
+### Example Configuration Dictionary
+
+## Quick Start
+
+### 1. Submit to SLURM
+
+```bash
+sbatch submit.sh
+```
+
+### 2. Check job status
+
+```bash
+squeue -u $USER
+tail -f master_<jobid>.log
+```
+
+### 3. Add a new script (while job is running!)
+
+Edit `scripts_config.json`:
+```json
+{
+  "scripts": [
+    "python example_script1.py",
+    "python example_script2.py",
+    "./example_script3.sh",
+    "python my_new_script.py"
+  ]
+  "name": "backup-service",
+  "command": "/usr/local/bin/backup.sh",
+  "user": "admin",
+  "schedule-cron": "0 2 * * *",
+  "times": 3,
+  "on-fail": "restart",
+  "notify": "on-fail"
+}
+```
+
+The master script will detect the change in 30 seconds and start the new script automatically.
+## Implementing a Task
+
+### 4. Remove a script
+To create a runnable task, you must subclass `AbstractTask` and implement the `run()` and `stop()` methods.
+
+Just remove it from `scripts_config.json` - the master will send SIGTERM, wait 120s, then SIGKILL if needed.
+### Example Implementation
+
+## Configuration
+Here is how to create a simple shell-based task:
+
+### scripts_config.json
+```python
+import subprocess
+from task_base import AbstractTask, TaskConfig
+
+```json
+{
+  "scripts": [
+    "python script1.py",
+    "./script2.sh",
+    "python script3.py --arg1 value1"
+  ]
+}
+```
+class ShellTask(AbstractTask):
+    def __init__(self, config: TaskConfig):
+        super().__init__(config)
+        self._process = None
+
+**Important**: 
+- Use full command including interpreter (e.g., `python script.py` not just `script.py`)
+- Scripts can have arguments
+- Paths are relative to where master.py runs
+- Scripts should be executable (for bash scripts: `chmod +x script.sh`)
+    def run(self) -> int:
+        cmd = self.config.identification.command
+        print(f"Starting task: {self.config.identification.name}")
+        
+        self._process = subprocess.Popen(
+            cmd, 
+            shell=True,
+            cwd=self.config.identification.working_directory
+        )
+        
+        # Wait for completion
+        return_code = self._process.wait()
+        return return_code
+
+### master.py settings
+
+Edit the `main()` function in `master.py`:
+
+```python
+config_file = 'scripts_config.json'  # Config file path
+check_interval = 30                   # How often to reload config (seconds)
+watchdog_timeout = 120                # Grace period before SIGKILL (seconds)
+    def stop(self) -> None:
+        if self._process:
+            print(f"Stopping {self.config.identification.name}...")
+            self._process.terminate()
+```
+
+## How It Works
+## Usage
+
+### 1. Master Script Forever Loop
+### 1. Load Configuration
+Use `TaskConfig.from_dict()` to convert a raw dictionary into a structured configuration object.
+
+The master script runs continuously and:
+- Reads `scripts_config.json` every 30 seconds
+- Compares config with currently running scripts
+- Starts new scripts found in config
+- Stops scripts removed from config
+
+### 2. Script Execution (Async Threading)
+
+Each script runs in:
+- **Own thread** (isolated, non-blocking)
+- **Own subprocess** (via `subprocess.Popen` with `shell=True`)
+- **No synchronization needed** between scripts
+
+### 3. Graceful Termination
+
+When a script is removed from config:
+1. Master sends **SIGTERM** to the process
+2. Waits **120 seconds** (watchdog timeout)
+3. If still running, sends **SIGKILL**
+4. Cleans up thread
+
+### 4. Script Agnostic Execution
+
+Scripts are launched with `shell=True`, so you can run:
+- Python: `python script.py`
+- Bash: `./script.sh` or `bash script.sh`
+- Any command: `python script.py --arg1 value --arg2 value`
+
+## Example Scripts
+
+### Python Forever Loop
+
+```python
+import time
+from datetime import datetime
+from task_base import TaskConfig
+
+while True:
+    print(f"Running at {datetime.now()}")
+    # Do work here
+    time.sleep(10)
+```
+raw_config = {
+    "name": "data-processor",
+    "command": "python process_data.py",
+    "times": 5,
+    "timeout": "10m"
+}
+
+### Bash Forever Loop
+
+```bash
+#!/bin/bash
+while true; do
+    echo "Running at $(date)"
+    # Do work here
+    sleep 10
+done
+config = TaskConfig.from_dict(raw_config)
+```
+
+## Monitoring
+### 2. Instantiate and Run
+Pass the configuration object to your concrete task implementation.
+
+### Check master script logs
+
+```bash
+tail -f master_<jobid>.log
+```
+
+You'll see:
+- Script starts/stops
+- SIGTERM/SIGKILL events
+- Config reloads
+- Errors
+
+### Check individual script output
+
+Scripts' stdout/stderr are captured by master and logged with prefixes like `[Script1]`, `[Script2]`, etc.
+
+## Stopping the Master
+
+### Graceful shutdown
+
+```bash
+scancel <jobid>
+```
+
+This will:
+1. Send SIGTERM to master
+2. Master sends SIGTERM to all child scripts
+3. Wait 120s for each script to finish
+4. Send SIGKILL to any still running
+5. Master exits
+
+### Force kill
+
+```bash
+scancel -s KILL <jobid>
+```
+
+## Best Practices
+
+1. **Test scripts locally first** before adding to SLURM
+2. **Handle SIGTERM** in your scripts for graceful shutdown
+3. **Use try/except** in Python scripts to handle interrupts
+4. **Log to database** or files, not just stdout
+5. **Monitor resource usage** - each script uses CPU/memory
+6. **Set appropriate SLURM resources** in `submit.sh`
+
+## Troubleshooting
+
+### Script not starting?
+
+- Check `scripts_config.json` syntax (valid JSON)
+- Verify script path is correct
+- Make bash scripts executable: `chmod +x script.sh`
+- Check master logs for errors
+
+### Script not stopping?
+
+- Check if script handles SIGTERM properly
+- Wait 120s - SIGKILL will force stop
+- Check master logs for watchdog messages
+
+### Config changes not detected?
+
+- Wait 30 seconds for next reload
+- Check JSON syntax
+- Verify config file name matches `config_file` in master.py
+
+## Advanced Usage
+
+### Custom config file location
+
+```python
+# In master.py main()
+config_file = '/path/to/custom_config.json'
+```
+task = ShellTask(config)
+
+### Faster reload
+# Access configuration properties easily
+if task.config.scheduling.is_periodic:
+    print(f"Task runs on schedule: {task.config.scheduling.schedule_cron}")
+
+```python
+# In master.py main()
+check_interval = 10  # Check every 10 seconds
+# Execute
+exit_code = task.run()
+print(f"Task finished with code: {exit_code}")
+```
+
+### Longer grace period
+
+```python
+# In master.py main()
+watchdog_timeout = 300  # Wait 5 minutes before SIGKILL
+```
+
+## License
+
+MIT License - feel free to modify and use!

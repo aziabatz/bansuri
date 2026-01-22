@@ -1,0 +1,228 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration &mdash; Bansuri 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Advanced Configuration" href="advanced-config.html" />
+    <link rel="prev" title="System Architecture" href="architecture.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bansuri
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Understanding Bansuri</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts and Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Configuration</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#scripts-definition">Scripts Definition</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#file-location">File Location</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#structure">Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parameters-explained">Parameters Explained</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced-config.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notifications.html">Notifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-tasks.html">Creating Custom Tasks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Operations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting-detailed.html">Troubleshooting Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project Info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to Bansuri</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bansuri</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Configuration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/configuration.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h1>
+<p>Bansuri is highly configurable to suit various orchestration needs. The core configuration is managed through JSON files that define the scripts, their schedules, and execution parameters.</p>
+<section id="scripts-definition">
+<h2>Scripts Definition<a class="headerlink" href="#scripts-definition" title="Link to this heading"></a></h2>
+<p>The heart of Bansuri’s operation lies in the <code class="docutils literal notranslate"><span class="pre">scripts.json</span></code> file. This file acts as the registry for all tasks that the system is aware of.</p>
+<section id="file-location">
+<h3>File Location<a class="headerlink" href="#file-location" title="Link to this heading"></a></h3>
+<p>By default, Bansuri looks for the configuration at <code class="docutils literal notranslate"><span class="pre">scripts.json</span></code> in the current working directory, or at <code class="docutils literal notranslate"><span class="pre">bansuri/scripts.json</span></code>.</p>
+</section>
+<section id="structure">
+<h3>Structure<a class="headerlink" href="#structure" title="Link to this heading"></a></h3>
+<p>The configuration file follows a strict schema to ensure the Orchestrator can parse tasks correctly. Below is the current configuration used in the project:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Current bansuri/scripts.json configuration</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="p">{</span>
+<span class="linenos"> 2</span><span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.1&quot;</span><span class="p">,</span>
+<span class="linenos"> 3</span><span class="w">    </span><span class="nt">&quot;scripts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="linenos"> 4</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos"> 5</span><span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;s&quot;</span><span class="p">,</span>
+<span class="linenos"> 6</span><span class="w">            </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python example_script1.py&quot;</span><span class="p">,</span>
+<span class="linenos"> 7</span><span class="w">            </span><span class="nt">&quot;user&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="linenos"> 8</span><span class="w">            </span><span class="nt">&quot;working_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/home/ahmed/PycharmProjects/bansuri/examples/scripts/&quot;</span><span class="p">,</span>
+<span class="linenos"> 9</span><span class="w">            </span><span class="nt">&quot;no-interface&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="linenos">10</span><span class="w">            </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;10s&quot;</span><span class="p">,</span>
+<span class="linenos">11</span><span class="w">            </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="linenos">12</span><span class="w">            </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="linenos">13</span><span class="w">            </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;stop&quot;</span><span class="p">,</span>
+<span class="linenos">14</span><span class="w">            </span><span class="nt">&quot;depends-on&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="linenos">15</span><span class="w">            </span><span class="nt">&quot;success-codes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="linenos">16</span><span class="w">            </span><span class="nt">&quot;environment-file&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="linenos">17</span><span class="w">            </span><span class="nt">&quot;priority&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="linenos">18</span><span class="w">            </span><span class="nt">&quot;stdout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;script1.out&quot;</span><span class="p">,</span>
+<span class="linenos">19</span><span class="w">            </span><span class="nt">&quot;stderr&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;script1.err&quot;</span><span class="p">,</span>
+<span class="linenos">20</span><span class="w">            </span><span class="nt">&quot;notify&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;none&quot;</span>
+<span class="linenos">21</span><span class="w">        </span><span class="p">},</span>
+<span class="linenos">22</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos">23</span><span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ls test&quot;</span><span class="p">,</span>
+<span class="linenos">24</span><span class="w">            </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ls ~/&quot;</span><span class="p">,</span>
+<span class="linenos">25</span><span class="w">            </span><span class="nt">&quot;schedule-cron&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;* * * * *&quot;</span><span class="p">,</span>
+<span class="linenos">26</span><span class="w">            </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="linenos">27</span><span class="w">        </span><span class="p">},</span>
+<span class="linenos">28</span><span class="w">        </span><span class="p">{</span>
+<span class="linenos">29</span><span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;script3&quot;</span><span class="p">,</span>
+<span class="linenos">30</span><span class="w">            </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bash example_script3.sh&quot;</span><span class="p">,</span>
+<span class="linenos">31</span><span class="w">            </span><span class="nt">&quot;working_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/home/ahmed/PycharmProjects/bansuri/examples/scripts/&quot;</span><span class="p">,</span>
+<span class="linenos">32</span><span class="w">            </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
+<span class="linenos">33</span><span class="w">            </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="linenos">34</span><span class="w">            </span><span class="nt">&quot;stdout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;script3.out&quot;</span><span class="p">,</span>
+<span class="linenos">35</span><span class="w">            </span><span class="nt">&quot;notify&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail&quot;</span>
+<span class="linenos">36</span><span class="w">        </span><span class="p">}</span>
+<span class="linenos">37</span><span class="w">    </span><span class="p">]</span>
+<span class="linenos">38</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="parameters-explained">
+<h3>Parameters Explained<a class="headerlink" href="#parameters-explained" title="Link to this heading"></a></h3>
+<p>Each entry in the configuration supports the following keys:</p>
+<ul class="simple">
+<li><p><strong>name</strong>: Unique identifier for the task.</p></li>
+<li><p><strong>command</strong>: The actual shell command or script path to execute.</p></li>
+<li><p><strong>schedule-cron</strong>: Cron expression for scheduling (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;*/5</span> <span class="pre">*</span> <span class="pre">*</span> <span class="pre">*</span> <span class="pre">*&quot;</span></code>). NOT IMPLEMENTED.</p></li>
+<li><p><strong>timer</strong>: Fixed interval execution in seconds (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;300&quot;</span></code> for 5 minutes).</p></li>
+<li><p><strong>timeout</strong>: Maximum execution time (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;30s&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;5m&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;1h&quot;</span></code>).</p></li>
+<li><p><strong>times</strong>: Number of execution attempts (default: 1).</p></li>
+<li><p><strong>on-fail</strong>: Action on failure - <code class="docutils literal notranslate"><span class="pre">&quot;stop&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;restart&quot;</span></code> (default: <code class="docutils literal notranslate"><span class="pre">&quot;stop&quot;</span></code>).</p></li>
+<li><p><strong>working-directory</strong>: Working directory for task execution (optional).</p></li>
+<li><p><strong>stdout</strong>: File path for stdout redirection (optional).</p></li>
+<li><p><strong>stderr</strong>: File path for stderr redirection or <code class="docutils literal notranslate"><span class="pre">&quot;combined&quot;</span></code> (default: <code class="docutils literal notranslate"><span class="pre">&quot;combined&quot;</span></code>).</p></li>
+<li><p><strong>no-interface</strong>: Auto-detect if task is AbstractTask or shell command (default: <code class="docutils literal notranslate"><span class="pre">false</span></code>).</p></li>
+<li><p><strong>depends-on</strong>: List of task dependencies. NOT IMPLEMENTED.</p></li>
+<li><p><strong>user</strong>: User to run the task as. NOT IMPLEMENTED.</p></li>
+<li><p><strong>priority</strong>: Process priority/nice value. NOT IMPLEMENTED.</p></li>
+<li><p><strong>environment-file</strong>: Environment file to load. NOT IMPLEMENTED.</p></li>
+<li><p><strong>success-codes</strong>: List of success exit codes (default: <code class="docutils literal notranslate"><span class="pre">[0]</span></code>).</p></li>
+<li><p><strong>notify</strong>: Notification policy (<code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;mail&quot;</span></code>). IMPLEMENTED - see <a class="reference internal" href="notifications.html"><span class="doc">Notifications</span></a> for details.</p></li>
+<li><p><strong>description</strong>: Human-readable task description (optional).</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="architecture.html" class="btn btn-neutral float-left" title="System Architecture" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced-config.html" class="btn btn-neutral float-right" title="Advanced Configuration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Bansuri Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

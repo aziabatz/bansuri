@@ -1,0 +1,628 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reference &mdash; Bansuri 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Notifications" href="notifications.html" />
+    <link rel="prev" title="Advanced Configuration" href="advanced-config.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bansuri
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Understanding Bansuri</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts and Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Configuration</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced-config.html">Advanced Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-quick-reference">Configuration Quick Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#minimal-task">Minimal Task</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#complete-task-with-all-options">Complete Task with All Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-parameters-reference">Configuration Parameters Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#timeout-formats">Timeout Formats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#common-timer-values">Common Timer Values</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-reference">Command Line Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#start-bansuri">Start Bansuri</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#view-logs">View Logs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#system-management">System Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#validation">Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-examples">Configuration Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-1-simple-health-check">Example 1: Simple Health Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-2-database-backup-with-retry">Example 2: Database Backup with Retry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-3-multiple-tasks">Example 3: Multiple Tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exit-codes-reference">Exit Codes Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing-patterns">Testing Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debugging-checklist">Debugging Checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-tuning-checklist">Performance Tuning Checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common-commands-cheat-sheet">Common Commands Cheat Sheet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#useful-aliases">Useful Aliases</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notifications.html">Notifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-tasks.html">Creating Custom Tasks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Operations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting-detailed.html">Troubleshooting Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project Info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to Bansuri</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bansuri</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/reference.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="reference">
+<h1>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h1>
+<p>Quick reference for Bansuri configuration and commands.</p>
+<section id="configuration-quick-reference">
+<h2>Configuration Quick Reference<a class="headerlink" href="#configuration-quick-reference" title="Link to this heading"></a></h2>
+<section id="minimal-task">
+<h3>Minimal Task<a class="headerlink" href="#minimal-task" title="Link to this heading"></a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-name&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;command-to-run&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="complete-task-with-all-options">
+<h3>Complete Task with All Options<a class="headerlink" href="#complete-task-with-all-options" title="Link to this heading"></a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;notify_command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail -s &#39;Alert&#39; admin@example.com&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scripts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;example-task&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/script.sh&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;working-directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/home/user/workdir&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;300&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5m&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;stdout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/task.log&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;stderr&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;combined&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;notify&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;success-codes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Task description&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="configuration-parameters-reference">
+<h3>Configuration Parameters Reference<a class="headerlink" href="#configuration-parameters-reference" title="Link to this heading"></a></h3>
+</section>
+<section id="timeout-formats">
+<h3>Timeout Formats<a class="headerlink" href="#timeout-formats" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Format</p></th>
+<th class="head"><p>Equivalent</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>“30”</p></td>
+<td><p>30 seconds</p></td>
+</tr>
+<tr class="row-odd"><td><p>“30s”</p></td>
+<td><p>30 seconds</p></td>
+</tr>
+<tr class="row-even"><td><p>“5m”</p></td>
+<td><p>5 minutes (300s)</p></td>
+</tr>
+<tr class="row-odd"><td><p>“1h”</p></td>
+<td><p>1 hour (3600s)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="common-timer-values">
+<h3>Common Timer Values<a class="headerlink" href="#common-timer-values" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Interval</p></th>
+<th class="head"><p>Timer Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Every 5 seconds</p></td>
+<td><p>“5”</p></td>
+</tr>
+<tr class="row-odd"><td><p>Every minute</p></td>
+<td><p>“60”</p></td>
+</tr>
+<tr class="row-even"><td><p>Every 5 minutes</p></td>
+<td><p>“300”</p></td>
+</tr>
+<tr class="row-odd"><td><p>Every hour</p></td>
+<td><p>“3600”</p></td>
+</tr>
+<tr class="row-even"><td><p>Every day</p></td>
+<td><p>“86400”</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="command-line-reference">
+<h2>Command Line Reference<a class="headerlink" href="#command-line-reference" title="Link to this heading"></a></h2>
+<section id="start-bansuri">
+<h3>Start Bansuri<a class="headerlink" href="#start-bansuri" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Default configuration (scripts.json in current directory)</span>
+bansuri
+
+<span class="c1"># Custom configuration file</span>
+bansuri<span class="w"> </span>--config<span class="w"> </span>/path/to/scripts.json
+
+<span class="c1"># Help</span>
+bansuri<span class="w"> </span>--help
+
+<span class="c1"># Version</span>
+bansuri<span class="w"> </span>--version
+</pre></div>
+</div>
+</section>
+<section id="view-logs">
+<h3>View Logs<a class="headerlink" href="#view-logs" title="Link to this heading"></a></h3>
+<p>For systemd:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Live logs</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>bansuri<span class="w"> </span>-f
+
+<span class="c1"># Last 50 lines</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>bansuri<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span>
+
+<span class="c1"># Since specific time</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>bansuri<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;2024-01-19 10:00:00&quot;</span>
+
+<span class="c1"># Only errors</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>bansuri<span class="w"> </span>-p<span class="w"> </span>err
+</pre></div>
+</div>
+<p>For file logging:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Live logs</span>
+tail<span class="w"> </span>-f<span class="w"> </span>/var/log/bansuri.log
+
+<span class="c1"># Last 100 lines</span>
+tail<span class="w"> </span>-100<span class="w"> </span>/var/log/bansuri.log
+
+<span class="c1"># Follow and grep</span>
+tail<span class="w"> </span>-f<span class="w"> </span>/var/log/bansuri.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>FAILED
+</pre></div>
+</div>
+</section>
+<section id="system-management">
+<h3>System Management<a class="headerlink" href="#system-management" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start</span>
+systemctl<span class="w"> </span>start<span class="w"> </span>bansuri
+
+<span class="c1"># Stop</span>
+systemctl<span class="w"> </span>stop<span class="w"> </span>bansuri
+
+<span class="c1"># Restart</span>
+systemctl<span class="w"> </span>restart<span class="w"> </span>bansuri
+
+<span class="c1"># Status</span>
+systemctl<span class="w"> </span>status<span class="w"> </span>bansuri
+
+<span class="c1"># Enable on boot</span>
+systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>bansuri
+
+<span class="c1"># Disable on boot</span>
+systemctl<span class="w"> </span>disable<span class="w"> </span>bansuri
+</pre></div>
+</div>
+</section>
+<section id="validation">
+<h3>Validation<a class="headerlink" href="#validation" title="Link to this heading"></a></h3>
+<p>Validate configuration syntax:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>json.tool<span class="w"> </span>scripts.json
+</pre></div>
+</div>
+<p>Validate with Bansuri:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">from bansuri.base.config_manager import BansuriConfig</span>
+<span class="s2">try:</span>
+<span class="s2">    config = BansuriConfig.load_from_file(&#39;scripts.json&#39;)</span>
+<span class="s2">    print(&#39;✓ Valid&#39;)</span>
+<span class="s2">except Exception as e:</span>
+<span class="s2">    print(f&#39;✗ Error: {e}&#39;)</span>
+<span class="s2">&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h3>
+<p>Test a command before adding to config:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>-x<span class="w"> </span>/path/to/script.sh
+</pre></div>
+</div>
+<p>Profile execution time:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">time</span><span class="w"> </span>/path/to/script.sh
+</pre></div>
+</div>
+<p>Monitor in real-time:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>watch<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s1">&#39;ps aux | grep python&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="environment-variables">
+<h3>Environment Variables<a class="headerlink" href="#environment-variables" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>BANSURI_ENV</p></td>
+<td><p>production</p></td>
+<td><p>Environment (dev/staging/production)</p></td>
+</tr>
+<tr class="row-odd"><td><p>BANSURI_LOG_LEVEL</p></td>
+<td><p>INFO</p></td>
+<td><p>Logging verbosity (DEBUG/INFO/WARNING/ERROR)</p></td>
+</tr>
+</tbody>
+</table>
+<p>Set before running:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">BANSURI_LOG_LEVEL</span><span class="o">=</span>DEBUG
+bansuri
+</pre></div>
+</div>
+</section>
+</section>
+<section id="configuration-examples">
+<h2>Configuration Examples<a class="headerlink" href="#configuration-examples" title="Link to this heading"></a></h2>
+<section id="example-1-simple-health-check">
+<h3>Example 1: Simple Health Check<a class="headerlink" href="#example-1-simple-health-check" title="Link to this heading"></a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scripts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;health-check&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;curl -f https://example.com/health&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;60&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;10s&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="example-2-database-backup-with-retry">
+<h3>Example 2: Database Backup with Retry<a class="headerlink" href="#example-2-database-backup-with-retry" title="Link to this heading"></a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;notify_command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail -s &#39;Backup Alert&#39; ops@example.com&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scripts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;backup-db&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pg_dump mydb | gzip &gt; backup.sql.gz&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;86400&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2h&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;notify&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;stdout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/backup.log&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="example-3-multiple-tasks">
+<h3>Example 3: Multiple Tasks<a class="headerlink" href="#example-3-multiple-tasks" title="Link to this heading"></a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;notify_command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail -s &#39;[Bansuri]&#39; admin@example.com&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scripts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;quick-task&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;echo &#39;Quick&#39;&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;60&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;medium-task&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sh /opt/process.sh&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;300&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2m&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;critical-task&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python /opt/critical.py&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3600&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;30m&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;notify&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;stdout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/critical.log&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="exit-codes-reference">
+<h2>Exit Codes Reference<a class="headerlink" href="#exit-codes-reference" title="Link to this heading"></a></h2>
+<p>Standard Exit Codes:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Code</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>Success</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>General error</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>Misuse of shell command</p></td>
+</tr>
+<tr class="row-odd"><td><p>126</p></td>
+<td><p>Command invoked cannot execute</p></td>
+</tr>
+<tr class="row-even"><td><p>127</p></td>
+<td><p>Command not found</p></td>
+</tr>
+<tr class="row-odd"><td><p>128+N</p></td>
+<td><p>Fatal signal N</p></td>
+</tr>
+<tr class="row-even"><td><p>130</p></td>
+<td><p>Terminated (SIGINT/Ctrl+C)</p></td>
+</tr>
+<tr class="row-odd"><td><p>137</p></td>
+<td><p>Killed (SIGKILL)</p></td>
+</tr>
+<tr class="row-even"><td><p>143</p></td>
+<td><p>Terminated (SIGTERM)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="testing-patterns">
+<h2>Testing Patterns<a class="headerlink" href="#testing-patterns" title="Link to this heading"></a></h2>
+<p>Test script exit code:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/path/to/script.sh
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Exit code: </span><span class="nv">$?</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Test with different arguments:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/path/to/script.sh<span class="w"> </span>arg1<span class="w"> </span>arg2
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$?</span>
+</pre></div>
+</div>
+<p>Test with timeout:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>timeout<span class="w"> </span><span class="m">30</span><span class="w"> </span>/path/to/script.sh
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$?</span>
+</pre></div>
+</div>
+<p>Test output redirection:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>/path/to/script.sh<span class="w"> </span>&gt;<span class="w"> </span>/tmp/out.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+cat<span class="w"> </span>/tmp/out.log
+</pre></div>
+</div>
+</section>
+<section id="debugging-checklist">
+<h2>Debugging Checklist<a class="headerlink" href="#debugging-checklist" title="Link to this heading"></a></h2>
+<p>Task not running:</p>
+<ul class="simple">
+<li><p>[ ] Command is valid: <code class="docutils literal notranslate"><span class="pre">which</span> <span class="pre">command_name</span></code></p></li>
+<li><p>[ ] Script is executable: <code class="docutils literal notranslate"><span class="pre">ls</span> <span class="pre">-la</span> <span class="pre">/path/to/script</span></code></p></li>
+<li><p>[ ] Path is absolute in config</p></li>
+<li><p>[ ] Working directory exists: <code class="docutils literal notranslate"><span class="pre">ls</span> <span class="pre">-la</span> <span class="pre">/path/to/workdir</span></code></p></li>
+<li><p>[ ] Timer is set (if periodic task)</p></li>
+</ul>
+<p>Task failing repeatedly:</p>
+<ul class="simple">
+<li><p>[ ] Test command manually</p></li>
+<li><p>[ ] Check exit code: <code class="docutils literal notranslate"><span class="pre">/path/to/script.sh;</span> <span class="pre">echo</span> <span class="pre">$?</span></code></p></li>
+<li><p>[ ] Check permissions: <code class="docutils literal notranslate"><span class="pre">ls</span> <span class="pre">-la</span> <span class="pre">/path/to/script</span></code></p></li>
+<li><p>[ ] Check output: <code class="docutils literal notranslate"><span class="pre">tail</span> <span class="pre">-f</span> <span class="pre">/var/log/task.log</span></code></p></li>
+<li><p>[ ] Check dependencies exist</p></li>
+</ul>
+<p>Timeout issues:</p>
+<ul class="simple">
+<li><p>[ ] Measure actual execution: <code class="docutils literal notranslate"><span class="pre">time</span> <span class="pre">/path/to/script.sh</span></code></p></li>
+<li><p>[ ] Increase timeout value</p></li>
+<li><p>[ ] Check system resources: <code class="docutils literal notranslate"><span class="pre">free</span> <span class="pre">-h</span></code>, <code class="docutils literal notranslate"><span class="pre">df</span> <span class="pre">-h</span></code></p></li>
+<li><p>[ ] Check for blocking operations</p></li>
+</ul>
+<p>Notifications not working:</p>
+<ul class="simple">
+<li><p>[ ] <code class="docutils literal notranslate"><span class="pre">notify</span></code> is set to <code class="docutils literal notranslate"><span class="pre">&quot;mail&quot;</span></code></p></li>
+<li><p>[ ] <code class="docutils literal notranslate"><span class="pre">notify_command</span></code> is configured</p></li>
+<li><p>[ ] Test command: <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">&quot;test&quot;</span> <span class="pre">|</span> <span class="pre">mail</span> <span class="pre">-s</span> <span class="pre">&quot;test&quot;</span> <span class="pre">email&#64;example.com</span></code></p></li>
+<li><p>[ ] Check network connectivity</p></li>
+<li><p>[ ] Check Bansuri logs</p></li>
+</ul>
+</section>
+<section id="performance-tuning-checklist">
+<h2>Performance Tuning Checklist<a class="headerlink" href="#performance-tuning-checklist" title="Link to this heading"></a></h2>
+<p>Memory usage high:</p>
+<ul class="simple">
+<li><p>[ ] Redirect task output to files</p></li>
+<li><p>[ ] Reduce number of concurrent tasks</p></li>
+<li><p>[ ] Monitor: <code class="docutils literal notranslate"><span class="pre">ps</span> <span class="pre">aux</span> <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">python</span></code></p></li>
+</ul>
+<p>CPU usage high:</p>
+<ul class="simple">
+<li><p>[ ] Increase timer intervals</p></li>
+<li><p>[ ] Check for infinite loops</p></li>
+<li><p>[ ] Profile: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">cProfile</span></code></p></li>
+</ul>
+<p>Tasks running slow:</p>
+<ul class="simple">
+<li><p>[ ] Check system load: <code class="docutils literal notranslate"><span class="pre">uptime</span></code></p></li>
+<li><p>[ ] Monitor I/O: <code class="docutils literal notranslate"><span class="pre">iotop</span></code></p></li>
+<li><p>[ ] Check network: <code class="docutils literal notranslate"><span class="pre">netstat</span> <span class="pre">-s</span></code></p></li>
+<li><p>[ ] Profile execution: <code class="docutils literal notranslate"><span class="pre">time</span></code> command</p></li>
+</ul>
+</section>
+<section id="common-commands-cheat-sheet">
+<h2>Common Commands Cheat Sheet<a class="headerlink" href="#common-commands-cheat-sheet" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># View configuration</span>
+cat<span class="w"> </span>scripts.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>json.tool
+
+<span class="c1"># Validate configuration</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from bansuri.base.config_manager import BansuriConfig; BansuriConfig.load_from_file(&#39;scripts.json&#39;)&quot;</span>
+
+<span class="c1"># Find Bansuri process</span>
+pgrep<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;python -m bansuri&quot;</span>
+
+<span class="c1"># Kill Bansuri</span>
+pkill<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;python -m bansuri&quot;</span>
+
+<span class="c1"># Check system resources</span>
+free<span class="w"> </span>-h<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>df<span class="w"> </span>-h<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>uptime
+
+<span class="c1"># Monitor process</span>
+watch<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s1">&#39;ps aux | grep bansuri&#39;</span>
+
+<span class="c1"># View recent logs</span>
+tail<span class="w"> </span>-50<span class="w"> </span>/var/log/bansuri.log
+
+<span class="c1"># Search logs</span>
+grep<span class="w"> </span><span class="s2">&quot;ERROR&quot;</span><span class="w"> </span>/var/log/bansuri.log
+
+<span class="c1"># Count task executions</span>
+grep<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;started\|completed&quot;</span><span class="w"> </span>/var/log/bansuri.log
+</pre></div>
+</div>
+<section id="useful-aliases">
+<h3>Useful Aliases<a class="headerlink" href="#useful-aliases" title="Link to this heading"></a></h3>
+<p>Add to <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">alias</span><span class="w"> </span>bansuri-status<span class="o">=</span><span class="s1">&#39;systemctl status bansuri&#39;</span>
+<span class="nb">alias</span><span class="w"> </span>bansuri-logs<span class="o">=</span><span class="s1">&#39;journalctl -u bansuri -f&#39;</span>
+<span class="nb">alias</span><span class="w"> </span>bansuri-restart<span class="o">=</span><span class="s1">&#39;systemctl restart bansuri&#39;</span>
+<span class="nb">alias</span><span class="w"> </span>bansuri-config<span class="o">=</span><span class="s1">&#39;cat ~/bansuri/scripts.json | python -m json.tool&#39;</span>
+<span class="nb">alias</span><span class="w"> </span>bansuri-validate<span class="o">=</span><span class="s1">&#39;python -c &quot;from bansuri.base.config_manager import BansuriConfig; BansuriConfig.load_from_file(\&quot;scripts.json\&quot;); print(\&quot;✓ Valid\&quot;)&quot;&#39;</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="advanced-config.html" class="btn btn-neutral float-left" title="Advanced Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="notifications.html" class="btn btn-neutral float-right" title="Notifications" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Bansuri Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

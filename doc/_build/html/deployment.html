@@ -1,0 +1,564 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deployment Guide &mdash; Bansuri 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Troubleshooting Guide" href="troubleshooting-detailed.html" />
+    <link rel="prev" title="Creating Custom Tasks" href="custom-tasks.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bansuri
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Understanding Bansuri</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts and Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Configuration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced-config.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notifications.html">Notifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-tasks.html">Creating Custom Tasks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Operations</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Deployment Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#systemd-service-setup">Systemd Service Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#running-as-a-systemd-service">Running as a Systemd Service</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-deployment">Docker Deployment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dockerfile">Dockerfile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-compose">Docker Compose</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#kubernetes-deployment">Kubernetes Deployment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configmap-for-configuration">ConfigMap for Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deployment">Deployment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#serviceaccount">ServiceAccount</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#production-checklist">Production Checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backup-and-recovery">Backup and Recovery</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-backup">Configuration Backup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#log-backup">Log Backup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recovery-procedure">Recovery Procedure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#scaling-considerations">Scaling Considerations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#single-instance">Single Instance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multiple-instances">Multiple Instances</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-tuning">Performance Tuning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#memory-management">Memory Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cpu-affinity">CPU Affinity</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#troubleshooting-deployment-issues">Troubleshooting Deployment Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#service-won-t-start">Service won’t start</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#high-memory-usage">High memory usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tasks-not-running">Tasks not running</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting-detailed.html">Troubleshooting Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project Info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to Bansuri</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bansuri</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Deployment Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/deployment.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="deployment-guide">
+<h1>Deployment Guide<a class="headerlink" href="#deployment-guide" title="Link to this heading"></a></h1>
+<p>This guide covers deployment strategies for production use of Bansuri.</p>
+<section id="systemd-service-setup">
+<h2>Systemd Service Setup<a class="headerlink" href="#systemd-service-setup" title="Link to this heading"></a></h2>
+<section id="running-as-a-systemd-service">
+<h3>Running as a Systemd Service<a class="headerlink" href="#running-as-a-systemd-service" title="Link to this heading"></a></h3>
+<p>Create a systemd unit file at <code class="docutils literal notranslate"><span class="pre">/etc/systemd/system/bansuri.service</span></code>:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Unit]</span>
+<span class="na">Description</span><span class="o">=</span><span class="s">Bansuri Task Orchestrator</span>
+<span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
+<span class="na">Wants</span><span class="o">=</span><span class="s">network-online.target</span>
+
+<span class="k">[Service]</span>
+<span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+<span class="na">User</span><span class="o">=</span><span class="s">bansuri</span>
+<span class="na">Group</span><span class="o">=</span><span class="s">bansuri</span>
+<span class="na">WorkingDirectory</span><span class="o">=</span><span class="s">/opt/bansuri</span>
+<span class="na">ExecStart</span><span class="o">=</span><span class="s">/opt/bansuri/venv/bin/python -m bansuri</span>
+
+<span class="c1"># Restart policy</span>
+<span class="na">Restart</span><span class="o">=</span><span class="s">on-failure</span>
+<span class="na">RestartSec</span><span class="o">=</span><span class="s">10</span>
+
+<span class="c1"># Resource limits</span>
+<span class="na">MemoryLimit</span><span class="o">=</span><span class="s">1G</span>
+<span class="na">CPUQuota</span><span class="o">=</span><span class="s">80%</span>
+
+<span class="c1"># Logging</span>
+<span class="na">StandardOutput</span><span class="o">=</span><span class="s">journal</span>
+<span class="na">StandardError</span><span class="o">=</span><span class="s">journal</span>
+<span class="na">SyslogIdentifier</span><span class="o">=</span><span class="s">bansuri</span>
+
+<span class="c1"># Environment</span>
+<span class="na">Environment</span><span class="o">=</span><span class="s">&quot;BANSURI_ENV=production&quot;</span>
+<span class="na">Environment</span><span class="o">=</span><span class="s">&quot;BANSURI_LOG_LEVEL=INFO&quot;</span>
+
+<span class="k">[Install]</span>
+<span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+</pre></div>
+</div>
+<p>Enable and start the service:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>bansuri
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>bansuri
+sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>bansuri
+</pre></div>
+</div>
+<p>View logs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>journalctl<span class="w"> </span>-u<span class="w"> </span>bansuri<span class="w"> </span>-f
+</pre></div>
+</div>
+</section>
+</section>
+<section id="docker-deployment">
+<h2>Docker Deployment<a class="headerlink" href="#docker-deployment" title="Link to this heading"></a></h2>
+<section id="dockerfile">
+<h3>Dockerfile<a class="headerlink" href="#dockerfile" title="Link to this heading"></a></h3>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.11-slim</span>
+
+<span class="c"># Create bansuri user</span>
+<span class="k">RUN</span><span class="w"> </span>useradd<span class="w"> </span>-m<span class="w"> </span>-u<span class="w"> </span><span class="m">1000</span><span class="w"> </span>bansuri
+
+<span class="c"># Install dependencies</span>
+<span class="k">RUN</span><span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>git<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>curl<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="o">&amp;&amp;</span><span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/var/lib/apt/lists/*
+
+<span class="c"># Install Bansuri</span>
+<span class="k">RUN</span><span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/opt/bansuri<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>chown<span class="w"> </span>bansuri:bansuri<span class="w"> </span>/opt/bansuri
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/opt/bansuri</span>
+
+<span class="k">COPY</span><span class="w"> </span>--chown<span class="o">=</span>bansuri:bansuri<span class="w"> </span>.<span class="w"> </span>.
+<span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--no-cache-dir<span class="w"> </span>-e<span class="w"> </span>.
+
+<span class="c"># Create log directory</span>
+<span class="k">RUN</span><span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/var/log/bansuri<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>chown<span class="w"> </span>bansuri:bansuri<span class="w"> </span>/var/log/bansuri
+
+<span class="k">USER</span><span class="w"> </span><span class="s">bansuri</span>
+
+<span class="c"># Health check</span>
+<span class="k">HEALTHCHECK</span><span class="w"> </span>--interval<span class="o">=</span>30s<span class="w"> </span>--timeout<span class="o">=</span>10s<span class="w"> </span>--start-period<span class="o">=</span>40s<span class="w"> </span>--retries<span class="o">=</span><span class="m">3</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>CMD<span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import sys; sys.exit(0)&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
+
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;python&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;-m&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bansuri&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="docker-compose">
+<h3>Docker Compose<a class="headerlink" href="#docker-compose" title="Link to this heading"></a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.8&#39;</span>
+
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">bansuri</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bansuri</span>
+<span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bansuri</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./scripts.json:/opt/bansuri/scripts.json:ro</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./logs:/var/log/bansuri</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/run/docker.sock:/var/run/docker.sock:ro</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BANSURI_ENV=production</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BANSURI_LOG_LEVEL=INFO</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">logging</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;json-file&quot;</span>
+<span class="w">      </span><span class="nt">options</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">max-size</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;10m&quot;</span>
+<span class="w">        </span><span class="nt">max-file</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="kubernetes-deployment">
+<h2>Kubernetes Deployment<a class="headerlink" href="#kubernetes-deployment" title="Link to this heading"></a></h2>
+<section id="configmap-for-configuration">
+<h3>ConfigMap for Configuration<a class="headerlink" href="#configmap-for-configuration" title="Link to this heading"></a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bansuri-config</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="nt">data</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">scripts.json</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">{</span>
+<span class="w">      </span><span class="no">&quot;version&quot;: &quot;1.0&quot;,</span>
+<span class="w">      </span><span class="no">&quot;notify_command&quot;: &quot;curl -X POST https://alerts.example.com/notify&quot;,</span>
+<span class="w">      </span><span class="no">&quot;scripts&quot;: [</span>
+<span class="w">        </span><span class="no">{</span>
+<span class="w">          </span><span class="no">&quot;name&quot;: &quot;health-check&quot;,</span>
+<span class="w">          </span><span class="no">&quot;command&quot;: &quot;/usr/local/bin/health-check.sh&quot;,</span>
+<span class="w">          </span><span class="no">&quot;timer&quot;: &quot;60&quot;,</span>
+<span class="w">          </span><span class="no">&quot;timeout&quot;: &quot;30s&quot;</span>
+<span class="w">        </span><span class="no">}</span>
+<span class="w">      </span><span class="no">]</span>
+<span class="w">    </span><span class="no">}</span>
+</pre></div>
+</div>
+</section>
+<section id="deployment">
+<h3>Deployment<a class="headerlink" href="#deployment" title="Link to this heading"></a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bansuri</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bansuri</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bansuri</span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bansuri</span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myregistry.azurecr.io/bansuri:latest</span>
+<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Always</span>
+<span class="w">        </span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">limits</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1Gi&quot;</span>
+<span class="w">            </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500m&quot;</span>
+<span class="w">          </span><span class="nt">requests</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;512Mi&quot;</span>
+<span class="w">            </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;250m&quot;</span>
+<span class="w">        </span><span class="nt">env</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BANSURI_ENV</span>
+<span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;production&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BANSURI_LOG_LEVEL</span>
+<span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INFO&quot;</span>
+<span class="w">        </span><span class="nt">volumeMounts</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config</span>
+<span class="w">          </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/opt/bansuri/scripts.json</span>
+<span class="w">          </span><span class="nt">subPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scripts.json</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logs</span>
+<span class="w">          </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/bansuri</span>
+<span class="w">        </span><span class="nt">livenessProbe</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">exec</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">command</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-c</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;import</span><span class="nv"> </span><span class="s">sys;</span><span class="nv"> </span><span class="s">sys.exit(0)&quot;</span>
+<span class="w">          </span><span class="nt">initialDelaySeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<span class="w">          </span><span class="nt">periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">      </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config</span>
+<span class="w">        </span><span class="nt">configMap</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bansuri-config</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logs</span>
+<span class="w">        </span><span class="nt">emptyDir</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">      </span><span class="nt">serviceAccountName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bansuri</span>
+</pre></div>
+</div>
+</section>
+<section id="serviceaccount">
+<h3>ServiceAccount<a class="headerlink" href="#serviceaccount" title="Link to this heading"></a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bansuri</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="production-checklist">
+<h2>Production Checklist<a class="headerlink" href="#production-checklist" title="Link to this heading"></a></h2>
+<p>Before deploying to production, verify:</p>
+<p><strong>Configuration</strong></p>
+<ul class="simple">
+<li><p>☐ All task commands are absolute paths</p></li>
+<li><p>☐ Working directories are correctly specified</p></li>
+<li><p>☐ Timeouts are realistic for your infrastructure</p></li>
+<li><p>☐ Notification endpoints are configured and tested</p></li>
+<li><p>☐ Log directories exist and are writable</p></li>
+</ul>
+<p><strong>Security</strong></p>
+<ul class="simple">
+<li><p>☐ Run as non-root user</p></li>
+<li><p>☐ Use restrictive file permissions (600-755)</p></li>
+<li><p>☐ Verify all scripts are from trusted sources</p></li>
+<li><p>☐ Use secrets management for credentials</p></li>
+<li><p>☐ Enable audit logging</p></li>
+</ul>
+<p><strong>Monitoring</strong></p>
+<ul class="simple">
+<li><p>☐ Set up log aggregation (ELK, Splunk, etc.)</p></li>
+<li><p>☐ Configure alerting for task failures</p></li>
+<li><p>☐ Monitor system resources (CPU, memory, disk)</p></li>
+<li><p>☐ Set up health checks for Bansuri itself</p></li>
+<li><p>☐ Create dashboards for task execution metrics</p></li>
+</ul>
+<p><strong>Resilience</strong></p>
+<ul class="simple">
+<li><p>☐ Test failure scenarios (network, timeout, out of memory)</p></li>
+<li><p>☐ Verify restart policies</p></li>
+<li><p>☐ Test graceful shutdown (SIGTERM handling)</p></li>
+<li><p>☐ Ensure log rotation is working</p></li>
+<li><p>☐ Validate recovery time objectives</p></li>
+</ul>
+<p><strong>Documentation</strong></p>
+<ul class="simple">
+<li><p>☐ Document all tasks and their purpose</p></li>
+<li><p>☐ Document task dependencies</p></li>
+<li><p>☐ Maintain runbooks for common issues</p></li>
+<li><p>☐ Document escalation procedures</p></li>
+<li><p>☐ Keep version history of configurations</p></li>
+</ul>
+</section>
+<section id="backup-and-recovery">
+<h2>Backup and Recovery<a class="headerlink" href="#backup-and-recovery" title="Link to this heading"></a></h2>
+<section id="configuration-backup">
+<h3>Configuration Backup<a class="headerlink" href="#configuration-backup" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Backup scripts.json with timestamp</span>
+cp<span class="w"> </span>scripts.json<span class="w"> </span><span class="s2">&quot;scripts.json.backup.</span><span class="k">$(</span>date<span class="w"> </span>+%Y%m%d_%H%M%S<span class="k">)</span><span class="s2">&quot;</span>
+
+<span class="c1"># Keep last 30 days of backups</span>
+find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;scripts.json.backup.*&quot;</span><span class="w"> </span>-mtime<span class="w"> </span>+30<span class="w"> </span>-delete
+</pre></div>
+</div>
+</section>
+<section id="log-backup">
+<h3>Log Backup<a class="headerlink" href="#log-backup" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Archive logs older than 7 days</span>
+find<span class="w"> </span>/var/log/bansuri<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.log&quot;</span><span class="w"> </span>-mtime<span class="w"> </span>+7<span class="w"> </span>-exec<span class="w"> </span>gzip<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+find<span class="w"> </span>/var/log/bansuri<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.log.gz&quot;</span><span class="w"> </span>-mtime<span class="w"> </span>+30<span class="w"> </span>-delete
+</pre></div>
+</div>
+</section>
+<section id="recovery-procedure">
+<h3>Recovery Procedure<a class="headerlink" href="#recovery-procedure" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Stop Bansuri: <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">stop</span> <span class="pre">bansuri</span></code></p></li>
+<li><p>Restore configuration: <code class="docutils literal notranslate"><span class="pre">cp</span> <span class="pre">scripts.json.backup.*</span> <span class="pre">scripts.json</span></code></p></li>
+<li><p>Verify configuration: <a href="#id1"><span class="problematic" id="id2">``</span></a>python -c “from bansuri.base.config_manager import BansuriConfig; BansuriConfig.load_from_file(‘scripts.json’)”`</p></li>
+<li><p>Start Bansuri: <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">start</span> <span class="pre">bansuri</span></code></p></li>
+<li><p>Verify status: <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">status</span> <span class="pre">bansuri</span></code></p></li>
+</ol>
+</section>
+</section>
+<section id="scaling-considerations">
+<h2>Scaling Considerations<a class="headerlink" href="#scaling-considerations" title="Link to this heading"></a></h2>
+<section id="single-instance">
+<h3>Single Instance<a class="headerlink" href="#single-instance" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Suitable for &lt; 100 concurrent tasks</p></li>
+<li><p>Sufficient for &lt; 1000 events per minute</p></li>
+<li><p>Simple deployment and management</p></li>
+</ul>
+</section>
+<section id="multiple-instances">
+<h3>Multiple Instances<a class="headerlink" href="#multiple-instances" title="Link to this heading"></a></h3>
+<p>For larger deployments:</p>
+<ol class="arabic simple">
+<li><p><strong>Task Distribution</strong>: Partition tasks across instances</p></li>
+<li><p><strong>Configuration Sync</strong>: Use centralized config storage (Git, S3, etc.)</p></li>
+<li><p><strong>Log Aggregation</strong>: Send logs to centralized location</p></li>
+<li><p><strong>Health Monitoring</strong>: Monitor all instances</p></li>
+</ol>
+<p>Example multi-instance setup:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instance 1: High-priority critical tasks</span>
+bansuri<span class="w"> </span>--config<span class="w"> </span>scripts-critical.json
+
+<span class="c1"># Instance 2: Background/batch tasks</span>
+bansuri<span class="w"> </span>--config<span class="w"> </span>scripts-batch.json
+
+<span class="c1"># Instance 3: Monitoring/health-check tasks</span>
+bansuri<span class="w"> </span>--config<span class="w"> </span>scripts-monitoring.json
+</pre></div>
+</div>
+</section>
+</section>
+<section id="performance-tuning">
+<h2>Performance Tuning<a class="headerlink" href="#performance-tuning" title="Link to this heading"></a></h2>
+<section id="memory-management">
+<h3>Memory Management<a class="headerlink" href="#memory-management" title="Link to this heading"></a></h3>
+<p>Monitor memory usage:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Monitor Bansuri process</span>
+watch<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s1">&#39;ps aux | grep bansuri&#39;</span>
+</pre></div>
+</div>
+<p>Set limits in systemd:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Service]</span>
+<span class="na">MemoryLimit</span><span class="o">=</span><span class="s">2G</span>
+<span class="na">MemoryAccounting</span><span class="o">=</span><span class="s">yes</span>
+</pre></div>
+</div>
+</section>
+<section id="cpu-affinity">
+<h3>CPU Affinity<a class="headerlink" href="#cpu-affinity" title="Link to this heading"></a></h3>
+<p>Bind Bansuri to specific CPU cores:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Service]</span>
+<span class="na">CPUAffinity</span><span class="o">=</span><span class="s">0-3</span>
+</pre></div>
+</div>
+<p>For systemd systems with taskset:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>taskset<span class="w"> </span>-cp<span class="w"> </span><span class="m">0</span>-3<span class="w"> </span><span class="k">$(</span>pgrep<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;python -m bansuri&quot;</span><span class="k">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="troubleshooting-deployment-issues">
+<h2>Troubleshooting Deployment Issues<a class="headerlink" href="#troubleshooting-deployment-issues" title="Link to this heading"></a></h2>
+<section id="service-won-t-start">
+<h3>Service won’t start<a class="headerlink" href="#service-won-t-start" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check syntax</span>
+systemctl<span class="w"> </span>status<span class="w"> </span>bansuri
+journalctl<span class="w"> </span>-u<span class="w"> </span>bansuri<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span>
+
+<span class="c1"># Verify permissions</span>
+ls<span class="w"> </span>-la<span class="w"> </span>/opt/bansuri
+sudo<span class="w"> </span>-u<span class="w"> </span>bansuri<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>bansuri<span class="w"> </span>--help
+</pre></div>
+</div>
+</section>
+<section id="high-memory-usage">
+<h3>High memory usage<a class="headerlink" href="#high-memory-usage" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check for zombie processes</span>
+ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>defunct
+
+<span class="c1"># Monitor task output</span>
+tail<span class="w"> </span>-f<span class="w"> </span>/var/log/bansuri/task.log
+
+<span class="c1"># Reduce concurrency</span>
+<span class="c1"># Modify scripts.json to reduce number of concurrent tasks</span>
+</pre></div>
+</div>
+</section>
+<section id="tasks-not-running">
+<h3>Tasks not running<a class="headerlink" href="#tasks-not-running" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Verify configuration</span>
+python<span class="w"> </span>-m<span class="w"> </span>bansuri<span class="w"> </span>--validate-config
+
+<span class="c1"># Check file permissions on log directories</span>
+ls<span class="w"> </span>-la<span class="w"> </span>/var/log/bansuri
+
+<span class="c1"># Check if user has execute permissions</span>
+sudo<span class="w"> </span>-u<span class="w"> </span>bansuri<span class="w"> </span>which<span class="w"> </span>/path/to/command
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="custom-tasks.html" class="btn btn-neutral float-left" title="Creating Custom Tasks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="troubleshooting-detailed.html" class="btn btn-neutral float-right" title="Troubleshooting Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Bansuri Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

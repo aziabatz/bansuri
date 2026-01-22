@@ -1,0 +1,482 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Configuration &mdash; Bansuri 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Reference" href="reference.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bansuri
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Understanding Bansuri</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts and Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Configuration</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Advanced Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#timeout-management">Timeout Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#understanding-timeouts">Understanding Timeouts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#timeout-format">Timeout Format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#failure-control">Failure Control</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#restart-policies">Restart Policies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-configurations">Example Configurations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#output-redirection">Output Redirection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#log-file-management">Log File Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#working-directory">Working Directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#task-descriptions">Task Descriptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#combining-features">Combining Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-tuning">Performance Tuning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#task-concurrency">Task Concurrency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#timer-based-execution">Timer-based Execution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#error-handling-patterns">Error Handling Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common-mistakes-to-avoid">Common Mistakes to Avoid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debugging-configuration-issues">Debugging Configuration Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notifications.html">Notifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-tasks.html">Creating Custom Tasks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Operations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting-detailed.html">Troubleshooting Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project Info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to Bansuri</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bansuri</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Advanced Configuration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/advanced-config.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="advanced-configuration">
+<h1>Advanced Configuration<a class="headerlink" href="#advanced-configuration" title="Link to this heading"></a></h1>
+<p>This guide covers advanced configuration features and patterns for Bansuri.</p>
+<section id="timeout-management">
+<h2>Timeout Management<a class="headerlink" href="#timeout-management" title="Link to this heading"></a></h2>
+<section id="understanding-timeouts">
+<h3>Understanding Timeouts<a class="headerlink" href="#understanding-timeouts" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">timeout</span></code> parameter controls the maximum execution time for a task. If the task exceeds this time, the process is terminated.</p>
+</section>
+<section id="timeout-format">
+<h3>Timeout Format<a class="headerlink" href="#timeout-format" title="Link to this heading"></a></h3>
+<p>Timeouts can be specified as:</p>
+<ul class="simple">
+<li><p><strong>Seconds</strong>: <code class="docutils literal notranslate"><span class="pre">&quot;300&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">300</span></code> (5 minutes)</p></li>
+<li><p><strong>Human-readable format</strong>:
+- Seconds: <code class="docutils literal notranslate"><span class="pre">&quot;30s&quot;</span></code> → 30 seconds
+- Minutes: <code class="docutils literal notranslate"><span class="pre">&quot;5m&quot;</span></code> → 5 minutes (300 seconds)
+- Hours: <code class="docutils literal notranslate"><span class="pre">&quot;2h&quot;</span></code> → 2 hours (7200 seconds)</p></li>
+</ul>
+</section>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;scripts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;quick-task&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;echo &#39;Hello&#39;&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;10s&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;medium-task&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/usr/bin/backup.sh&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;30m&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;long-task&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/opt/process/heavy-computation.py&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1h&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;very-long-task&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mysqldump production | gzip&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3600&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="failure-control">
+<h2>Failure Control<a class="headerlink" href="#failure-control" title="Link to this heading"></a></h2>
+<section id="restart-policies">
+<h3>Restart Policies<a class="headerlink" href="#restart-policies" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">on-fail</span></code> and <code class="docutils literal notranslate"><span class="pre">times</span></code> parameters control task retry behavior:</p>
+<ul class="simple">
+<li><p><strong>on-fail: “stop”</strong> (default): Stop the task immediately on failure</p></li>
+<li><p><strong>on-fail: “restart”</strong>: Restart the task up to <code class="docutils literal notranslate"><span class="pre">times</span></code> attempts</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">success-codes</span></code> parameter specifies which exit codes are considered success (default: <code class="docutils literal notranslate"><span class="pre">[0]</span></code>).</p>
+</section>
+<section id="example-configurations">
+<h3>Example Configurations<a class="headerlink" href="#example-configurations" title="Link to this heading"></a></h3>
+<p><strong>Single attempt, stop on failure:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;critical-task&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;deploy.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;stop&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Three retry attempts:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;resilient-task&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api-call.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Custom success codes:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-with-warnings&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./checker.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;success-codes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="output-redirection">
+<h2>Output Redirection<a class="headerlink" href="#output-redirection" title="Link to this heading"></a></h2>
+<section id="log-file-management">
+<h3>Log File Management<a class="headerlink" href="#log-file-management" title="Link to this heading"></a></h3>
+<p>Control where task output goes with <code class="docutils literal notranslate"><span class="pre">stdout</span></code> and <code class="docutils literal notranslate"><span class="pre">stderr</span></code>:</p>
+<ul class="simple">
+<li><p><strong>stderr: “combined”</strong> (default): Merge stderr into stdout</p></li>
+<li><p><strong>stderr: “/path/to/file”</strong>: Redirect to a specific file</p></li>
+<li><p><strong>stdout: “/path/to/file”</strong>: Redirect stdout separately</p></li>
+</ul>
+</section>
+<section id="id1">
+<h3>Examples<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p><strong>Combined output to single file:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-with-logs&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;backup.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;stdout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/backup.log&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;stderr&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;combined&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Separate log files:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-separate-logs&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;process.py&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;stdout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/process.out&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;stderr&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/process.err&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Log rotation pattern:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-with-rotation&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;data-sync.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;stdout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/sync/$(date +%Y-%m-%d).log&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;stderr&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;combined&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="working-directory">
+<h2>Working Directory<a class="headerlink" href="#working-directory" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">working-directory</span></code> parameter sets the directory where the command is executed:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;repo-task&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;git pull &amp;&amp; npm test&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;working-directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/home/deploy/myapp&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This is useful for:</p>
+<ul class="simple">
+<li><p>Scripts that use relative paths</p></li>
+<li><p>Repository operations</p></li>
+<li><p>Docker container workloads</p></li>
+</ul>
+</section>
+<section id="task-descriptions">
+<h2>Task Descriptions<a class="headerlink" href="#task-descriptions" title="Link to this heading"></a></h2>
+<p>Add <code class="docutils literal notranslate"><span class="pre">description</span></code> field for documentation:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;backup-daily&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pg_dump production &gt; backup.sql&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;86400&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Daily PostgreSQL backup at midnight UTC&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="combining-features">
+<h2>Combining Features<a class="headerlink" href="#combining-features" title="Link to this heading"></a></h2>
+<p>Here’s a comprehensive example using multiple advanced features:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;notify_command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail -s &#39;[Bansuri] Alert&#39; ops@company.com&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scripts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;critical-api-health-check&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/opt/healthcheck/api-check.py&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;60&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;30s&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;working-directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/opt/healthcheck&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;notify&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;stdout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/healthcheck.log&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;stderr&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;combined&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;success-codes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;API health check every minute with retries&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;nightly-database-backup&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/usr/local/bin/backup-db.sh&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;86400&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2h&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;working-directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/backups&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;notify&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;stdout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/backup-$(date +%Y-%m-%d).log&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;stderr&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;combined&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nightly full database backup with retry&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="performance-tuning">
+<h2>Performance Tuning<a class="headerlink" href="#performance-tuning" title="Link to this heading"></a></h2>
+<section id="task-concurrency">
+<h3>Task Concurrency<a class="headerlink" href="#task-concurrency" title="Link to this heading"></a></h3>
+<p>Each task runs in its own thread. The system can handle multiple concurrent tasks:</p>
+<ul class="simple">
+<li><p><strong>I/O-bound tasks</strong>: Run many concurrently (network calls, file operations)</p></li>
+<li><p><strong>CPU-bound tasks</strong>: Consider limiting concurrency and using appropriate timeouts</p></li>
+<li><p><strong>Resource-intensive tasks</strong>: Monitor system resources</p></li>
+</ul>
+</section>
+<section id="timer-based-execution">
+<h3>Timer-based Execution<a class="headerlink" href="#timer-based-execution" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">timer</span></code> parameter defines fixed-interval execution:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;frequent-task&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;check.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Runs every 5 seconds&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;hourly-task&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;hourly-job.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3600&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Runs every hour&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="error-handling-patterns">
+<h2>Error Handling Patterns<a class="headerlink" href="#error-handling-patterns" title="Link to this heading"></a></h2>
+<p><strong>Pattern 1: Fail-fast</strong></p>
+<p>For critical tasks that should stop immediately:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;deploy&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;deploy.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;stop&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Pattern 2: Resilient with retries</strong></p>
+<p>For tasks that might have transient failures:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api-call&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;api-client.py&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;30s&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Pattern 3: Partial success acceptance</strong></p>
+<p>For tasks where certain exit codes are acceptable:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;data-check&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;validator.py&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;success-codes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;notify&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Pattern 4: Monitored execution with notification</strong></p>
+<p>For important tasks that need monitoring:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;critical-job&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;critical.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3600&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;30m&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;notify&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;stdout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/critical.log&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;stderr&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;combined&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="common-mistakes-to-avoid">
+<h2>Common Mistakes to Avoid<a class="headerlink" href="#common-mistakes-to-avoid" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Setting timeout too short</strong>: Leave enough time for normal execution</p></li>
+<li><p><strong>Ignoring failure modes</strong>: Test on-fail behavior</p></li>
+<li><p><strong>Not managing logs</strong>: Use log rotation or separate log directories</p></li>
+<li><p><strong>Forgetting working-directory</strong>: Relative paths may fail</p></li>
+<li><p><strong>Ignoring resource limits</strong>: Monitor CPU and memory usage</p></li>
+</ol>
+</section>
+<section id="debugging-configuration-issues">
+<h2>Debugging Configuration Issues<a class="headerlink" href="#debugging-configuration-issues" title="Link to this heading"></a></h2>
+<p>Enable debug output:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">BANSURI_LOG_LEVEL</span><span class="o">=</span>DEBUG
+bansuri<span class="w"> </span>--config<span class="w"> </span>scripts.json
+</pre></div>
+</div>
+<p>Check configuration syntax:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">from bansuri.base.config_manager import BansuriConfig</span>
+<span class="s2">config = BansuriConfig.load_from_file(&#39;scripts.json&#39;)</span>
+<span class="s2">for script in config.scripts:</span>
+<span class="s2">    print(f&#39;{script.name}: OK&#39;)</span>
+<span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Test command execution:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;cd /working/dir &amp;&amp; /path/to/command&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="configuration.html" class="btn btn-neutral float-left" title="Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="reference.html" class="btn btn-neutral float-right" title="Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Bansuri Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

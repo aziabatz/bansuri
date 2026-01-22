@@ -1,0 +1,43 @@
+Troubleshooting
+===============
+
+Encountering issues with Bansuri? Check the common problems and solutions below.
+
+Common Issues
+-------------
+
+Task fails to start
+~~~~~~~~~~~~~~~~~~~
+
+**Symptoms:** The task status remains ``PENDING`` or immediately goes to ``FAILED``.
+
+**Possible Causes:**
+
+* **Incorrect Path:** The ``command`` specified in ``scripts.json`` does not exist or is not in the system PATH.
+* **Permissions:** The user running Bansuri does not have execute permissions for the script.
+* **Shebang Missing:** If running a raw script file, ensure it has a valid shebang (e.g., ``#!/bin/bash``).
+
+**Solution:**
+Try running the command manually as the bansuri user to verify output.
+
+Orchestrator consumes too much memory
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Symptoms:** System OOM killer terminates the Bansuri process.
+
+**Possible Causes:**
+
+* **Output Buffering:** A task is generating massive amounts of stdout/stderr which Bansuri is trying to buffer in memory.
+
+**Solution:**
+Redirect task output to a file in the ``command`` string (e.g., ``./script.sh > /tmp/log``) or reduce the logging verbosity of the child task.
+
+Logs
+----
+
+If the issue persists, enable debug logging to inspect the internal state of the Scheduler and TaskRunner.
+
+.. code-block:: bash
+
+   export BANSURI_LOG_LEVEL=DEBUG
+   python -m bansuri

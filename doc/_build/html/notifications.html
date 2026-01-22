@@ -1,0 +1,475 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notifications &mdash; Bansuri 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Creating Custom Tasks" href="custom-tasks.html" />
+    <link rel="prev" title="Reference" href="reference.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bansuri
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Understanding Bansuri</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts and Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Configuration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced-config.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Notifications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-configuration">Example Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-parameters">Configuration Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#failure-information">Failure Information</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#notification-message-format">Notification Message Format</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#api-reference">API Reference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#notifier-base-class">Notifier Base Class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#bansuri.alerts.notifier.Notifier"><code class="docutils literal notranslate"><span class="pre">Notifier</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#failureinfo-data-class">FailureInfo Data Class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#bansuri.alerts.notifier.FailureInfo"><code class="docutils literal notranslate"><span class="pre">FailureInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#commandnotifier-implementation">CommandNotifier Implementation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#bansuri.alerts.cmd_notifier.CommandNotifier"><code class="docutils literal notranslate"><span class="pre">CommandNotifier</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#email-notifications">Email Notifications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#slack-notifications">Slack Notifications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#custom-webhook">Custom Webhook</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#extending-the-notification-system">Extending the Notification System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#notifications-not-being-sent">Notifications not being sent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#notification-timeout">Notification timeout</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-notes">Integration Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="custom-tasks.html">Creating Custom Tasks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Operations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting-detailed.html">Troubleshooting Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project Info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to Bansuri</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bansuri</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Notifications</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/notifications.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="notifications">
+<h1>Notifications<a class="headerlink" href="#notifications" title="Link to this heading"></a></h1>
+<p>Bansuri includes a built-in notification system to alert you when tasks fail. This allows you to respond quickly to issues in your orchestrated tasks.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The notification system is triggered when a task fails (returns a non-zero exit code) and the <code class="docutils literal notranslate"><span class="pre">notify</span></code> configuration option is set to <code class="docutils literal notranslate"><span class="pre">&quot;mail&quot;</span></code>. Notifications are sent using a command-based system, allowing integration with any notification service (email, Slack, webhooks, etc.).</p>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<p>To enable notifications, you need to:</p>
+<ol class="arabic simple">
+<li><p>Set the <code class="docutils literal notranslate"><span class="pre">notify</span></code> field in your task configuration to <code class="docutils literal notranslate"><span class="pre">&quot;mail&quot;</span></code></p></li>
+<li><p>Configure a global <code class="docutils literal notranslate"><span class="pre">notify_command</span></code> in your <code class="docutils literal notranslate"><span class="pre">scripts.json</span></code></p></li>
+</ol>
+<section id="example-configuration">
+<h3>Example Configuration<a class="headerlink" href="#example-configuration" title="Link to this heading"></a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;notify_command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail -s &#39;[Bansuri] Task Failed&#39; your-email@example.com&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scripts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;critical-backup&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/usr/local/bin/backup.sh&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3600&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;notify&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="configuration-parameters">
+<h3>Configuration Parameters<a class="headerlink" href="#configuration-parameters" title="Link to this heading"></a></h3>
+<ul>
+<li><p><strong>notify_command</strong> (global): Shell command to execute for sending notifications. The command receives the failure message as input.</p>
+<p>Examples:</p>
+<ul class="simple">
+<li><p>Email: <code class="docutils literal notranslate"><span class="pre">&quot;mail</span> <span class="pre">-s</span> <span class="pre">'[Bansuri]</span> <span class="pre">Task</span> <span class="pre">Failed'</span> <span class="pre">admin&#64;example.com&quot;</span></code></p></li>
+<li><p>Slack: <code class="docutils literal notranslate"><span class="pre">&quot;curl</span> <span class="pre">-X</span> <span class="pre">POST</span> <span class="pre">-d</span> <span class="pre">&#64;-</span> <span class="pre">https://hooks.slack.com/services/YOUR/WEBHOOK/URL&quot;</span></code></p></li>
+<li><p>Webhook: <code class="docutils literal notranslate"><span class="pre">&quot;curl</span> <span class="pre">-X</span> <span class="pre">POST</span> <span class="pre">-H</span> <span class="pre">'Content-Type:</span> <span class="pre">application/json'</span> <span class="pre">-d</span> <span class="pre">&#64;-</span> <span class="pre">https://your-api.example.com/notify&quot;</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>notify</strong> (per-task): Set to <code class="docutils literal notranslate"><span class="pre">&quot;mail&quot;</span></code> to enable notifications for this task, or <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> to disable.</p></li>
+</ul>
+</section>
+</section>
+<section id="failure-information">
+<h2>Failure Information<a class="headerlink" href="#failure-information" title="Link to this heading"></a></h2>
+<p>When a task fails, Bansuri sends the following information in the notification:</p>
+<ul class="simple">
+<li><p><strong>Task Name</strong>: Unique identifier of the failed task</p></li>
+<li><p><strong>Command</strong>: The command that was executed</p></li>
+<li><p><strong>Working Directory</strong>: The directory where the command ran</p></li>
+<li><p><strong>Return Code</strong>: Exit code of the failed process</p></li>
+<li><p><strong>Attempt</strong>: Which attempt this was (e.g., “2/3”)</p></li>
+<li><p><strong>Timestamp</strong>: When the failure occurred</p></li>
+<li><p><strong>Description</strong>: Task description (if provided)</p></li>
+<li><p><strong>Stdout</strong>: Standard output captured from the failed task</p></li>
+<li><p><strong>Stderr</strong>: Standard error output captured from the failed task</p></li>
+</ul>
+<section id="notification-message-format">
+<h3>Notification Message Format<a class="headerlink" href="#notification-message-format" title="Link to this heading"></a></h3>
+<p>The notification is formatted as follows:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>=== [Bansuri] Task Failure ===
+
+Task &#39;task-name&#39; has failed.
+
+--- Task Details ---
+Name:              task-name
+Command:           /path/to/command
+Working Directory: /working/dir
+Return Code:       1
+Attempt:           2/3
+Timestamp:         2026-01-19 14:30:45
+Description:       Optional task description
+
+--- Output ---
+(stdout from task)
+
+--- Error ---
+(stderr from task)
+
+---
+This is an automated message from Bansuri Orchestrator.
+</pre></div>
+</div>
+</section>
+</section>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h2>
+<section id="notifier-base-class">
+<h3>Notifier Base Class<a class="headerlink" href="#notifier-base-class" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="bansuri.alerts.notifier.Notifier">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">bansuri.alerts.notifier.</span></span><span class="sig-name descname"><span class="pre">Notifier</span></span><a class="reference internal" href="_modules/bansuri/alerts/notifier.html#Notifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bansuri.alerts.notifier.Notifier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Base class for notification handlers.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bansuri.alerts.notifier.Notifier.notify">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">notify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">failure_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#bansuri.alerts.notifier.FailureInfo" title="bansuri.alerts.notifier.FailureInfo"><span class="pre">FailureInfo</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/bansuri/alerts/notifier.html#Notifier.notify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bansuri.alerts.notifier.Notifier.notify" title="Link to this definition"></a></dt>
+<dd><p>Abstract method that handles on failure notifications</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="failureinfo-data-class">
+<h3>FailureInfo Data Class<a class="headerlink" href="#failureinfo-data-class" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="bansuri.alerts.notifier.FailureInfo">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">bansuri.alerts.notifier.</span></span><span class="sig-name descname"><span class="pre">FailureInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">working_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attempt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stderr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bansuri/alerts/notifier.html#FailureInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bansuri.alerts.notifier.FailureInfo" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="bansuri.alerts.notifier.FailureInfo.attempt">
+<span class="sig-name descname"><span class="pre">attempt</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#bansuri.alerts.notifier.FailureInfo.attempt" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bansuri.alerts.notifier.FailureInfo.command">
+<span class="sig-name descname"><span class="pre">command</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#bansuri.alerts.notifier.FailureInfo.command" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bansuri.alerts.notifier.FailureInfo.description">
+<span class="sig-name descname"><span class="pre">description</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#bansuri.alerts.notifier.FailureInfo.description" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bansuri.alerts.notifier.FailureInfo.max_attempts">
+<span class="sig-name descname"><span class="pre">max_attempts</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#bansuri.alerts.notifier.FailureInfo.max_attempts" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bansuri.alerts.notifier.FailureInfo.return_code">
+<span class="sig-name descname"><span class="pre">return_code</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#bansuri.alerts.notifier.FailureInfo.return_code" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bansuri.alerts.notifier.FailureInfo.stderr">
+<span class="sig-name descname"><span class="pre">stderr</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#bansuri.alerts.notifier.FailureInfo.stderr" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bansuri.alerts.notifier.FailureInfo.stdout">
+<span class="sig-name descname"><span class="pre">stdout</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#bansuri.alerts.notifier.FailureInfo.stdout" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bansuri.alerts.notifier.FailureInfo.task_name">
+<span class="sig-name descname"><span class="pre">task_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#bansuri.alerts.notifier.FailureInfo.task_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bansuri.alerts.notifier.FailureInfo.timestamp">
+<span class="sig-name descname"><span class="pre">timestamp</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></span><a class="headerlink" href="#bansuri.alerts.notifier.FailureInfo.timestamp" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bansuri.alerts.notifier.FailureInfo.working_directory">
+<span class="sig-name descname"><span class="pre">working_directory</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#bansuri.alerts.notifier.FailureInfo.working_directory" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="commandnotifier-implementation">
+<h3>CommandNotifier Implementation<a class="headerlink" href="#commandnotifier-implementation" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="bansuri.alerts.cmd_notifier.CommandNotifier">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">bansuri.alerts.cmd_notifier.</span></span><span class="sig-name descname"><span class="pre">CommandNotifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">notify_command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bansuri/alerts/cmd_notifier.html#CommandNotifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bansuri.alerts.cmd_notifier.CommandNotifier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bansuri.alerts.notifier.Notifier" title="bansuri.alerts.notifier.Notifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">Notifier</span></code></a></p>
+<p>Notify via shell command execution.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bansuri.alerts.cmd_notifier.CommandNotifier.notify">
+<span class="sig-name descname"><span class="pre">notify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">failure_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#bansuri.alerts.notifier.FailureInfo" title="bansuri.alerts.notifier.FailureInfo"><span class="pre">FailureInfo</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/bansuri/alerts/cmd_notifier.html#CommandNotifier.notify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bansuri.alerts.cmd_notifier.CommandNotifier.notify" title="Link to this definition"></a></dt>
+<dd><p>Abstract method that handles on failure notifications</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<section id="email-notifications">
+<h3>Email Notifications<a class="headerlink" href="#email-notifications" title="Link to this heading"></a></h3>
+<p>Send notifications via email using the <code class="docutils literal notranslate"><span class="pre">mail</span></code> command:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;notify_command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail -s &#39;[Bansuri Alert] Task Failed&#39; ops-team@company.com&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scripts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;database-backup&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pg_dump production &gt; /backups/db.sql&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;86400&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;notify&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="slack-notifications">
+<h3>Slack Notifications<a class="headerlink" href="#slack-notifications" title="Link to this heading"></a></h3>
+<p>Send notifications to a Slack channel:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;notify_command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;curl -X POST -d @- https://hooks.slack.com/services/YOUR/WEBHOOK/URL&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scripts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;critical-service&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;systemctl restart myservice&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;300&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;notify&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;stop&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="custom-webhook">
+<h3>Custom Webhook<a class="headerlink" href="#custom-webhook" title="Link to this heading"></a></h3>
+<p>Send notifications to a custom API endpoint:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;notify_command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;curl -X POST -H &#39;Content-Type: application/json&#39; -d @- https://monitoring.company.com/api/alerts&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;scripts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;health-check&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/opt/health-check.py&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;600&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;notify&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mail&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;on-fail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;restart&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;times&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="extending-the-notification-system">
+<h2>Extending the Notification System<a class="headerlink" href="#extending-the-notification-system" title="Link to this heading"></a></h2>
+<p>You can create custom notifier implementations by subclassing the <code class="docutils literal notranslate"><span class="pre">Notifier</span></code> base class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bansuri.alerts.notifier</span><span class="w"> </span><span class="kn">import</span> <span class="n">Notifier</span><span class="p">,</span> <span class="n">FailureInfo</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SlackNotifier</span><span class="p">(</span><span class="n">Notifier</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">webhook_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">webhook_url</span> <span class="o">=</span> <span class="n">webhook_url</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">failure_info</span><span class="p">:</span> <span class="n">FailureInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Your implementation to send to Slack</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Task &#39;</span><span class="si">{</span><span class="n">failure_info</span><span class="o">.</span><span class="n">task_name</span><span class="si">}</span><span class="s2">&#39; failed with code </span><span class="si">{</span><span class="n">failure_info</span><span class="o">.</span><span class="n">return_code</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="c1"># ... send to Slack ...</span>
+        <span class="k">return</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Then modify the <code class="docutils literal notranslate"><span class="pre">TaskRunner._create_notifier()</span></code> method to use your custom notifier.</p>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
+<section id="notifications-not-being-sent">
+<h3>Notifications not being sent<a class="headerlink" href="#notifications-not-being-sent" title="Link to this heading"></a></h3>
+<p><strong>Issue</strong>: Tasks are failing but no notifications are received.</p>
+<p><strong>Solutions</strong>:</p>
+<ol class="arabic">
+<li><p>Verify the <code class="docutils literal notranslate"><span class="pre">notify</span></code> field is set to <code class="docutils literal notranslate"><span class="pre">&quot;mail&quot;</span></code> in the task configuration</p></li>
+<li><p>Check that <code class="docutils literal notranslate"><span class="pre">notify_command</span></code> is defined at the global level in <code class="docutils literal notranslate"><span class="pre">scripts.json</span></code></p></li>
+<li><p>Test the notify command manually:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Test message&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>mail<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;Test&quot;</span><span class="w"> </span>your-email@example.com
+</pre></div>
+</div>
+</li>
+<li><p>Check Bansuri logs for error messages related to notification sending</p></li>
+</ol>
+<ol class="arabic simple" start="4">
+<li><p>Ensure the user running Bansuri has permissions to execute the notify command</p></li>
+</ol>
+</section>
+<section id="notification-timeout">
+<h3>Notification timeout<a class="headerlink" href="#notification-timeout" title="Link to this heading"></a></h3>
+<p><strong>Issue</strong>: Notifications are causing tasks to hang or slow down.</p>
+<p><strong>Solution</strong>: The <code class="docutils literal notranslate"><span class="pre">CommandNotifier</span></code> has a default 30-second timeout. To increase it, modify the timeout in <code class="docutils literal notranslate"><span class="pre">TaskRunner._create_notifier()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">return</span> <span class="n">CommandNotifier</span><span class="p">(</span><span class="n">notify_cmd</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>  <span class="c1"># 60 seconds</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="integration-notes">
+<h2>Integration Notes<a class="headerlink" href="#integration-notes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Notifications are sent <strong>asynchronously</strong> within the task execution thread, so they won’t block task execution.</p></li>
+<li><p>If a notification fails, it’s logged but doesn’t affect the task execution flow.</p></li>
+<li><p>The notification message is formatted with escaped newlines (<code class="docutils literal notranslate"><span class="pre">\\n</span></code>) for compatibility with shell commands.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="reference.html" class="btn btn-neutral float-left" title="Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="custom-tasks.html" class="btn btn-neutral float-right" title="Creating Custom Tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Bansuri Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,454 @@
+Reference
+=========
+
+Quick reference for Bansuri configuration and commands.
+
+Configuration Quick Reference
+------------------------------
+
+Minimal Task
+~~~~~~~~~~~~
+
+.. code-block:: json
+
+    {
+      "name": "task-name",
+      "command": "command-to-run"
+    }
+
+Complete Task with All Options
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: json
+
+    {
+      "version": "1.0",
+      "notify_command": "mail -s 'Alert' admin@example.com",
+      "scripts": [
+        {
+          "name": "example-task",
+          "command": "/path/to/script.sh",
+          "working-directory": "/home/user/workdir",
+          "timer": "300",
+          "timeout": "5m",
+          "times": 3,
+          "on-fail": "restart",
+          "stdout": "/var/log/task.log",
+          "stderr": "combined",
+          "notify": "mail",
+          "success-codes": [0, 2],
+          "description": "Task description"
+        }
+      ]
+    }
+
+Configuration Parameters Reference
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+====================  ===========  ========  =============================================
+Parameter             Type         Default   Description
+====================  ===========  ========  =============================================
+version               string       "1.0"     Configuration version
+notify_command        string       null      Global command for sending notifications
+(per-task)
+name                  string       required  Unique task identifier
+command               string       required  Command to execute
+working-directory     string       null      Directory to execute command in
+timer                 int/string   null      Interval in seconds (e.g., "300" or 300)
+timeout               int/string   null      Max execution time (e.g., "5m")
+times                 int          1         Number of retry attempts
+on-fail               string       "stop"    Action on failure: "stop" or "restart"
+stdout                string       null      File to redirect stdout
+stderr                string       "combined" File to redirect stderr or "combined"
+notify                string       "none"    Notification trigger: "none" or "mail"
+success-codes         array        [0]       Exit codes considered successful
+description           string       ""        Task description
+====================  ===========  ========  =============================================
+
+Timeout Formats
+~~~~~~~~~~~~~~~
+
+==========  ====================
+Format      Equivalent
+==========  ====================
+"30"        30 seconds
+"30s"       30 seconds
+"5m"        5 minutes (300s)
+"1h"        1 hour (3600s)
+==========  ====================
+
+Common Timer Values
+~~~~~~~~~~~~~~~~~~~
+
+===============  ==================
+Interval         Timer Value
+===============  ==================
+Every 5 seconds  "5"
+Every minute     "60"
+Every 5 minutes  "300"
+Every hour       "3600"
+Every day        "86400"
+===============  ==================
+
+Command Line Reference
+----------------------
+
+Start Bansuri
+~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+    # Default configuration (scripts.json in current directory)
+    bansuri
+
+    # Custom configuration file
+    bansuri --config /path/to/scripts.json
+
+    # Help
+    bansuri --help
+
+    # Version
+    bansuri --version
+
+View Logs
+~~~~~~~~~
+
+For systemd:
+
+.. code-block:: bash
+
+    # Live logs
+    journalctl -u bansuri -f
+
+    # Last 50 lines
+    journalctl -u bansuri -n 50
+
+    # Since specific time
+    journalctl -u bansuri --since "2024-01-19 10:00:00"
+
+    # Only errors
+    journalctl -u bansuri -p err
+
+For file logging:
+
+.. code-block:: bash
+
+    # Live logs
+    tail -f /var/log/bansuri.log
+
+    # Last 100 lines
+    tail -100 /var/log/bansuri.log
+
+    # Follow and grep
+    tail -f /var/log/bansuri.log | grep FAILED
+
+System Management
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+    # Start
+    systemctl start bansuri
+
+    # Stop
+    systemctl stop bansuri
+
+    # Restart
+    systemctl restart bansuri
+
+    # Status
+    systemctl status bansuri
+
+    # Enable on boot
+    systemctl enable bansuri
+
+    # Disable on boot
+    systemctl disable bansuri
+
+Validation
+~~~~~~~~~~
+
+Validate configuration syntax:
+
+.. code-block:: bash
+
+    python -m json.tool scripts.json
+
+Validate with Bansuri:
+
+.. code-block:: bash
+
+    python -c "
+    from bansuri.base.config_manager import BansuriConfig
+    try:
+        config = BansuriConfig.load_from_file('scripts.json')
+        print('✓ Valid')
+    except Exception as e:
+        print(f'✗ Error: {e}')
+    "
+
+Testing
+~~~~~~~
+
+Test a command before adding to config:
+
+.. code-block:: bash
+
+    bash -x /path/to/script.sh
+
+Profile execution time:
+
+.. code-block:: bash
+
+    time /path/to/script.sh
+
+Monitor in real-time:
+
+.. code-block:: bash
+
+    watch -n 1 'ps aux | grep python'
+
+Environment Variables
+~~~~~~~~~~~~~~~~~~~~~
+
+===================  ================  ==========================================
+Variable             Default           Description
+===================  ================  ==========================================
+BANSURI_ENV          production        Environment (dev/staging/production)
+BANSURI_LOG_LEVEL    INFO              Logging verbosity (DEBUG/INFO/WARNING/ERROR)
+===================  ================  ==========================================
+
+Set before running:
+
+.. code-block:: bash
+
+    export BANSURI_LOG_LEVEL=DEBUG
+    bansuri
+
+Configuration Examples
+----------------------
+
+Example 1: Simple Health Check
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: json
+
+    {
+      "version": "1.0",
+      "scripts": [
+        {
+          "name": "health-check",
+          "command": "curl -f https://example.com/health",
+          "timer": "60",
+          "timeout": "10s"
+        }
+      ]
+    }
+
+Example 2: Database Backup with Retry
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: json
+
+    {
+      "version": "1.0",
+      "notify_command": "mail -s 'Backup Alert' ops@example.com",
+      "scripts": [
+        {
+          "name": "backup-db",
+          "command": "pg_dump mydb | gzip > backup.sql.gz",
+          "timer": "86400",
+          "timeout": "2h",
+          "on-fail": "restart",
+          "times": 3,
+          "notify": "mail",
+          "stdout": "/var/log/backup.log"
+        }
+      ]
+    }
+
+Example 3: Multiple Tasks
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: json
+
+    {
+      "version": "1.0",
+      "notify_command": "mail -s '[Bansuri]' admin@example.com",
+      "scripts": [
+        {
+          "name": "quick-task",
+          "command": "echo 'Quick'",
+          "timer": "60"
+        },
+        {
+          "name": "medium-task",
+          "command": "sh /opt/process.sh",
+          "timer": "300",
+          "timeout": "2m",
+          "on-fail": "restart",
+          "times": 2
+        },
+        {
+          "name": "critical-task",
+          "command": "python /opt/critical.py",
+          "timer": "3600",
+          "timeout": "30m",
+          "on-fail": "restart",
+          "times": 3,
+          "notify": "mail",
+          "stdout": "/var/log/critical.log"
+        }
+      ]
+    }
+
+Exit Codes Reference
+--------------------
+
+Standard Exit Codes:
+
+=========  ==================
+Code       Meaning
+=========  ==================
+0          Success
+1          General error
+2          Misuse of shell command
+126        Command invoked cannot execute
+127        Command not found
+128+N      Fatal signal N
+130        Terminated (SIGINT/Ctrl+C)
+137        Killed (SIGKILL)
+143        Terminated (SIGTERM)
+=========  ==================
+
+Testing Patterns
+----------------
+
+Test script exit code:
+
+.. code-block:: bash
+
+    /path/to/script.sh
+    echo "Exit code: $?"
+
+Test with different arguments:
+
+.. code-block:: bash
+
+    /path/to/script.sh arg1 arg2
+    echo $?
+
+Test with timeout:
+
+.. code-block:: bash
+
+    timeout 30 /path/to/script.sh
+    echo $?
+
+Test output redirection:
+
+.. code-block:: bash
+
+    /path/to/script.sh > /tmp/out.log 2>&1
+    cat /tmp/out.log
+
+Debugging Checklist
+-------------------
+
+Task not running:
+
+- [ ] Command is valid: ``which command_name``
+- [ ] Script is executable: ``ls -la /path/to/script``
+- [ ] Path is absolute in config
+- [ ] Working directory exists: ``ls -la /path/to/workdir``
+- [ ] Timer is set (if periodic task)
+
+Task failing repeatedly:
+
+- [ ] Test command manually
+- [ ] Check exit code: ``/path/to/script.sh; echo $?``
+- [ ] Check permissions: ``ls -la /path/to/script``
+- [ ] Check output: ``tail -f /var/log/task.log``
+- [ ] Check dependencies exist
+
+Timeout issues:
+
+- [ ] Measure actual execution: ``time /path/to/script.sh``
+- [ ] Increase timeout value
+- [ ] Check system resources: ``free -h``, ``df -h``
+- [ ] Check for blocking operations
+
+Notifications not working:
+
+- [ ] ``notify`` is set to ``"mail"``
+- [ ] ``notify_command`` is configured
+- [ ] Test command: ``echo "test" | mail -s "test" email@example.com``
+- [ ] Check network connectivity
+- [ ] Check Bansuri logs
+
+Performance Tuning Checklist
+-----------------------------
+
+Memory usage high:
+
+- [ ] Redirect task output to files
+- [ ] Reduce number of concurrent tasks
+- [ ] Monitor: ``ps aux | grep python``
+
+CPU usage high:
+
+- [ ] Increase timer intervals
+- [ ] Check for infinite loops
+- [ ] Profile: ``python -m cProfile``
+
+Tasks running slow:
+
+- [ ] Check system load: ``uptime``
+- [ ] Monitor I/O: ``iotop``
+- [ ] Check network: ``netstat -s``
+- [ ] Profile execution: ``time`` command
+
+Common Commands Cheat Sheet
+----------------------------
+
+.. code-block:: bash
+
+    # View configuration
+    cat scripts.json | python -m json.tool
+
+    # Validate configuration
+    python -c "from bansuri.base.config_manager import BansuriConfig; BansuriConfig.load_from_file('scripts.json')"
+
+    # Find Bansuri process
+    pgrep -f "python -m bansuri"
+
+    # Kill Bansuri
+    pkill -f "python -m bansuri"
+
+    # Check system resources
+    free -h && df -h && uptime
+
+    # Monitor process
+    watch -n 1 'ps aux | grep bansuri'
+
+    # View recent logs
+    tail -50 /var/log/bansuri.log
+
+    # Search logs
+    grep "ERROR" /var/log/bansuri.log
+
+    # Count task executions
+    grep -c "started\|completed" /var/log/bansuri.log
+
+Useful Aliases
+~~~~~~~~~~~~~~
+
+Add to ``.bashrc``:
+
+.. code-block:: bash
+
+    alias bansuri-status='systemctl status bansuri'
+    alias bansuri-logs='journalctl -u bansuri -f'
+    alias bansuri-restart='systemctl restart bansuri'
+    alias bansuri-config='cat ~/bansuri/scripts.json | python -m json.tool'
+    alias bansuri-validate='python -c "from bansuri.base.config_manager import BansuriConfig; BansuriConfig.load_from_file(\"scripts.json\"); print(\"✓ Valid\")"'

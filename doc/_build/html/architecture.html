@@ -1,0 +1,213 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System Architecture &mdash; Bansuri 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Configuration" href="configuration.html" />
+    <link rel="prev" title="Concepts and Terminology" href="concepts.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bansuri
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Understanding Bansuri</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts and Terminology</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">System Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#high-level-overview">High-Level Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#execution-models">Execution Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#task-lifecycle">Task Lifecycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#error-handling-and-restart-policies">Error Handling and Restart Policies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output-management">Output Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extensibility">Extensibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#notification-system">Notification System</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Configuration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced-config.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notifications.html">Notifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-tasks.html">Creating Custom Tasks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Operations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting-detailed.html">Troubleshooting Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project Info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to Bansuri</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bansuri</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">System Architecture</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/architecture.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="system-architecture">
+<h1>System Architecture<a class="headerlink" href="#system-architecture" title="Link to this heading"></a></h1>
+<p>Bansuri is designed as a modular task orchestration system. It separates the concerns of task definition, scheduling, and execution monitoring.</p>
+<section id="high-level-overview">
+<h2>High-Level Overview<a class="headerlink" href="#high-level-overview" title="Link to this heading"></a></h2>
+<p>The system consists of two main components:</p>
+<ol class="arabic simple">
+<li><p><strong>Orchestrator</strong>: Reads the configuration from <code class="docutils literal notranslate"><span class="pre">scripts.json</span></code>, manages the lifecycle of all tasks, synchronizes configuration changes, and coordinates task execution.</p></li>
+<li><p><strong>TaskRunner</strong>: Encapsulates the logic for spawning a subprocess, managing a control thread, capturing output, and handling lifecycle events (start, stop, timeout, restarts).</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Bansuri uses Python’s <code class="docutils literal notranslate"><span class="pre">subprocess</span></code> module for process isolation, ensuring that a crashing script does not bring down the main orchestrator. Each task runs in its own thread and process.</p>
+</div>
+</section>
+<section id="execution-models">
+<h2>Execution Models<a class="headerlink" href="#execution-models" title="Link to this heading"></a></h2>
+<p>Bansuri supports multiple execution models through <code class="docutils literal notranslate"><span class="pre">TaskRunner</span></code>:</p>
+<ul class="simple">
+<li><p><strong>Simple Execution</strong>: Run the task once and stop.</p></li>
+<li><p><strong>Timer-based Execution</strong>: Run the task at fixed intervals (configured via <code class="docutils literal notranslate"><span class="pre">timer</span></code> parameter).</p></li>
+<li><p><strong>Cron-based Execution</strong>: Run the task on a schedule (configured via <code class="docutils literal notranslate"><span class="pre">schedule-cron</span></code>). NOT IMPLEMENTED.</p></li>
+</ul>
+</section>
+<section id="task-lifecycle">
+<h2>Task Lifecycle<a class="headerlink" href="#task-lifecycle" title="Link to this heading"></a></h2>
+<p>A task goes through several states during its execution:</p>
+<ul class="simple">
+<li><p><strong>PENDING</strong>: The task is about to start (in the execution loop).</p></li>
+<li><p><strong>RUNNING</strong>: The process has been spawned and has an active PID.</p></li>
+<li><p><strong>COMPLETED</strong>: The process exited with a success code (default: 0).</p></li>
+<li><p><strong>FAILED</strong>: The process exited with a non-zero return code or was killed.</p></li>
+<li><p><strong>TIMED_OUT</strong>: The TaskRunner killed the process because it exceeded its <code class="docutils literal notranslate"><span class="pre">timeout</span></code> limit.</p></li>
+</ul>
+</section>
+<section id="error-handling-and-restart-policies">
+<h2>Error Handling and Restart Policies<a class="headerlink" href="#error-handling-and-restart-policies" title="Link to this heading"></a></h2>
+<p>If a task fails, the <strong>on-fail</strong> policy kicks in:</p>
+<ul class="simple">
+<li><p><strong>“stop”</strong>: Task execution stops immediately on failure.</p></li>
+<li><p><strong>“restart”</strong>: Task is restarted up to <code class="docutils literal notranslate"><span class="pre">times</span></code> attempts with a brief delay between attempts.</p></li>
+</ul>
+<p>The configuration in <a class="reference internal" href="configuration.html"><span class="doc">Configuration</span></a> determines the behavior on task failure.</p>
+</section>
+<section id="output-management">
+<h2>Output Management<a class="headerlink" href="#output-management" title="Link to this heading"></a></h2>
+<p>Bansuri redirects stdout and stderr according to the task configuration:</p>
+<ul class="simple">
+<li><p><strong>“combined”</strong> (default): Both stdout and stderr are written to the same file.</p></li>
+<li><p><strong>File path</strong>: Stdout/stderr are redirected to the specified file.</p></li>
+<li><p><strong>None</strong>: Output is not captured.</p></li>
+</ul>
+</section>
+<section id="extensibility">
+<h2>Extensibility<a class="headerlink" href="#extensibility" title="Link to this heading"></a></h2>
+<p>Bansuri is built to be extended. You can create custom task implementations by inheriting from the <code class="docutils literal notranslate"><span class="pre">AbstractTask</span></code> class and implementing the <code class="docutils literal notranslate"><span class="pre">run()</span></code> and <code class="docutils literal notranslate"><span class="pre">stop()</span></code> methods. Tasks implementing this interface can be loaded and executed by Bansuri with the <code class="docutils literal notranslate"><span class="pre">no-interface</span></code> configuration option.</p>
+</section>
+<section id="notification-system">
+<h2>Notification System<a class="headerlink" href="#notification-system" title="Link to this heading"></a></h2>
+<p>Bansuri includes a notification system that can alert you when tasks fail. The system is extensible and supports:</p>
+<ul class="simple">
+<li><p><strong>Command-based notifications</strong>: Execute any shell command to send alerts (email, Slack, webhooks, etc.)</p></li>
+<li><p><strong>Custom notifiers</strong>: Extend the <code class="docutils literal notranslate"><span class="pre">Notifier</span></code> base class to implement custom notification handlers</p></li>
+</ul>
+<p>For detailed information, see <a class="reference internal" href="notifications.html"><span class="doc">Notifications</span></a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="concepts.html" class="btn btn-neutral float-left" title="Concepts and Terminology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="configuration.html" class="btn btn-neutral float-right" title="Configuration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Bansuri Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

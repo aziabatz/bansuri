@@ -1,0 +1,280 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bansuri.master &mdash; Bansuri 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Bansuri
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project Info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to Bansuri</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Bansuri</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">bansuri.master</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bansuri.master</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bansuri.base.misc.header</span><span class="w"> </span><span class="kn">import</span> <span class="n">HEADER</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bansuri.base.misc.help</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_help</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bansuri.base.config_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">BansuriConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bansuri.task_runner</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaskRunner</span>
+
+
+
+<div class="viewcode-block" id="Orchestrator">
+<a class="viewcode-back" href="../../api.html#bansuri.master.Orchestrator">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Orchestrator</span><span class="p">:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file</span><span class="o">=</span><span class="s2">&quot;scripts.json&quot;</span><span class="p">,</span> <span class="n">check_interval</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Orchestrator init</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config_file (str, optional): Path to config file. Defaults to &quot;scripts.json&quot;.</span>
+<span class="sd">            check_interval (int, optional): Check interval in seconds. Defaults to 30.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_file</span> <span class="o">=</span> <span class="n">config_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_interval</span> <span class="o">=</span> <span class="n">check_interval</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runners</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TaskRunner</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_stop</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_handler</span><span class="p">)</span>
+        <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_handler</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s2">&quot;Orchestrator initialized&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="c1"># TODO add pluggable logger</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">] [MASTER] </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Orchestrator.signal_handler">
+<a class="viewcode-back" href="../../api.html#bansuri.master.Orchestrator.signal_handler">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">signal_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        POSIX signal handling</span>
+
+<span class="sd">        :param signum: Signal identifier</span>
+<span class="sd">        :param frame: Unused</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received signal </span><span class="si">{</span><span class="n">signum</span><span class="si">}</span><span class="s2">, shutting down...&quot;</span><span class="p">)</span>
+        <span class="c1"># TODO shutdown only on SIGTERM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_all</span><span class="p">()</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Orchestrator.sync_tasks">
+<a class="viewcode-back" href="../../api.html#bansuri.master.Orchestrator.sync_tasks">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sync_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Synchronize tasks from config file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="n">config</span> <span class="o">=</span> <span class="n">BansuriConfig</span><span class="o">.</span><span class="n">load_from_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_file</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading config: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Map config fields by name</span>
+        <span class="n">new_configs</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">scripts</span><span class="p">}</span>
+
+        <span class="n">current_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runners</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">new_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">new_configs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="c1"># we stop tasks which are no longer in config</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">current_names</span> <span class="o">-</span> <span class="n">new_names</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task removed from config: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runners</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">runners</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="c1"># Check for updates in existing tasks</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">current_names</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">new_names</span><span class="p">):</span>
+            <span class="n">current_runner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runners</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">new_config</span> <span class="o">=</span> <span class="n">new_configs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">current_runner</span><span class="o">.</span><span class="n">config</span> <span class="o">!=</span> <span class="n">new_config</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Configuration changed for task: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. Restarting...&quot;</span><span class="p">)</span>
+                <span class="n">current_runner</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">runners</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                <span class="c1"># It will be re-added in the next loop (actually no, we must add it here or treat it as new)</span>
+                <span class="c1"># Better approach: restart it immediately here</span>
+                <span class="n">runner</span> <span class="o">=</span> <span class="n">TaskRunner</span><span class="p">(</span><span class="n">new_config</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">runners</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">runner</span>
+                <span class="n">runner</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="c1"># Start added tasks</span>
+        <span class="c1"># The set &#39;new_names - current_names&#39; is strictly for NEW task names.</span>
+        <span class="c1"># The updated ones are handled above.</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">new_names</span> <span class="o">-</span> <span class="n">current_names</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New task found: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Check for NOT IMPLEMENTED features</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="n">new_configs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">depends_on</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARNING [</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">]: depends-on NOT IMPLEMENTED&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">user</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARNING [</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">]: user switching NOT IMPLEMENTED&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">priority</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARNING [</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">]: priority NOT IMPLEMENTED&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">environment_file</span><span class="p">:</span>
+                <span class="c1"># TODO implement</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARNING [</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">]: environment-file NOT IMPLEMENTED&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">success_codes</span><span class="p">:</span>
+                <span class="c1"># TODO implement</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARNING [</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">]: success-codes NOT IMPLEMENTED&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">notify</span><span class="p">:</span>
+                <span class="c1"># TODO implement</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARNING [</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">]: notify NOT IMPLEMENTED&quot;</span><span class="p">)</span>
+
+            <span class="n">runner</span> <span class="o">=</span> <span class="n">TaskRunner</span><span class="p">(</span><span class="n">new_configs</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runners</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">runner</span>
+            <span class="n">runner</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Orchestrator.stop_all">
+<a class="viewcode-back" href="../../api.html#bansuri.master.Orchestrator.stop_all">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s2">&quot;Stopping all tasks...&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">runner</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">runners</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">runner</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Orchestrator.run">
+<a class="viewcode-back" href="../../api.html#bansuri.master.Orchestrator.run">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># print(HEADER)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">40</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s2">&quot;BANSURI ORCHESTRATOR STARTED&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">40</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Monitoring config file: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_stop</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sync_tasks</span><span class="p">()</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">check_interval</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR in main loop: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">check_interval</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># TODO add -c option for specifying configfile</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;scripts.json&quot;</span><span class="p">)</span>
+
+    <span class="n">orchestrator</span> <span class="o">=</span> <span class="n">Orchestrator</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="n">config_path</span><span class="p">,</span> <span class="n">check_interval</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">orchestrator</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Bansuri Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+.. Bansuri documentation master file.
+
+Bansuri Documentation
+=====================
+
+Task orchestration and management system for running and monitoring multiple scripts.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Getting Started
+
+   quickstart
+   installation
+   usage
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Understanding Bansuri
+
+   concepts
+   architecture
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Configuration
+
+   configuration
+   advanced-config
+   reference
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Features
+
+   notifications
+   custom-tasks
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Deployment & Operations
+
+   deployment
+   troubleshooting-detailed
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Project Info
+
+   contributing
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API Reference
+
+   api
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

@@ -1,0 +1,48 @@
+Configuration
+=============
+
+Bansuri is highly configurable to suit various orchestration needs. The core configuration is managed through JSON files that define the scripts, their schedules, and execution parameters.
+
+Scripts Definition
+------------------
+
+The heart of Bansuri's operation lies in the ``scripts.json`` file. This file acts as the registry for all tasks that the system is aware of.
+
+File Location
+~~~~~~~~~~~~~
+
+By default, Bansuri looks for the configuration at ``scripts.json`` in the current working directory, or at ``bansuri/scripts.json``.
+
+Structure
+~~~~~~~~~
+
+The configuration file follows a strict schema to ensure the Orchestrator can parse tasks correctly. Below is the current configuration used in the project:
+
+.. literalinclude:: ../bansuri/scripts.json
+   :language: json
+   :caption: Current bansuri/scripts.json configuration
+   :linenos:
+
+Parameters Explained
+~~~~~~~~~~~~~~~~~~~~
+
+Each entry in the configuration supports the following keys:
+
+- **name**: Unique identifier for the task.
+- **command**: The actual shell command or script path to execute.
+- **schedule-cron**: Cron expression for scheduling (e.g., ``"*/5 * * * *"``). NOT IMPLEMENTED.
+- **timer**: Fixed interval execution in seconds (e.g., ``"300"`` for 5 minutes).
+- **timeout**: Maximum execution time (e.g., ``"30s"``, ``"5m"``, ``"1h"``).
+- **times**: Number of execution attempts (default: 1).
+- **on-fail**: Action on failure - ``"stop"`` or ``"restart"`` (default: ``"stop"``).
+- **working-directory**: Working directory for task execution (optional).
+- **stdout**: File path for stdout redirection (optional).
+- **stderr**: File path for stderr redirection or ``"combined"`` (default: ``"combined"``).
+- **no-interface**: Auto-detect if task is AbstractTask or shell command (default: ``false``).
+- **depends-on**: List of task dependencies. NOT IMPLEMENTED.
+- **user**: User to run the task as. NOT IMPLEMENTED.
+- **priority**: Process priority/nice value. NOT IMPLEMENTED.
+- **environment-file**: Environment file to load. NOT IMPLEMENTED.
+- **success-codes**: List of success exit codes (default: ``[0]``).
+- **notify**: Notification policy (``"none"`` or ``"mail"``). IMPLEMENTED - see :doc:`notifications` for details.
+- **description**: Human-readable task description (optional).

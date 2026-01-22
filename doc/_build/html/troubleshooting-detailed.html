@@ -1,0 +1,586 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Troubleshooting Guide &mdash; Bansuri 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing to Bansuri" href="contributing.html" />
+    <link rel="prev" title="Deployment Guide" href="deployment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bansuri
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Understanding Bansuri</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts and Terminology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">System Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Configuration</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced-config.html">Advanced Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notifications.html">Notifications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-tasks.html">Creating Custom Tasks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Operations</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshooting Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#task-execution-issues">Task Execution Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#task-fails-to-start">Task fails to start</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#task-timeout-issues">Task timeout issues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#task-returns-wrong-exit-code">Task returns wrong exit code</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-issues">Configuration Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#json-parsing-errors">JSON parsing errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#missing-required-fields">Missing required fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#invalid-timeout-format">Invalid timeout format</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-issues">Performance Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#high-memory-usage">High memory usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#high-cpu-usage">High CPU usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#slow-task-execution">Slow task execution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#logging-and-debugging">Logging and Debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#enable-debug-logging">Enable debug logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#view-logs">View logs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debug-specific-task">Debug specific task</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#notification-issues">Notification Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#notifications-not-being-sent">Notifications not being sent</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#connection-issues">Connection Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cannot-connect-to-remote-services">Cannot connect to remote services</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#restart-issues">Restart Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bansuri-won-t-restart">Bansuri won’t restart</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-help">Getting Help</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project Info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to Bansuri</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bansuri</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Troubleshooting Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/troubleshooting-detailed.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="troubleshooting-guide">
+<h1>Troubleshooting Guide<a class="headerlink" href="#troubleshooting-guide" title="Link to this heading"></a></h1>
+<p>Common problems and their solutions.</p>
+<section id="task-execution-issues">
+<h2>Task Execution Issues<a class="headerlink" href="#task-execution-issues" title="Link to this heading"></a></h2>
+<section id="task-fails-to-start">
+<h3>Task fails to start<a class="headerlink" href="#task-fails-to-start" title="Link to this heading"></a></h3>
+<p><strong>Symptoms</strong>: Task status is <code class="docutils literal notranslate"><span class="pre">FAILED</span></code> immediately or doesn’t run at all.</p>
+<p><strong>Possible Causes</strong>:</p>
+<ol class="arabic simple">
+<li><p><strong>Invalid command path</strong>: Command doesn’t exist or isn’t in PATH</p></li>
+<li><p><strong>Missing permissions</strong>: User running Bansuri can’t execute the command</p></li>
+<li><p><strong>Incorrect working directory</strong>: Directory doesn’t exist or isn’t readable</p></li>
+<li><p><strong>Syntax errors in scripts</strong>: Shell scripts have errors</p></li>
+</ol>
+<p><strong>Solutions</strong>:</p>
+<p>Test the command manually:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># As the bansuri user</span>
+sudo<span class="w"> </span>-u<span class="w"> </span>bansuri<span class="w"> </span>bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;cd /working/dir &amp;&amp; /path/to/command&quot;</span>
+</pre></div>
+</div>
+<p>Verify command exists:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>which<span class="w"> </span>command_name
+ls<span class="w"> </span>-la<span class="w"> </span>/path/to/command
+</pre></div>
+</div>
+<p>Check file permissions:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ls<span class="w"> </span>-la<span class="w"> </span>/path/to/command
+<span class="c1"># Should be executable: -rwxr-xr-x or similar</span>
+</pre></div>
+</div>
+<p>Check working directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ls<span class="w"> </span>-la<span class="w"> </span>/working/directory
+<span class="c1"># Ensure directory exists and is readable</span>
+</pre></div>
+</div>
+<p>Verify shell script syntax:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>-n<span class="w"> </span>/path/to/script.sh
+</pre></div>
+</div>
+</section>
+<section id="task-timeout-issues">
+<h3>Task timeout issues<a class="headerlink" href="#task-timeout-issues" title="Link to this heading"></a></h3>
+<p><strong>Symptoms</strong>: Tasks are killed unexpectedly or run too long.</p>
+<p><strong>Possible Causes</strong>:</p>
+<ol class="arabic simple">
+<li><p><strong>Timeout too short</strong>: Legitimate tasks exceed configured timeout</p></li>
+<li><p><strong>Hanging process</strong>: Process is blocked waiting for I/O or network</p></li>
+<li><p><strong>Zombie processes</strong>: Child processes not properly cleaned up</p></li>
+<li><p><strong>Resource contention</strong>: System is under heavy load</p></li>
+</ol>
+<p><strong>Solutions</strong>:</p>
+<p>Increase timeout:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;slow-task&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;heavy-operation.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;30m&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Debug process hanging:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Monitor the process</span>
+strace<span class="w"> </span>-p<span class="w"> </span>&lt;PID&gt;<span class="w"> </span>-e<span class="w"> </span><span class="nv">trace</span><span class="o">=</span>network,open,read,write
+
+<span class="c1"># Check system load</span>
+uptime
+free<span class="w"> </span>-h
+df<span class="w"> </span>-h
+</pre></div>
+</div>
+<p>Check for zombie processes:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>defunct
+<span class="c1"># If found, restart Bansuri</span>
+</pre></div>
+</div>
+</section>
+<section id="task-returns-wrong-exit-code">
+<h3>Task returns wrong exit code<a class="headerlink" href="#task-returns-wrong-exit-code" title="Link to this heading"></a></h3>
+<p><strong>Symptoms</strong>: Task shows as failed but should be success, or vice versa.</p>
+<p><strong>Possible Causes</strong>:</p>
+<ol class="arabic simple">
+<li><p><strong>Script returns non-zero for success</strong>: Script’s exit logic is reversed</p></li>
+<li><p><strong>Unexpected errors</strong>: Script encountered error but doesn’t propagate</p></li>
+<li><p><strong>Missing success code configuration</strong>: Success codes not configured correctly</p></li>
+</ol>
+<p><strong>Solutions</strong>:</p>
+<p>Configure success codes:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-with-warnings&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;checker.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;success-codes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Test script exit codes:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./script.sh
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$?</span><span class="w">  </span><span class="c1"># Print exit code</span>
+
+<span class="c1"># Test different scenarios</span>
+./script.sh<span class="w"> </span>arg1<span class="w"> </span>arg2
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$?</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="configuration-issues">
+<h2>Configuration Issues<a class="headerlink" href="#configuration-issues" title="Link to this heading"></a></h2>
+<section id="json-parsing-errors">
+<h3>JSON parsing errors<a class="headerlink" href="#json-parsing-errors" title="Link to this heading"></a></h3>
+<p><strong>Symptoms</strong>: “Error decoding JSON” message.</p>
+<p><strong>Solutions</strong>:</p>
+<p>Validate JSON syntax:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>json.tool<span class="w"> </span>scripts.json
+</pre></div>
+</div>
+<p>Use online JSON validator:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://jsonlint.com/api/validate<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>-d<span class="w"> </span>@scripts.json
+</pre></div>
+</div>
+<p>Check for common mistakes:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Trailing commas</span>
+grep<span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;,</span>$<span class="s2">&quot;</span><span class="w"> </span>scripts.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-10
+
+<span class="c1"># Mixed quotes</span>
+grep<span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;&#39;&quot;</span><span class="w"> </span>scripts.json
+</pre></div>
+</div>
+</section>
+<section id="missing-required-fields">
+<h3>Missing required fields<a class="headerlink" href="#missing-required-fields" title="Link to this heading"></a></h3>
+<p><strong>Symptoms</strong>: “Missing required fields” error.</p>
+<p><strong>Solutions</strong>:</p>
+<p>Verify all required fields are present:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">from bansuri.base.config_manager import BansuriConfig</span>
+<span class="s2">config = BansuriConfig.load_from_file(&#39;scripts.json&#39;)</span>
+<span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Check schema:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">from bansuri.base.config_manager import ScriptConfig</span>
+<span class="s2">import inspect</span>
+<span class="s2">print(inspect.signature(ScriptConfig))</span>
+<span class="s2">&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="invalid-timeout-format">
+<h3>Invalid timeout format<a class="headerlink" href="#invalid-timeout-format" title="Link to this heading"></a></h3>
+<p><strong>Symptoms</strong>: Timeout is parsed incorrectly.</p>
+<p><strong>Valid formats</strong>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;30&quot;</span>
+<span class="p">},</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;30s&quot;</span>
+<span class="p">},</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5m&quot;</span>
+<span class="p">},</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;timeout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1h&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="performance-issues">
+<h2>Performance Issues<a class="headerlink" href="#performance-issues" title="Link to this heading"></a></h2>
+<section id="high-memory-usage">
+<h3>High memory usage<a class="headerlink" href="#high-memory-usage" title="Link to this heading"></a></h3>
+<p><strong>Symptoms</strong>: Process consumes excessive memory, system OOM killer triggers.</p>
+<p><strong>Possible Causes</strong>:</p>
+<ol class="arabic simple">
+<li><p><strong>Large log files</strong>: Stderr/stdout buffering too much data</p></li>
+<li><p><strong>Memory leak in task</strong>: Task is leaking memory</p></li>
+<li><p><strong>Too many concurrent tasks</strong>: Running too many tasks simultaneously</p></li>
+</ol>
+<p><strong>Solutions</strong>:</p>
+<p>Redirect output to files:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;verbose-task&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;data-process.sh&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;stdout&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/output.log&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;stderr&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;combined&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Limit task concurrency:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Monitor concurrent tasks</span>
+ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>python<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l
+
+<span class="c1"># Increase timer intervals to reduce concurrency</span>
+<span class="s2">&quot;timer&quot;</span>:<span class="w"> </span><span class="s2">&quot;3600&quot;</span><span class="w">  </span><span class="c1"># Run hourly instead of frequently</span>
+</pre></div>
+</div>
+<p>Monitor memory in real-time:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>watch<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s1">&#39;ps aux | grep bansuri | head -1&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="high-cpu-usage">
+<h3>High CPU usage<a class="headerlink" href="#high-cpu-usage" title="Link to this heading"></a></h3>
+<p><strong>Symptoms</strong>: Bansuri or tasks consume excessive CPU.</p>
+<p><strong>Solutions</strong>:</p>
+<p>Identify which task uses CPU:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># In another terminal, monitor processes</span>
+watch<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s1">&#39;ps aux --sort=-%cpu | head -10&#39;</span>
+</pre></div>
+</div>
+<p>Reduce execution frequency:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;timer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;300&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Check for tight loops:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Profile the task</span>
+python<span class="w"> </span>-m<span class="w"> </span>cProfile<span class="w"> </span>-s<span class="w"> </span>cumtime<span class="w"> </span>task.py
+</pre></div>
+</div>
+</section>
+<section id="slow-task-execution">
+<h3>Slow task execution<a class="headerlink" href="#slow-task-execution" title="Link to this heading"></a></h3>
+<p><strong>Symptoms</strong>: Tasks take longer than expected.</p>
+<p><strong>Solutions</strong>:</p>
+<p>Profile task execution:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">time</span><span class="w"> </span>./script.sh
+</pre></div>
+</div>
+<p>Check system resources during execution:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Terminal 1: Run task</span>
+./script.sh
+
+<span class="c1"># Terminal 2: Monitor</span>
+watch<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="s1">&#39;top -p $(pgrep -f script.sh)&#39;</span>
+</pre></div>
+</div>
+<p>Check for I/O bottlenecks:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>iotop<span class="w"> </span>-o<span class="w"> </span>-b<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="logging-and-debugging">
+<h2>Logging and Debugging<a class="headerlink" href="#logging-and-debugging" title="Link to this heading"></a></h2>
+<section id="enable-debug-logging">
+<h3>Enable debug logging<a class="headerlink" href="#enable-debug-logging" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">BANSURI_LOG_LEVEL</span><span class="o">=</span>DEBUG
+python<span class="w"> </span>-m<span class="w"> </span>bansuri
+</pre></div>
+</div>
+</section>
+<section id="view-logs">
+<h3>View logs<a class="headerlink" href="#view-logs" title="Link to this heading"></a></h3>
+<p>For systemd:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Live logs</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>bansuri<span class="w"> </span>-f
+
+<span class="c1"># Last 100 lines</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>bansuri<span class="w"> </span>-n<span class="w"> </span><span class="m">100</span>
+
+<span class="c1"># Since specific time</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>bansuri<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;2024-01-19 10:00:00&quot;</span>
+</pre></div>
+</div>
+<p>For file logging:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/bansuri/bansuri.log
+</pre></div>
+</div>
+</section>
+<section id="debug-specific-task">
+<h3>Debug specific task<a class="headerlink" href="#debug-specific-task" title="Link to this heading"></a></h3>
+<p>Run task manually with debugging:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># With bash debugging</span>
+bash<span class="w"> </span>-x<span class="w"> </span>./script.sh
+
+<span class="c1"># With Python debugging</span>
+python<span class="w"> </span>-u<span class="w"> </span>-m<span class="w"> </span>pdb<span class="w"> </span>task.py
+
+<span class="c1"># With strace (system calls)</span>
+strace<span class="w"> </span>-f<span class="w"> </span>./script.sh
+</pre></div>
+</div>
+</section>
+</section>
+<section id="notification-issues">
+<h2>Notification Issues<a class="headerlink" href="#notification-issues" title="Link to this heading"></a></h2>
+<section id="notifications-not-being-sent">
+<h3>Notifications not being sent<a class="headerlink" href="#notifications-not-being-sent" title="Link to this heading"></a></h3>
+<p><strong>Symptoms</strong>: Task fails but no notification received.</p>
+<p><strong>Possible Causes</strong>:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">notify</span></code> field not set to <code class="docutils literal notranslate"><span class="pre">&quot;mail&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">notify_command</span></code> not configured</p></li>
+<li><p>Notification command fails</p></li>
+<li><p>Network connectivity issues</p></li>
+</ol>
+<p><strong>Solutions</strong>:</p>
+<p>Verify configuration:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">from bansuri.base.config_manager import BansuriConfig</span>
+<span class="s2">config = BansuriConfig.load_from_file(&#39;scripts.json&#39;)</span>
+<span class="s2">print(f&#39;notify_command: {config.notify_command}&#39;)</span>
+<span class="s2">for script in config.scripts:</span>
+<span class="s2">    print(f&#39;{script.name}: notify={script.notify}&#39;)</span>
+<span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Test notification command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Test email</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;Test message&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>mail<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;Test&#39;</span><span class="w"> </span>your-email@example.com
+
+<span class="c1"># Test curl webhook</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://your-webhook-url<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>-d<span class="w"> </span><span class="s1">&#39;Test message&#39;</span>
+</pre></div>
+</div>
+<p>Check notification in logs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>journalctl<span class="w"> </span>-u<span class="w"> </span>bansuri<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>notif
+</pre></div>
+</div>
+</section>
+</section>
+<section id="connection-issues">
+<h2>Connection Issues<a class="headerlink" href="#connection-issues" title="Link to this heading"></a></h2>
+<section id="cannot-connect-to-remote-services">
+<h3>Cannot connect to remote services<a class="headerlink" href="#cannot-connect-to-remote-services" title="Link to this heading"></a></h3>
+<p><strong>Symptoms</strong>: Task fails when connecting to external services.</p>
+<p><strong>Solutions</strong>:</p>
+<p>Test connectivity:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Test DNS</span>
+nslookup<span class="w"> </span>example.com
+
+<span class="c1"># Test port connectivity</span>
+nc<span class="w"> </span>-zv<span class="w"> </span>example.com<span class="w"> </span><span class="m">443</span>
+
+<span class="c1"># Test HTTP request</span>
+curl<span class="w"> </span>-v<span class="w"> </span>https://api.example.com
+</pre></div>
+</div>
+<p>Check firewall rules:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check iptables (if using Linux firewall)</span>
+sudo<span class="w"> </span>iptables<span class="w"> </span>-L<span class="w"> </span>-n
+
+<span class="c1"># Check firewall status</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>firewalld<span class="w">  </span><span class="c1"># Red Hat</span>
+sudo<span class="w"> </span>ufw<span class="w"> </span>status<span class="w">                  </span><span class="c1"># Ubuntu</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="restart-issues">
+<h2>Restart Issues<a class="headerlink" href="#restart-issues" title="Link to this heading"></a></h2>
+<section id="bansuri-won-t-restart">
+<h3>Bansuri won’t restart<a class="headerlink" href="#bansuri-won-t-restart" title="Link to this heading"></a></h3>
+<p><strong>Symptoms</strong>: Service fails to start after configuration change.</p>
+<p><strong>Solutions</strong>:</p>
+<p>Validate configuration before restart:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">from bansuri.base.config_manager import BansuriConfig</span>
+<span class="s2">try:</span>
+<span class="s2">    config = BansuriConfig.load_from_file(&#39;scripts.json&#39;)</span>
+<span class="s2">    print(&#39;Configuration is valid&#39;)</span>
+<span class="s2">except Exception as e:</span>
+<span class="s2">    print(f&#39;Configuration error: {e}&#39;)</span>
+<span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Check logs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>journalctl<span class="w"> </span>-u<span class="w"> </span>bansuri<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span><span class="w"> </span>-p<span class="w"> </span>err
+</pre></div>
+</div>
+<p>Force-stop if stuck:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>bansuri
+pkill<span class="w"> </span>-9<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;python -m bansuri&quot;</span>
+sleep<span class="w"> </span><span class="m">2</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>bansuri
+</pre></div>
+</div>
+</section>
+</section>
+<section id="getting-help">
+<h2>Getting Help<a class="headerlink" href="#getting-help" title="Link to this heading"></a></h2>
+<p>Collecting diagnostic information:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># System information</span>
+uname<span class="w"> </span>-a
+python<span class="w"> </span>--version
+pip<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>bansuri
+
+<span class="c1"># Configuration</span>
+cat<span class="w"> </span>scripts.json
+
+<span class="c1"># Recent logs</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>bansuri<span class="w"> </span>-n<span class="w"> </span><span class="m">100</span>
+
+<span class="c1"># Running processes</span>
+ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>bansuri
+
+<span class="c1"># Resource usage</span>
+ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>bansuri<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-1
+free<span class="w"> </span>-h
+df<span class="w"> </span>-h
+</pre></div>
+</div>
+<p>Report issues with this information to help diagnose problems faster.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deployment.html" class="btn btn-neutral float-left" title="Deployment Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="contributing.html" class="btn btn-neutral float-right" title="Contributing to Bansuri" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Bansuri Contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
