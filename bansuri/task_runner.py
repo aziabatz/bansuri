@@ -85,6 +85,10 @@ class TaskRunner:
 
     def _check_max_attempts(self) -> bool:
         """Check if max attempts reached. Returns True if should stop."""
+
+        if self.config.schedule_cron:
+            return False
+
         try:
             max_times = int(self.config.times)
         except (ValueError, TypeError):
