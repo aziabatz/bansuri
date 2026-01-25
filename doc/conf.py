@@ -34,16 +34,13 @@ html_theme_options = {
     "display_version": True,
     "prev_next_buttons_location": "both",
     "style_external_links": True,
-    
     # Colors and styling
     "color_primary": "#1f77b4",
     "color_secondary": "#ff7f0e",
-    
     # Typography
     "collapse_navigation": False,
     "sticky_navigation": True,
     "navigation_depth": 4,
-    
     # Sidebar
     "includehidden": True,
 }

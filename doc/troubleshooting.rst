@@ -188,7 +188,7 @@ Notification Not Sending
 ---
 
 Invalid Configuration
-~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^
 
 **Symptom**: Tasks ignored, no error messages
 
@@ -220,7 +220,7 @@ Invalid Configuration
 ---
 
 Cron Not Working
-~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^
 
 **Symptom**: ``schedule-cron`` doesn't trigger
 
@@ -268,7 +268,7 @@ Restart Bansuri
 ---
 
 Force Stop Hung Task
-~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: bash
 
@@ -282,7 +282,7 @@ Force Stop Hung Task
 ---
 
 Reset All Tasks
-~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^
 
 Stop Bansuri and remove any state files:
 
@@ -314,7 +314,7 @@ Enable Debug Logging
     grep "task-name" /var/log/bansuri.log
 
 Check Bansuri Status
-~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: bash
 
@@ -328,7 +328,7 @@ Check Bansuri Status
     cat scripts.json | python -m json.tool
 
 Need More Help?
-~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^
 
 1. Check :doc:`../NOT_IMPLEMENTED.md` for known limitations
 2. Review :doc:`configuration` for correct parameter format

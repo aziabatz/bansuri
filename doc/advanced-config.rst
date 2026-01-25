@@ -114,8 +114,8 @@ Control where task output goes with ``stdout`` and ``stderr``:
 - **stderr: "/path/to/file"**: Redirect to a specific file
 - **stdout: "/path/to/file"**: Redirect stdout separately
 
-Examples
-~~~~~~~~
+Output Examples
+~~~~~~~~~~~~~~~
 
 **Combined output to single file:**
 

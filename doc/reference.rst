@@ -150,7 +150,7 @@ Parameter              Default        Description
 =====================  ==========================================
 
 Time Format Reference
---------------------
+~~~~~~~~~~~~~~~~~~~~~
 
 All time-based parameters support flexible formats:
 
@@ -336,8 +336,8 @@ System Management
     # Disable on boot
     systemctl disable bansuri
 
-Validation
-~~~~~~~~~~
+Configuration Validation
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Validate configuration syntax:
 

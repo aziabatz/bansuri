@@ -152,19 +152,6 @@ By default, only exit code 0 is success. Override with:
 
 Exit codes 1 and 2 won't trigger retries or notifications.
 
-Task Lifecycle
---------------
-
-A task goes through these states:
-
-1. **PENDING** → Task queued, waiting to start
-2. **RUNNING** → Process is executing
-3. **TIMEOUT** → Task exceeded timeout limit
-4. **SUCCESS** → Task completed with success code
-5. **FAILED** → Task exited with non-success code
-6. **RESTARTING** → Task failed, retrying (if ``on-fail: restart``)
-7. **STOPPED** → Task stopped by user or reached max attempts
-
 Configuration Synchronization
 ------------------------------
 
@@ -319,7 +306,6 @@ Output goes to console (Bansuri's stdout/stderr):
 .. code-block:: json
 
     {}
-```
 
 **File redirection**
 

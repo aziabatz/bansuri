@@ -137,3 +137,10 @@ dmypy.json
 scripts_config.json
 scripts.json
 scripts.config.template.json
+unify/**
+examples/**
+*.log
+*.out
+*.err
+
+doc/_build/**

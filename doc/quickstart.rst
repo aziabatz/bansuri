@@ -51,7 +51,7 @@ Your First Task
 
 **Expected Output**:
 
-.. code-block:: text
+.. code-block:: log
 
     [2026-01-19 10:00:00] [MASTER] ========================================
     [2026-01-19 10:00:00] [MASTER] BANSURI ORCHESTRATOR STARTED
@@ -166,7 +166,7 @@ Complete Beginner Configuration
     }
 
 Common Tasks
------------
+~~~~~~~~~~~~
 
 **Run once and exit:**
 
@@ -251,7 +251,7 @@ Before running:
     "
 
 Next Steps
----------
+~~~~~~~~~~
 
 - 📖 Read :doc:`configuration` for advanced options
 - 🔔 Set up :doc:`notifications` for alerts
