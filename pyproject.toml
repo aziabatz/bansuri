@@ -39,6 +39,10 @@ dev = [
     "black>=22.0",
     "flake8>=4.0",
     "mypy>=0.950",
+    "Sphinx==9.0.4",
+    "sphinx_design==0.7.0",
+    "sphinx_rtd_theme==3.1.0",
+    "sphinxcontrib-mermaid==2.0.0"
 ]
 
 [project.scripts]

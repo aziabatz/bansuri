@@ -62,12 +62,15 @@ def test_run_command_timeout(mock_popen, simple_config, global_config):
         with patch("time.sleep"):
             with patch.object(runner, "_kill_process") as mock_kill:
                 runner._run_command()
-                mock_kill.assert_called_once()
+                # once within loop
+                # the second time after loop
+                assert mock_kill.call_count == 2
 
 
 @patch("subprocess.Popen")
 def test_max_attempts_logic(mock_popen, simple_config, global_config):
     simple_config.times = 2
+    simple_config.on_fail = "restart"
     runner = TaskRunner(simple_config, global_config)
 
     process = MagicMock()
@@ -180,7 +183,11 @@ def test_timer_execution_loop(simple_config, global_config):
     runner = TaskRunner(simple_config, global_config)
 
     runner.stop_event = MagicMock()
-    runner.stop_event.is_set.side_effect = [False, True]
+    # is_set() is called:
+    #   1 while loop
+    #   2 after _run_process
+    #   3 next while iteration
+    runner.stop_event.is_set.side_effect = [False, False, True]
     runner.stop_event.wait.return_value = True
 
     with patch.object(runner, "_run_process") as mock_run:

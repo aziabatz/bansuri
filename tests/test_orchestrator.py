@@ -9,6 +9,7 @@ from bansuri.base.config_manager import ScriptConfig, BansuriConfig
 @pytest.fixture
 def mock_runner_cls():
     with patch("bansuri.master.TaskRunner") as mock:
+        mock.side_effect = lambda *args, **kwargs: MagicMock()
         yield mock
 
 
