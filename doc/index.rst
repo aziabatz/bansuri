@@ -1,7 +1,4 @@
-.. image:: image.png
-   :width: 200px
-   :alt: Bansuri Logo
-   :align: center
+
 
 Bansuri Documentation
 =====================
