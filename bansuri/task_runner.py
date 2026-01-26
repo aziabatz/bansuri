@@ -3,8 +3,6 @@ import threading
 import time
 import os
 import signal
-import sys
-import importlib.util
 from datetime import datetime
 from typing import Optional, Any
 from bansuri.base.config_manager import BansuriConfig, ScriptConfig
@@ -229,13 +227,8 @@ class TaskRunner:
 
     def _run_process(self):
         """Launches the subprocess or AbstractTask"""
-        if self.config.no_interface:
-            # Plain command execution (shell/bash)
-            self._run_command()
-        else:
-            # Smart script (inherits AbstractTask) later...
-            self._run_command()
-            # self._run_smart_script() IGNORED FOR NOW!
+        self._run_command()
+        # TODO Smart script (inherits AbstractTask) later -> _run_smart_script...
 
     def _run_command(self):
         """Executes command directly as shell process"""
@@ -321,7 +314,7 @@ class TaskRunner:
                 stderr_f.close()
 
     def _run_smart_script(self):
-        pass
+        raise NotImplementedError
 
     def _kill_process(self):
         """Kills the process gracefully (SIGTERM) -> [watchdog timer...] -> forcefully (SIGKILL)."""
