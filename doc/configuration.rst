@@ -77,16 +77,11 @@ Parameter              Example               Description
 ``description``        ``"Daily backup"``    Human-readable description
 =====================  ====================  =====================================================
 
-**Advanced** (not yet implemented):
+.. warning::
 
-=====================  ====================  =====================================================
-Parameter              Example               Description
-=====================  ====================  =====================================================
-``depends-on``         ``["task-1"]``        ❌ Run after other tasks complete
-``user``               ``"postgres"``        ❌ Run as different user
-``priority``           ``10``                ❌ Process priority (nice value)
-``environment-file``   ``"/etc/env.json"``   ❌ Load environment variables from file
-=====================  ====================  =====================================================
+   **Not Yet Implemented**
+
+   The following parameters are not yet supported: ``depends-on`` (run after other tasks complete), ``user`` (run as different user), ``priority`` (process priority), and ``environment-file`` (load environment variables from file).
 
 Time Format Examples
 ~~~~~~~~~~~~~~~~~~~~

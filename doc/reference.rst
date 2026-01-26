@@ -211,11 +211,11 @@ Quick Validation Script:
     from bansuri.base.config_manager import BansuriConfig
     try:
         config = BansuriConfig.load_from_file('scripts.json')
-        print('✅ Configuration is valid')
+        print('Configuration is valid')
         for task in config.scripts:
             print(f'   - {task.name}')
     except Exception as e:
-        print(f'❌ Error: {e}')
+        print(f'Error: {e}')
     "
 
 Testing Commands
@@ -353,9 +353,9 @@ Validate with Bansuri:
     from bansuri.base.config_manager import BansuriConfig
     try:
         config = BansuriConfig.load_from_file('scripts.json')
-        print('✓ Valid')
+        print('Valid')
     except Exception as e:
-        print(f'✗ Error: {e}')
+        print(f'Error: {e}')
     "
 
 Testing
@@ -622,4 +622,4 @@ Add to ``.bashrc``:
     alias bansuri-logs='journalctl -u bansuri -f'
     alias bansuri-restart='systemctl restart bansuri'
     alias bansuri-config='cat ~/bansuri/scripts.json | python -m json.tool'
-    alias bansuri-validate='python -c "from bansuri.base.config_manager import BansuriConfig; BansuriConfig.load_from_file(\"scripts.json\"); print(\"✓ Valid\")"'
+    alias bansuri-validate='python -c "from bansuri.base.config_manager import BansuriConfig; BansuriConfig.load_from_file(\"scripts.json\"); print(\"Valid\")"'

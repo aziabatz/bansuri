@@ -157,31 +157,12 @@ Configuration Synchronization
 
 The Orchestrator monitors ``scripts.json`` for changes:
 
-- **New tasks** → Automatically started
-- **Deleted tasks** → Automatically stopped
-- **Modified tasks** → ❌ NOT YET (requires hot-reload)
+- **New tasks**: Automatically started
+- **Deleted tasks**: Automatically stopped
 
-See :doc:`../NOT_IMPLEMENTED.md` for feature status.
+.. note::
 
-.. code-block:: json
-
-    {
-      "name": "monitor",
-      "command": "check.sh",
-      "timer": "300"
-    }
-
-**Cron-based Execution (NOT IMPLEMENTED)**
-
-Task runs on cron schedule:
-
-.. code-block:: json
-
-    {
-      "name": "nightly-job",
-      "command": "backup.sh",
-      "schedule-cron": "0 2 * * *"
-    }
+   Modified tasks are not yet automatically restarted (requires hot-reload feature).
 
 Configuration Hierarchy
 -----------------------

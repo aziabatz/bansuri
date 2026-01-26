@@ -2,21 +2,17 @@
 
 Quick implementation status for all Bansuri features with examples.
 
----
-
 ## Status Summary
 
 | Status | Count | Features |
 |--------|-------|----------|
-| ✅ Implemented | 9 | schedule-cron, timer, timeout, on-fail, times, success-codes, notify, stdout/stderr, working-directory |
-| ⚠️ Partial | 1 | no-interface (shell works, AbstractTask pending) |
-| ❌ Missing | 5 | depends-on, user, priority, environment-file, hot-reload |
+| Implemented | 9 | schedule-cron, timer, timeout, on-fail, times, success-codes, notify, stdout/stderr, working-directory |
+| Partial | 1 | no-interface (shell works, AbstractTask pending) |
+| Not Implemented | 5 | depends-on, user, priority, environment-file, hot-reload |
 
----
+## Implemented Features (9)
 
-## ✅ Implemented Features (9)
-
-### 1. Timer-Based Scheduling ✅
+### 1. Timer-Based Scheduling
 **Field**: `timer`  
 **Example**: `"30s"`, `"5m"`, `"1h"`
 

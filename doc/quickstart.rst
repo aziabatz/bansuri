@@ -253,11 +253,11 @@ Before running:
 Next Steps
 ~~~~~~~~~~
 
-- 📖 Read :doc:`configuration` for advanced options
-- 🔔 Set up :doc:`notifications` for alerts
-- 🚀 Deploy to production with :doc:`deployment`
-- 🐛 See :doc:`troubleshooting-detailed` if issues arise
-- 🧩 Create custom tasks with :doc:`custom-tasks`
+- Read :doc:`configuration` for advanced options
+- Set up :doc:`notifications` for alerts
+- Deploy to production with :doc:`deployment`
+- See :doc:`troubleshooting-detailed` if issues arise
+- Create custom tasks with :doc:`custom-tasks`
 
 Tips and Tricks
 ---------------
@@ -322,8 +322,6 @@ See :doc:`troubleshooting-detailed` for more help.
 Getting Support
 ---------------
 
-- 📚 Full documentation: See the other RST files
-- 🐛 Report issues: GitHub Issues
-- 💬 Discuss: GitHub Discussions
-
-Happy orchestrating! 🎉
+- Full documentation: See the other sections
+- Report issues: GitHub Issues
+- Discuss: GitHub Discussions

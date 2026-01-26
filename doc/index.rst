@@ -20,59 +20,56 @@ Bansuri Documentation
 .. grid:: 1 2 2 3
     :gutter: 2
 
-    .. grid-item-card:: 🚀 Easy to Use
+    .. grid-item-card:: Easy to Use
         :text-align: center
 
-        Start managing tasks in minutes with simple JSON configuration.
+        Simple JSON configuration to start managing tasks in minutes.
 
-    .. grid-item-card:: ⏱️ Flexible Scheduling
+    .. grid-item-card:: Flexible Scheduling
         :text-align: center
 
-        Timer-based intervals or cron schedules for perfect timing.
+        Timer-based intervals or cron schedules.
 
-    .. grid-item-card:: 🔄 Auto-Retry
+    .. grid-item-card:: Auto-Retry
         :text-align: center
 
         Automatic failure recovery with configurable retry logic.
 
-    .. grid-item-card:: 📧 Smart Alerts
+    .. grid-item-card:: Smart Alerts
         :text-align: center
 
-        Email notifications when tasks fail or need attention.
+        Email notifications on task failure.
 
-    .. grid-item-card:: 📊 Full Monitoring
+    .. grid-item-card:: Monitoring
         :text-align: center
 
-        Real-time logs and execution tracking for all tasks.
+        Real-time logs and execution tracking.
 
-    .. grid-item-card:: 🛠️ Extensible
+    .. grid-item-card:: Extensible
         :text-align: center
 
-        Support for shell scripts, Python, and custom implementations.
+        Support for shell scripts, Python, and custom tasks.
 
----
+Features
+--------
 
-**✅ What You Can Do**:
+- Run shell commands on timers or cron schedules
+- Retry failed tasks automatically with configurable policies
+- Monitor task execution with detailed logs and timestamps
+- Send email alerts when tasks fail
+- Manage multiple tasks from one configuration file
+- Set timeouts, working directories, and output redirection
+- Define custom success codes for flexible exit handling
 
-- ⏰ Run shell commands on timers or cron schedules
-- 🔄 Retry failed tasks automatically with configurable policies
-- 📝 Monitor task execution with detailed logs and timestamps
-- 📧 Send email alerts when tasks fail
-- 🎛️ Manage multiple tasks from one configuration file
-- ⚙️ Set timeouts, working directories, and output redirection
-- ✔️ Define custom success codes for flexible exit handling
+.. note::
 
-**⚠️ Coming Soon**:
+   **Coming Soon**
 
-- Task dependencies and DAG orchestration
-- User switching and process priority control
-- Environment file loading
-- Hot reload on configuration changes
-- AbstractTask Python script support
+   Task dependencies and DAG orchestration, user switching and process priority control, environment file loading, hot reload on configuration changes, and AbstractTask Python script support.
 
-See :doc:`NOT_IMPLEMENTED.md` for detailed feature status and workarounds.
+   See :doc:`NOT_IMPLEMENTED` for detailed feature status and workarounds.
 
----
+
 
 **Getting Started**
 
@@ -145,13 +142,15 @@ Help improve Bansuri:
 
 ---
 
-.. note::
+.. tip::
 
-   📖 **New to documentation?** Check the :doc:`quickstart` for a 5-minute introduction.
-   
-   🐛 **Found an issue?** Visit our `GitHub Issues <https://github.com/aziabatz/bansuri/issues>`_.
-   
-   📝 **Want to contribute?** See :doc:`contributing` for guidelines.
+   New to Bansuri? Check the :doc:`quickstart` for a 5-minute introduction.
+
+.. seealso::
+
+   Found an issue? Visit our `GitHub Issues <https://github.com/aziabatz/bansuri/issues>`_.
+
+   Want to contribute? See :doc:`contributing` for guidelines.
 
 Indices and tables
 ==================

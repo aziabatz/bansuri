@@ -35,13 +35,13 @@ Task Won't Start
 
 4. Are you using an absolute path?
 
-   ✅ Good:
+   Recommended:
 
    .. code-block:: json
 
       "command": "/usr/local/bin/backup.sh"
 
-   ❌ Bad:
+   Not recommended:
 
    .. code-block:: json
 
