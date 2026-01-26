@@ -272,9 +272,10 @@ class TaskRunner:
                 self.log("Redirecting stderr to stdout")
 
             self.log(f"Executing shell command: {cmd}")
+
             self.process = subprocess.Popen(
                 cmd,
-                shell=True,
+                shell=True, # XXX: you better not know what can happen here...
                 cwd=cwd,
                 stdout=stdout_dest,
                 stderr=stderr_dest,
@@ -287,10 +288,7 @@ class TaskRunner:
                 if self.process.poll() is not None:
                     self.log(f"Process finished with code {self.process.returncode}")
 
-                    if (
-                        self.process.returncode != 0
-                        or self.process.returncode not in self.config.success_codes
-                    ):
+                    if self.process.returncode not in self.config.success_codes:
                         outs, errs = "", ""
                         try:
                             outs, errs = self.process.communicate(timeout=1)
