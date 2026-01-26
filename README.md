@@ -13,22 +13,28 @@ Bansuri is a flexible system for running and monitoring multiple scripts with co
 - ✅ Automatic task monitoring and recovery
 - ✅ Flexible timeout management
 - ✅ Comprehensive logging support
-- ✅ Support for Python scripts implementing AbstractTask interface
 - ✅ Graceful shutdown handling (SIGTERM/SIGINT)
 - ✅ Process group management
 - ✅ Stdout/stderr redirection
 - ✅ Timer-based execution (timer) - runs task at fixed intervals
+- ✅ Cron-based scheduling (schedule-cron) - runs task on cron schedule (requires croniter)
+- ✅ Custom success codes (success-codes) - define which exit codes are considered successful
+- ✅ Failure notifications (notify) - send alerts on task failure via mail command
+- ✅ Working directory support (working-directory)
+- ✅ Timeout handling (timeout) - with flexible time units (s/m/h)
+- ✅ Attempt limiting (times) - limit number of execution attempts
+- ✅ Restart on failure (on-fail) - configurable failure recovery
+
+### Partially Implemented
+- ⚠️ Smart script detection (no-interface) - shell commands work, AbstractTask pending
 
 ### NOT Implemented (See [NOT_IMPLEMENTED.md](doc/NOT_IMPLEMENTED.md))
-- ❌ Cron-like scheduling support (schedule-cron)
-- ❌ Task dependencies (depends-on)
-- ❌ User switching (user)
-- ❌ Process priority (priority/nice)
-- ❌ Environment file loading (environment-file)
-- ❌ Custom success codes (success-codes)
-- ❌ Notifications (notify)
-- ❌ Plain shell command support (no-interface)
-- ❌ Hot reload / change detection
+- ❌ Task dependencies (depends-on) - wait for other tasks to complete
+- ❌ User switching (user) - run task as different user
+- ❌ Process priority (priority/nice) - set process priority
+- ❌ Environment file loading (environment-file) - load env vars from file
+- ❌ AbstractTask interface for Python scripts - smart script execution
+- ❌ Hot reload / change detection - restart tasks on config changes
 
 ## Installation
 
