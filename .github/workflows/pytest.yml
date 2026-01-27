@@ -43,5 +43,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pytest-${{ matrix.python-version }}-
 
-      - name: Run pytest
-        run: pytest tests/ -v --cov=bansuri --cov-report=term-missing
+      - name: Run tests with coverage
+        run: |
+          pytest --cov --cov-branch --cov-report=xml
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
