@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import os
 from dataclasses import dataclass, field
@@ -83,10 +84,17 @@ class BansuriConfig:
             # all hyphens to pythonic "-" to "_"
             normalized_item = {k.replace("-", "_"): v for k, v in item.items()}
 
-            # check only keys that match to avoid errors
-            # TODO add warnings on unmatched keys
             valid_keys = ScriptConfig.__annotations__.keys()
             filtered_item = {k: v for k, v in normalized_item.items() if k in valid_keys}
+
+            not_found_keys = normalized_item - valid_keys
+
+            for k in not_found_keys:
+                message = f"Config: Found key {k} but not recognized as a bansuri valid field"
+                print(
+                    f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] [MASTER] {message}",
+                    flush=True,
+                )
 
             try:
                 script = ScriptConfig(**filtered_item)
