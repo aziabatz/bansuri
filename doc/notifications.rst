@@ -30,8 +30,9 @@ Example Configuration
           "command": "/usr/local/bin/backup.sh",
           "timer": "3600",
           "notify": "mail",
+          "notify-after": "300s",
           "on-fail": "restart",
-          "times": 3
+          "max-attempts": 3
         }
       ]
     }
@@ -47,7 +48,9 @@ Configuration Parameters
   - Slack: ``"curl -X POST -d @- https://hooks.slack.com/services/YOUR/WEBHOOK/URL"``
   - Webhook: ``"curl -X POST -H 'Content-Type: application/json' -d @- https://your-api.example.com/notify"``
 
-- **notify** (per-task): Set to ``"mail"`` to enable notifications for this task, or ``"none"`` to disable.
+- **notify** (per-task): Set to ``"mail"`` to enable notifications for this task, or ``"none"`` (default) to disable.
+
+- **notify-after** (per-task): Wait this amount of time before sending the first notification. Useful to avoid alerting on transient failures. Format: ``"300s"``, ``"5m"``, etc. (default: send immediately).
 
 Failure Information
 -------------------
@@ -58,7 +61,7 @@ When a task fails, Bansuri sends the following information in the notification:
 - **Command**: The command that was executed
 - **Working Directory**: The directory where the command ran
 - **Return Code**: Exit code of the failed process
-- **Attempt**: Which attempt this was (e.g., "2/3")
+- **Attempt**: Which retry attempt this was (e.g., "2/3")
 - **Timestamp**: When the failure occurred
 - **Description**: Task description (if provided)
 - **Stdout**: Standard output captured from the failed task
