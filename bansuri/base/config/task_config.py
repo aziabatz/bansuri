@@ -32,9 +32,10 @@ class TaskConfig:
                 schedule_cron=data.get("schedule-cron"),
                 timer=data.get("timer"),
                 timeout=data.get("timeout"),
+                times=int(data.get("times", 0)) if data.get("times") else 0,
             ),
             failure_control=FailureControlConfig(
-                max_attempts=data.get("times", 1),
+                max_attempts=int(data.get("max-attempts", 1)) if data.get("max-attempts") else 1,
                 on_fail=data.get("on-fail", "stop"),
                 depends_on=data.get("depends-on", []),
                 success_codes=data.get("success-codes", [0]),
@@ -47,5 +48,6 @@ class TaskConfig:
                 stdout_path=data.get("stdout"),
                 stderr_path=data.get("stderr"),
                 notify_condition=data.get("notify", "none"),
+                notify_after=data.get("notify-after"),
             ),
         )
