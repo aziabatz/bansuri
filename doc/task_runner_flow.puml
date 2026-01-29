@@ -1,0 +1,134 @@
+@startuml TaskRunner Flow Diagram
+!theme plain
+skinparam backgroundColor #fefefe
+skinparam classBackgroundColor #f0f0f0
+skinparam classBorderColor #333
+
+' ScriptConfig class
+class ScriptConfig {
+    -- Scheduling --
+    schedule_cron: Optional[str]
+    timer: Optional[str]
+    -- Execution Control --
+    times: int (0=unlimited)
+    max_attempts: int
+    on_fail: str ("stop"/"restart")
+    -- Task Definition --
+    name: str
+    command: str
+    timeout: Optional[str]
+    -- Output/Notifications --
+    stdout: Optional[str]
+    stderr: str ("combined")
+    notify: str ("none"/"mail")
+    -- Other --
+    user: Optional[str]
+    working_directory: Optional[str]
+    depends_on: List[str]
+    success_codes: List[int]
+    priority: int
+}
+
+' TaskRunner class
+class TaskRunner {
+    -- State --
+    config: ScriptConfig
+    process: Optional[Popen]
+    thread: Optional[Thread]
+    stop_event: Event
+    attempts: int
+    failed_attempts: int
+    -- Public Methods --
+    + start()
+    + stop()
+    -- Execution Modes --
+    - _execution_loop()
+    - _simple_execution_loop()
+    - _timer_execution_loop()
+    - _cron_execution_loop()
+    -- Checks --
+    - _check_max_executions(): bool
+    - _check_max_failed_attempts(): bool
+    - _handle_on_fail(): bool
+    -- Process --
+    - _run_process()
+    - _run_command()
+    - _kill_process()
+}
+
+' Flow diagram
+start
+:Initialize TaskRunner;
+:start() → creates thread;
+:_execution_loop() decides mode;
+
+if (schedule_cron configured?) then (yes)
+    :_cron_execution_loop();
+    while (not stop_event)
+        if (_check_max_executions()?) then (yes)
+            break
+        endif
+        :wait for next scheduled time;
+        :attempts++;
+        :_run_process();
+    endwhile
+else (no)
+    if (timer configured & not "none"?) then (yes)
+        :_timer_execution_loop();
+        while (not stop_event)
+            if (_check_max_executions()?) then (yes)
+                break
+            endif
+            :attempts++;
+            :_run_process();
+            :wait for interval;
+        endwhile
+    else (no - simple mode)
+        :_simple_execution_loop();
+        while (not stop_event)
+            if (_check_max_executions()?) then (yes)
+                break
+            endif
+            :attempts++;
+            :failed_attempts = 0;
+            :_run_process();
+            if (returncode in success_codes?) then (yes)
+                :log "success";
+            else (no)
+                :failed_attempts++;
+                if (_handle_on_fail()?) then (yes - stop)
+                    break
+                else (no - retry)
+                    :wait 5s;
+                endif
+            endif
+        endwhile
+    endif
+endif
+
+:stop() → signal stop;
+:_kill_process();
+end
+
+' Relationships
+ScriptConfig "1" <-- "1" TaskRunner : configures
+TaskRunner "1" --> "many" ScriptConfig : validates
+
+' Notes
+note right of ScriptConfig::times
+  Ignored for CRON tasks
+  (cron runs indefinitely)
+end note
+
+note right of TaskRunner::_check_max_executions
+  Returns True if should stop:
+  - Cron: always False
+  - Simple/Timer: check times
+end note
+
+note right of TaskRunner::_check_max_failed_attempts
+  Only applies in simple mode
+  with on_fail="restart"
+end note
+
+@enduml
