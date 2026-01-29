@@ -234,4 +234,4 @@ def test_check_max_attempts_cron(simple_config, global_config):
     simple_config.times = 1
     runner = TaskRunner(simple_config, global_config)
     runner.attempts = 100
-    assert runner._check_max_attempts() is False
+    assert runner._check_max_executions() is False

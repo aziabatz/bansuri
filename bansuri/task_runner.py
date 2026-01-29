@@ -31,7 +31,7 @@ class TaskRunner:
         )
         self.stop_event = threading.Event()  # The event signal for START/STOP the child process
         self.attempts = 0  # Total successful executions
-        self.failed_attempts = 0 
+        self.failed_attempts = 0
         self.watchdog_timeout = 120  # seconds to wait before force killing
         self.notifier: Optional[Notifier] = self._create_notifier()
 
@@ -88,7 +88,11 @@ class TaskRunner:
 
         Applies to all execution modes (simple, timer, cron).
         times=0 means unlimited executions.
+        For cron, runs counts are ignored
         """
+        if self.config.schedule_cron:
+            return False
+
         if self.config.times > 0 and self.attempts >= self.config.times:
             self.log(f"Reached max executions ({self.config.times}). Stopping...")
             return True
@@ -96,7 +100,7 @@ class TaskRunner:
 
     def _check_max_failed_attempts(self) -> bool:
         """Checks if max failed retry attempts reached. Returns True if should stop.
-        
+
         Only for simple mode when on_fail is 'restart'.
         max_attempts=1 means no retries (stop after first failure).
         """
@@ -148,17 +152,17 @@ class TaskRunner:
 
     def _handle_on_fail(self) -> bool:
         """Handle on_fail policy after task completion. Returns True if should stop.
-        
+
         Returns True if we should stop (either on_fail != 'restart' or max retries reached).
         """
         if self.config.on_fail.lower() != "restart":
             self.log(f"Task stopped. No automatic restart set (on_fail='{self.config.on_fail}')")
             return True
-        
+
         # Check if we've exceeded max failed attempts
         if self._check_max_failed_attempts():
             return True
-        
+
         return False
 
     def _simple_execution_loop(self):
@@ -169,7 +173,7 @@ class TaskRunner:
 
             self.attempts += 1
             self.failed_attempts = 0
-            
+
             self._run_process()
 
             if self.stop_event.is_set():
