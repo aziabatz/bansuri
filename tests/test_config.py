@@ -6,7 +6,7 @@ from bansuri.base.config_manager import ScriptConfig, BansuriConfig
 
 def test_script_config_defaults():
     config = ScriptConfig(name="test", command="echo 1")
-    assert config.times == 1
+    assert config.times == 0
     assert config.on_fail == "stop"
     assert config.notify == "none"
     assert config.working_directory is None

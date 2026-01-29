@@ -30,7 +30,8 @@ class TaskRunner:
             None  # The thread responsible for spawning the child process
         )
         self.stop_event = threading.Event()  # The event signal for START/STOP the child process
-        self.attempts = 0  # Total attemps done
+        self.attempts = 0  # Total successful executions
+        self.failed_attempts = 0
         self.watchdog_timeout = 120  # seconds to wait before force killing
         self.notifier: Optional[Notifier] = self._create_notifier()
 
@@ -49,6 +50,7 @@ class TaskRunner:
 
         self.stop_event.clear()
         self.attempts = 0
+        self.failed_attempts = 0
         self.thread = threading.Thread(
             target=self._execution_loop, name=f"Runner-{self.config.name}", daemon=False
         )
@@ -81,19 +83,29 @@ class TaskRunner:
         else:
             self._simple_execution_loop()
 
-    def _check_max_attempts(self) -> bool:
-        """Check if max attempts reached. Returns True if should stop."""
+    def _check_max_executions(self) -> bool:
+        """Checks if max successful executions reached. Returns True if should stop.
 
+        Applies to all execution modes (simple, timer, cron).
+        times=0 means unlimited executions.
+        For cron, runs counts are ignored
+        """
         if self.config.schedule_cron:
             return False
 
-        try:
-            max_times = int(self.config.times)
-        except (ValueError, TypeError):
-            max_times = 1
+        if self.config.times > 0 and self.attempts >= self.config.times:
+            self.log(f"Reached max executions ({self.config.times}). Stopping...")
+            return True
+        return False
 
-        if max_times > 0 and self.attempts >= max_times:
-            self.log("Reached max attempts. Giving up...")
+    def _check_max_failed_attempts(self) -> bool:
+        """Checks if max failed retry attempts reached. Returns True if should stop.
+
+        Only for simple mode when on_fail is 'restart'.
+        max_attempts=1 means no retries (stop after first failure).
+        """
+        if self.failed_attempts >= self.config.max_attempts:
+            self.log(f"Reached max attempts ({self.config.max_attempts}). Giving up...")
             return True
         return False
 
@@ -124,8 +136,8 @@ class TaskRunner:
             command=self.config.command,
             working_directory=self.config.working_directory,
             return_code=return_code,
-            attempt=self.attempts,
-            max_attempts=self.config.times,
+            attempt=self.failed_attempts,
+            max_attempts=self.config.max_attempts,
             timestamp=datetime.now(),
             description=self.config.description,
             stdout=output,
@@ -139,31 +151,44 @@ class TaskRunner:
             self.log("Failed to send notification")
 
     def _handle_on_fail(self) -> bool:
-        """Handle on_fail policy after task completion. Returns True if should stop."""
+        """Handle on_fail policy after task completion. Returns True if should stop.
+
+        Returns True if we should stop (either on_fail != 'restart' or max retries reached).
+        """
         if self.config.on_fail.lower() != "restart":
             self.log(f"Task stopped. No automatic restart set (on_fail='{self.config.on_fail}')")
-
             return True
+
+        # Check if we've exceeded max failed attempts
+        if self._check_max_failed_attempts():
+            return True
+
         return False
 
     def _simple_execution_loop(self):
         """Simple execution loop without timer"""
         while not self.stop_event.is_set():
-            if self._check_max_attempts():
+            if self._check_max_executions():
                 break
 
             self.attempts += 1
+            self.failed_attempts = 0
+
             self._run_process()
 
             if self.stop_event.is_set():
                 break
 
-            if self._handle_on_fail():
-                break
-
-            self.log("Restarting in 5 secs...")
-            if self.stop_event.wait(timeout=5):
-                break
+            if self.process and self.process.returncode not in self.config.success_codes:
+                self.failed_attempts += 1
+                if self._handle_on_fail():
+                    break
+                self.log("Restarting in 5 secs...")
+                if self.stop_event.wait(timeout=5):
+                    break
+            else:
+                self.failed_attempts = 0
+                self.log("Task completed successfully.")
 
     def _timer_execution_loop(self):
         """Timer-based execution loop - runs task at fixed intervals"""
@@ -177,7 +202,7 @@ class TaskRunner:
         self.log(f"Timer configured: running every {self.config.timer} ({timer_seconds}s)")
 
         while not self.stop_event.is_set():
-            if self._check_max_attempts():
+            if self._check_max_executions():
                 break
 
             self.attempts += 1
@@ -195,9 +220,7 @@ class TaskRunner:
         try:
             from croniter import croniter
         except ImportError:
-            self.log(
-                "ERROR: 'croniter' library is missing"
-            )
+            self.log("ERROR: 'croniter' library is missing")
             return
 
         if not self.config.schedule_cron or not croniter.is_valid(self.config.schedule_cron):
@@ -207,7 +230,7 @@ class TaskRunner:
         self.log(f"Cron configured: '{self.config.schedule_cron}'")
 
         while not self.stop_event.is_set():
-            if self._check_max_attempts():
+            if self._check_max_executions():
                 break
 
             now = datetime.now()
@@ -268,7 +291,7 @@ class TaskRunner:
 
             self.process = subprocess.Popen(
                 cmd,
-                shell=True, # XXX: you better not know what can happen here...
+                shell=True,  # XXX: you better not know what can happen here...
                 cwd=cwd,
                 stdout=stdout_dest,
                 stderr=stderr_dest,

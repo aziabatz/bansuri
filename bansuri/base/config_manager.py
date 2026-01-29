@@ -19,7 +19,8 @@ class ScriptConfig:
     schedule_cron: Optional[str] = None
     timer: Optional[str] = None
     timeout: Optional[str] = None
-    times: int = 1
+    times: int = 0 # for successful runs
+    max_attempts: int = 1 # for failed executons
     on_fail: str = "stop"
     depends_on: List[str] = field(default_factory=list)
     success_codes: List[int] = field(default_factory=lambda: [0])
@@ -28,6 +29,7 @@ class ScriptConfig:
     stdout: Optional[str] = None
     stderr: Union[str, None] = "combined"
     notify: str = "none"
+    notify_after: Optional[str] = "300s"
     description: str = ""
 
     @property
