@@ -55,13 +55,16 @@ Examples
 Failure Control
 ---------------
 
-Restart Policies
-~~~~~~~~~~~~~~~~
+Restart Policies & Retry Logic
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``on-fail`` and ``times`` parameters control task retry behavior:
+Bansuri separates two independent counters:
 
-- **on-fail: "stop"** (default): Stop the task immediately on failure
-- **on-fail: "restart"**: Restart the task up to ``times`` attempts
+- **``times``**: Max successful executions (0 = unlimited). Applies to ALL execution modes.
+- **``max-attempts``**: Max retry attempts when task fails. Only used with ``on-fail: "restart"``.
+- **``on-fail``**: What to do on failure:
+  - ``"stop"`` (default): Stop immediately on failure
+  - ``"restart"``: Retry up to ``max-attempts`` times before giving up
 
 The ``success-codes`` parameter specifies which exit codes are considered success (default: ``[0]``).
 
@@ -76,10 +79,11 @@ Example Configurations
       "name": "critical-task",
       "command": "deploy.sh",
       "on-fail": "stop",
-      "times": 1
+      "max-attempts": 1,
+      "success-codes": [0]
     }
 
-**Three retry attempts:**
+**Three retry attempts on failure:**
 
 .. code-block:: json
 
@@ -87,10 +91,23 @@ Example Configurations
       "name": "resilient-task",
       "command": "api-call.sh",
       "on-fail": "restart",
-      "times": 3
+      "max-attempts": 3,
+      "success-codes": [0]
     }
 
-**Custom success codes:**
+**Limit total executions to 5 successful runs:**
+
+.. code-block:: json
+
+    {
+      "name": "limited-runs",
+      "command": "background-job.sh",
+      "timer": "3600",
+      "times": 5,
+      "max-attempts": 2
+    }
+
+**Custom success codes with retries:**
 
 .. code-block:: json
 
@@ -99,7 +116,7 @@ Example Configurations
       "command": "./checker.sh",
       "success-codes": [0, 2],
       "on-fail": "restart",
-      "times": 2
+      "max-attempts": 2
     }
 
 Output Redirection
