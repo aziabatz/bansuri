@@ -39,10 +39,9 @@ class TaskRunner:
         self.failed_attempts = 0
         self.watchdog_timeout = 120  # seconds to wait before force killing
         self.notifier: Optional[Notifier] = self._create_notifier()
-        self._psutil_proc = None  # Cache for psutil process object
-        self._children_cache = {}  # Cache for children processes to track CPU correctly
+        self._psutil_proc = None
+        self._children_cache = {}  # cache for children procs
 
-        # Dashboard properties
         self._status = "STOPPED"
         self._last_run = None
         self._next_run = None
@@ -60,7 +59,7 @@ class TaskRunner:
         return self._next_run
 
     def get_resource_usage(self):
-        """Returns CPU percent and Memory usage (bytes) safely."""
+        """Returns resource stats from psutil cache"""
         if not self.process or self.process.poll() is not None:
             self._psutil_proc = None
             self._children_cache = {}
@@ -70,17 +69,16 @@ class TaskRunner:
             return {"cpu": 0.0, "memory": 0}
 
         try:
-            # Re-create psutil object only if PID changed (optimization)
+            # we recreate the psutil object if the pid changed
             if not self._psutil_proc or self._psutil_proc.pid != self.process.pid:
                 self._psutil_proc = psutil.Process(self.process.pid)
                 self._children_cache = {}
 
-            # Main process stats (The Shell)
+            # shell stats (ignored most of the time)
             total_cpu = self._psutil_proc.cpu_percent(interval=None)
             total_mem = self._psutil_proc.memory_info().rss
 
-            # Children stats (The actual command)
-            # We must cache children objects because cpu_percent needs state (interval=None)
+            # Here is the worthy of tracking!
             try:
                 current_children = self._psutil_proc.children(recursive=True)
             except psutil.NoSuchProcess:
@@ -93,12 +91,11 @@ class TaskRunner:
                     self._children_cache[child.pid] = child
                     child.cpu_percent(interval=None)  # Prime the CPU counter
 
-            # Remove dead children from cache
+            # if the pid changes, then the children cache must change too
             self._children_cache = {
                 pid: proc for pid, proc in self._children_cache.items() if pid in current_pids
             }
 
-            # Sum up children resources
             for child in self._children_cache.values():
                 try:
                     total_cpu += child.cpu_percent(interval=None)
@@ -111,7 +108,6 @@ class TaskRunner:
                 "memory": total_mem,
             }
         except Exception as e:
-            # Fallback if psutil missing or process died during call
             if not isinstance(e, psutil.NoSuchProcess):
                 self.log(f"Resource stats error: {e}")
             return {"cpu": 0.0, "memory": 0}
