@@ -164,7 +164,8 @@ class TaskRunner:
             else:
                 self._simple_execution_loop()
         finally:
-            self._status = "STOPPED"
+            if self._status not in ["FAILED", "COMPLETED"]:
+                self._status = "STOPPED"
 
     def _check_max_executions(self) -> bool:
         """Checks if max successful executions reached. Returns True if should stop.
@@ -188,6 +189,7 @@ class TaskRunner:
         max_attempts=1 means no retries (stop after first failure).
         """
         if self.failed_attempts >= self.config.max_attempts:
+            self._status = "FAILED"
             self.log(f"Reached max attempts ({self.config.max_attempts}). Giving up...")
             return True
         return False
@@ -256,7 +258,6 @@ class TaskRunner:
                 break
 
             self.attempts += 1
-            self.failed_attempts = 0
 
             self._status = "EXECUTING"
             self._last_run = datetime.now()
@@ -302,6 +303,14 @@ class TaskRunner:
             self._status = "EXECUTING"
             self._last_run = datetime.now()
             self._run_process()
+
+            if self.process and self.process.returncode not in self.config.success_codes:
+                self.failed_attempts += 1
+                if self._handle_on_fail():
+                    self._status = "FAILED"
+                    break
+            else:
+                self.failed_attempts = 0
 
             if self.stop_event.is_set():
                 break
@@ -349,6 +358,14 @@ class TaskRunner:
             self._status = "EXECUTING"
             self._last_run = datetime.now()
             self._run_process()
+
+            if self.process and self.process.returncode not in self.config.success_codes:
+                self.failed_attempts += 1
+                if self._handle_on_fail():
+                    self._status = "FAILED"
+                    break
+            else:
+                self.failed_attempts = 0
 
     def _run_process(self):
         """Launches the subprocess or AbstractTask"""
