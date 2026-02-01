@@ -11,7 +11,7 @@ from bansuri.base.misc.header import HEADER
 from bansuri.base.misc.help import print_help
 from bansuri.base.config_manager import BansuriConfig
 from bansuri.task_runner import TaskRunner
-
+from bansuri.server.dashboard import Dashboard
 
 
 class Orchestrator:
@@ -31,7 +31,24 @@ class Orchestrator:
         signal.signal(signal.SIGTERM, self.signal_handler)
         signal.signal(signal.SIGINT, self.signal_handler)
 
+        try:
+            self.dashboard = Dashboard(
+                self,
+                username=os.getenv("BANSURI_USER", "admin"),
+                password=os.getenv("BANSURI_PASS", "admin"),
+                port=int(os.getenv("BANSURI_PORT", "8080")),
+            )
+        except Exception as e:
+            self._log(f"WARNING: Failed to initialize Dashboard: {e}")
+            self.dashboard = None
+
         self._log("Orchestrator initialized")
+
+        try:
+            import psutil
+        except ImportError:
+            self._log("WARNING: 'psutil' not found. CPU/RAM stats will be 0.")
+            self._log("         Install it with: pip install psutil")
 
     def _log(self, message):
         # TODO add pluggable logger
@@ -114,6 +131,11 @@ class Orchestrator:
 
     def stop_all(self):
         self._log("Stopping all tasks...")
+        if self.dashboard:
+            try:
+                self.dashboard.stop()
+            except Exception as e:
+                self._log(f"WARNING: Failed to stop Dashboard: {e}")
         for runner in self.runners.values():
             runner.stop()
 
@@ -123,6 +145,12 @@ class Orchestrator:
         self._log("BANSURI ORCHESTRATOR STARTED")
         self._log("=" * 40)
         self._log(f"Monitoring config file: {self.config_file}")
+
+        if self.dashboard:
+            try:
+                self.dashboard.start()
+            except Exception as e:
+                self._log(f"WARNING: Failed to start Dashboard: {e}")
 
         while not self.should_stop:
             try:
