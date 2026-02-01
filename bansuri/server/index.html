@@ -217,7 +217,7 @@
                     container.innerHTML = '';
                     document.getElementById('stat-total').innerText = data.tasks.length;
                     document.getElementById('stat-running').innerText = data.tasks.filter(t => ['RUNNING', 'EXECUTING', 'STARTING'].includes(t.status)).length;
-                    document.getElementById('stat-failed').innerText = data.tasks.filter(t => t.status === 'FAILED').length;
+                    document.getElementById('stat-failed').innerText = data.tasks.filter(t => t.status == 'FAILED').length;
                     updateCharts(data);
                     data.tasks.forEach(task => {
                         container.innerHTML += `
@@ -272,7 +272,7 @@
                 <div id="stat-running" class="text-2xl font-bold">0</div>
             </div>
             <div class="card p-5 border-l-2 border-l-rose-500">
-                <div class="text-[10px] font-bold text-rose-600 uppercase tracking-wider mb-1">Failures</div>
+                <div class="text-[10px] font-bold text-rose-600 uppercase tracking-wider mb-1">Failed</div>
                 <div id="stat-failed" class="text-2xl font-bold text-gray-800">0</div>
             </div>
             <div class="card p-0 overflow-hidden relative group">
