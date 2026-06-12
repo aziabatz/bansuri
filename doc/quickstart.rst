@@ -89,8 +89,9 @@ Add this to your ``scripts.json``:
       "timer": "3600",
       "timeout": "15m",
       "on-fail": "restart",
-      "times": 2,
+      "max-attempts": 2,
       "working-directory": "/backups",
+      "notify": "mail",
       "description": "Backs up PostgreSQL database hourly"
     }
 
@@ -120,7 +121,7 @@ Data Sync with Retries
       "command": "rsync -av /data/source /data/backup",
       "timer": "300",
       "on-fail": "restart",
-      "times": 3,
+      "max-attempts": 3,
       "timeout": "5m",
       "notify": "mail",
       "description": "Sync data every 5 minutes with retry"
@@ -147,7 +148,7 @@ Complete Beginner Configuration
           "timer": "300",
           "timeout": "2m",
           "on-fail": "restart",
-          "times": 2,
+          "max-attempts": 2,
           "description": "Runs every 5 minutes with retry"
         },
         {
@@ -156,7 +157,7 @@ Complete Beginner Configuration
           "timer": "3600",
           "timeout": "30m",
           "on-fail": "restart",
-          "times": 3,
+          "max-attempts": 3,
           "notify": "mail",
           "stdout": "/var/log/critical.log",
           "stderr": "combined",

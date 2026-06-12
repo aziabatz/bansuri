@@ -3,11 +3,16 @@ import threading
 import time
 import os
 import signal
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional, Any
 from bansuri.base.config_manager import BansuriConfig, ScriptConfig
 from bansuri.alerts.notifier import FailureInfo, Notifier
 from bansuri.alerts.cmd_notifier import CommandNotifier
+
+try:
+    import psutil
+except ImportError:
+    psutil = None
 
 
 class TaskRunner:
@@ -34,6 +39,78 @@ class TaskRunner:
         self.failed_attempts = 0
         self.watchdog_timeout = 120  # seconds to wait before force killing
         self.notifier: Optional[Notifier] = self._create_notifier()
+        self._psutil_proc = None
+        self._children_cache = {}  # cache for children procs
+
+        self._status = "STOPPED"
+        self._last_run = None
+        self._next_run = None
+
+    @property
+    def status(self):
+        return self._status
+
+    @property
+    def last_run(self):
+        return self._last_run
+
+    @property
+    def next_run(self):
+        return self._next_run
+
+    def get_resource_usage(self):
+        """Returns resource stats from psutil cache"""
+        if not self.process or self.process.poll() is not None:
+            self._psutil_proc = None
+            self._children_cache = {}
+            return {"cpu": 0.0, "memory": 0}
+
+        if psutil is None:
+            return {"cpu": 0.0, "memory": 0}
+
+        try:
+            # we recreate the psutil object if the pid changed
+            if not self._psutil_proc or self._psutil_proc.pid != self.process.pid:
+                self._psutil_proc = psutil.Process(self.process.pid)
+                self._children_cache = {}
+
+            # shell stats (ignored most of the time)
+            total_cpu = self._psutil_proc.cpu_percent(interval=None)
+            total_mem = self._psutil_proc.memory_info().rss
+
+            # Here is the worthy of tracking!
+            try:
+                current_children = self._psutil_proc.children(recursive=True)
+            except psutil.NoSuchProcess:
+                return {"cpu": total_cpu, "memory": total_mem}
+
+            current_pids = set()
+            for child in current_children:
+                current_pids.add(child.pid)
+                if child.pid not in self._children_cache:
+                    self._children_cache[child.pid] = child
+                    child.cpu_percent(interval=None)  # Prime the CPU counter
+
+            # if the pid changes, then the children cache must change too
+            self._children_cache = {
+                pid: proc for pid, proc in self._children_cache.items() if pid in current_pids
+            }
+
+            for child in self._children_cache.values():
+                try:
+                    total_cpu += child.cpu_percent(interval=None)
+                    total_mem += child.memory_info().rss
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    pass
+
+            return {
+                "cpu": total_cpu,
+                "memory": total_mem,
+            }
+        except Exception as e:
+            if not isinstance(e, psutil.NoSuchProcess):
+                self.log(f"Resource stats error: {e}")
+            return {"cpu": 0.0, "memory": 0}
 
     def log(self, message: str):
         """Fallback formatted log output"""
@@ -54,17 +131,20 @@ class TaskRunner:
         self.thread = threading.Thread(
             target=self._execution_loop, name=f"Runner-{self.config.name}", daemon=False
         )
+        self._status = "STARTING"
         self.thread.start()
         self.log("Runner started.")
 
     def stop(self):
         """Sends the termination signal"""
         self.log("Stopping task...")
+        self._status = "STOPPING"
         self.stop_event.set()
         self._kill_process()
         if self.thread and self.thread.is_alive():
             self.thread.join(timeout=5)
         self.log("Task stopped!")
+        self._status = "STOPPED"
 
     def _execution_loop(self):
         """Main loop: executes the task and handles job stop-start events
@@ -72,16 +152,20 @@ class TaskRunner:
         Supports:
         - timer: Fixed interval execution
         """
-        if self.config.schedule_cron:
-            self._cron_execution_loop()
-            return
+        try:
+            if self.config.schedule_cron:
+                self._cron_execution_loop()
+                return
 
-        # Check if timer is configured
-        # Treat "0", 0, "none" as service/dameon
-        if self.config.timer and str(self.config.timer).lower() not in ["none", "0"]:
-            self._timer_execution_loop()
-        else:
-            self._simple_execution_loop()
+            # Check if timer is configured
+            # Treat "0", 0, "none" as service/dameon
+            if self.config.timer and str(self.config.timer).lower() not in ["none", "0"]:
+                self._timer_execution_loop()
+            else:
+                self._simple_execution_loop()
+        finally:
+            if self._status not in ["FAILED", "COMPLETED"]:
+                self._status = "STOPPED"
 
     def _check_max_executions(self) -> bool:
         """Checks if max successful executions reached. Returns True if should stop.
@@ -105,6 +189,7 @@ class TaskRunner:
         max_attempts=1 means no retries (stop after first failure).
         """
         if self.failed_attempts >= self.config.max_attempts:
+            self._status = "FAILED"
             self.log(f"Reached max attempts ({self.config.max_attempts}). Giving up...")
             return True
         return False
@@ -167,13 +252,15 @@ class TaskRunner:
 
     def _simple_execution_loop(self):
         """Simple execution loop without timer"""
+        self._status = "RUNNING"
         while not self.stop_event.is_set():
             if self._check_max_executions():
                 break
 
             self.attempts += 1
-            self.failed_attempts = 0
 
+            self._status = "EXECUTING"
+            self._last_run = datetime.now()
             self._run_process()
 
             if self.stop_event.is_set():
@@ -182,13 +269,16 @@ class TaskRunner:
             if self.process and self.process.returncode not in self.config.success_codes:
                 self.failed_attempts += 1
                 if self._handle_on_fail():
+                    self._status = "FAILED"
                     break
                 self.log("Restarting in 5 secs...")
+                self._status = "WAITING_RETRY"
                 if self.stop_event.wait(timeout=5):
                     break
             else:
                 self.failed_attempts = 0
                 self.log("Task completed successfully.")
+                self._status = "COMPLETED"
 
     def _timer_execution_loop(self):
         """Timer-based execution loop - runs task at fixed intervals"""
@@ -196,22 +286,38 @@ class TaskRunner:
 
         if not timer_seconds:
             self.log(f"ERROR: Invalid timer format '{self.config.timer}'. Running once.")
+            self._status = "EXECUTING"
+            self._last_run = datetime.now()
             self._run_process()
+            self._status = "COMPLETED"
             return
 
         self.log(f"Timer configured: running every {self.config.timer} ({timer_seconds}s)")
 
+        self._status = "RUNNING"
         while not self.stop_event.is_set():
             if self._check_max_executions():
                 break
 
             self.attempts += 1
+            self._status = "EXECUTING"
+            self._last_run = datetime.now()
             self._run_process()
+
+            if self.process and self.process.returncode not in self.config.success_codes:
+                self.failed_attempts += 1
+                if self._handle_on_fail():
+                    self._status = "FAILED"
+                    break
+            else:
+                self.failed_attempts = 0
 
             if self.stop_event.is_set():
                 break
 
             self.log(f"Waiting {self.config.timer} until next execution...")
+            self._status = "WAITING"
+            self._next_run = datetime.now() + timedelta(seconds=timer_seconds)
             if self.stop_event.wait(timeout=timer_seconds):
                 break
 
@@ -229,6 +335,7 @@ class TaskRunner:
 
         self.log(f"Cron configured: '{self.config.schedule_cron}'")
 
+        self._status = "RUNNING"
         while not self.stop_event.is_set():
             if self._check_max_executions():
                 break
@@ -236,17 +343,29 @@ class TaskRunner:
             now = datetime.now()
             iter_cron = croniter(self.config.schedule_cron, now)
             next_run = iter_cron.get_next(datetime)
+            self._next_run = next_run
             delay = (next_run - now).total_seconds()
 
             if delay > 0:
                 self.log(
                     f"Next execution at {next_run.strftime('%Y-%m-%d %H:%M:%S')} (in {int(delay)}s)"
                 )
+                self._status = "WAITING"
                 if self.stop_event.wait(timeout=delay):
                     break
 
             self.attempts += 1
+            self._status = "EXECUTING"
+            self._last_run = datetime.now()
             self._run_process()
+
+            if self.process and self.process.returncode not in self.config.success_codes:
+                self.failed_attempts += 1
+                if self._handle_on_fail():
+                    self._status = "FAILED"
+                    break
+            else:
+                self.failed_attempts = 0
 
     def _run_process(self):
         """Launches the subprocess or AbstractTask"""

@@ -62,8 +62,11 @@ Parameter              Example               Description
 =====================  ====================  ==================================================================
 ``timeout``            ``"30s"`` or ``"5m"`` Kill task if it runs longer than this
 ``on-fail``            ``"restart"``         What to do on failure: ``"stop"`` or ``"restart"``
-``times``              ``3``                 Max attempts (default: 1)
+``max-attempts``       ``3``                 Max retry attempts when task fails (default: 1)
+``times``              ``0``                 Max successful executions (0 = unlimited, default: 0)
 ``success-codes``      ``[0, 1, 2]``         Exit codes to treat as success (default: [0])
+``notify``             ``"mail"``            Notify on failure: ``"mail"`` or ``"none"`` (default: "none")
+``notify-after``       ``"300s"``            Wait before sending notification (default: none)
 =====================  ====================  ==================================================================
 
 **Output & Logs**:
@@ -112,11 +115,13 @@ Complete Example
           "working-directory": "/backups",
           "timer": "86400",
           "timeout": "1h",
-          "times": 2,
+          "times": 0,
+          "max-attempts": 3,
           "on-fail": "restart",
           "stdout": "backup.log",
           "stderr": "combined",
           "notify": "mail",
+          "notify-after": "300s",
           "success-codes": [0],
           "description": "Daily PostgreSQL backup"
         }

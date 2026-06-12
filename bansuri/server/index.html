@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bansuri Orchestrator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --accent: #6366f1;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #fafafa;
+            color: #18181b;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -0.02em;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e4e4e7;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .status-badge {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d4d4d8;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1aa;
+        }
+    </style>
+    <script>
+        function getStatusColor(status) {
+            status = status ? status.toUpperCase() : 'STOPPED';
+            if (status === 'RUNNING' || status === 'STARTING') return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+            if (status === 'EXECUTING') return 'bg-indigo-50 text-indigo-700 border-indigo-200';
+            if (status.includes('WAITING')) return 'bg-amber-50 text-amber-700 border-amber-200';
+            if (status.includes('STOPPED') || status.includes('STOPPING')) return 'bg-zinc-100 text-zinc-600 border-zinc-200';
+            if (status === 'FAILED') return 'bg-rose-50 text-rose-700 border-rose-200';
+            if (status === 'COMPLETED') return 'bg-blue-50 text-blue-700 border-blue-200';
+            return 'bg-zinc-50 text-zinc-500 border-zinc-200';
+        }
+
+        function getRelativeTime(dateStr) {
+            if (!dateStr) return '';
+            const target = new Date(dateStr);
+            const now = new Date();
+            const diff = (target - now) / 1000;
+            if (diff < 0) return '';
+            if (diff < 60) return `${Math.floor(diff)}s`;
+            if (diff < 3600) return `${Math.floor(diff / 60)}m`;
+            return `${Math.floor(diff / 86400)}d`;
+        }
+
+        let currentTask = null;
+        let currentOffset = 0;
+        let currentType = 'stdout';
+        const CHUNK_SIZE = 51200;
+        const MAX_HISTORY = 60;
+        const taskHistory = {};
+        let globalChart = null;
+        let taskDetailChart = null;
+        let currentStatsTask = null;
+
+        function openLogs(taskName) {
+            currentTask = taskName;
+            document.getElementById('log-modal').classList.remove('hidden');
+            document.getElementById('modal-title').innerText = taskName.toLowerCase();
+            fetchLogs('stdout', true);
+        }
+
+        function closeModal() {
+            document.getElementById('log-modal').classList.add('hidden');
+            currentTask = null;
+        }
+
+        function openStats(taskName) {
+            currentStatsTask = taskName;
+            document.getElementById('stats-modal').classList.remove('hidden');
+            document.getElementById('stats-modal-title').innerText = taskName;
+            updateTaskDetailChart();
+        }
+
+        function closeStatsModal() {
+            document.getElementById('stats-modal').classList.add('hidden');
+            currentStatsTask = null;
+        }
+
+        function fetchLogs(type, reset = false) {
+            if (!currentTask) return;
+            currentType = type;
+            if (reset) {
+                currentOffset = 0;
+                document.getElementById('log-content').innerText = 'Tail fetching...';
+            }
+            const active = 'bg-zinc-800 text-white';
+            const inactive = 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200';
+            document.getElementById('btn-stdout').className = `px-3 py-1 rounded text-xs font-bold transition ${type === 'stdout' ? active : inactive}`;
+            document.getElementById('btn-stderr').className = `px-3 py-1 rounded text-xs font-bold transition ${type === 'stderr' ? active : inactive}`;
+
+            fetch(`/api/logs?task=${encodeURIComponent(currentTask)}&type=${type}&offset=${currentOffset}&limit=${CHUNK_SIZE}`)
+                .then(res => res.text())
+                .then(text => {
+                    const el = document.getElementById('log-content');
+                    if (reset) { el.innerText = text; el.scrollTop = el.scrollHeight; }
+                    else { el.innerText = text + '\n' + el.innerText; }
+                    if (text.length > 0) currentOffset += CHUNK_SIZE;
+                })
+                .catch(err => { document.getElementById('log-content').innerText = 'ERR: ' + err; });
+        }
+
+        function controlTask(taskName, action) {
+            fetch('/api/control', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ task: taskName, action: action })
+            }).then(res => { if (res.ok) updateStatus(); });
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0B';
+            const i = Math.floor(Math.log(bytes) / Math.log(1024));
+            return (bytes / Math.pow(1024, i)).toFixed(1) + ['B', 'KB', 'MB', 'GB'][i];
+        }
+
+        function initGlobalChart() {
+            const ctx = document.getElementById('globalChart').getContext('2d');
+            globalChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'CPU', data: [], borderColor: '#6366f1', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: true, backgroundColor: 'rgba(99, 102, 241, 0.03)', yAxisID: 'y' },
+                        { label: 'RAM', data: [], borderColor: '#10b981', borderWidth: 1.5, tension: 0.4, pointRadius: 0, yAxisID: 'y1' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, animation: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { display: false }, y: { display: false }, y1: { display: false } }
+                }
+            });
+        }
+
+        function initTaskDetailChart() {
+            const ctx = document.getElementById('taskDetailChart').getContext('2d');
+            taskDetailChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: [], datasets: [{ label: 'CPU', data: [], borderColor: '#6366f1' }, { label: 'RAM', data: [], borderColor: '#10b981', yAxisID: 'y1' }] },
+                options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function updateCharts(data) {
+            const now = new Date().toLocaleTimeString();
+            if (globalChart) {
+                if (globalChart.data.labels.length > MAX_HISTORY) {
+                    globalChart.data.labels.shift();
+                    globalChart.data.datasets[0].data.shift();
+                    globalChart.data.datasets[1].data.shift();
+                }
+                globalChart.data.labels.push(now);
+                globalChart.data.datasets[0].data.push(data.global.cpu);
+                globalChart.data.datasets[1].data.push(data.global.memory / 1024 / 1024);
+                globalChart.update();
+            }
+            data.tasks.forEach(task => {
+                if (!taskHistory[task.name]) taskHistory[task.name] = { labels: [], cpu: [], mem: [] };
+                const h = taskHistory[task.name];
+                if (h.labels.length > MAX_HISTORY) { h.labels.shift(); h.cpu.shift(); h.mem.shift(); }
+                h.labels.push(now); h.cpu.push(task.resources.cpu); h.mem.push(task.resources.memory / 1024 / 1024);
+            });
+            if (currentStatsTask && taskDetailChart) updateTaskDetailChart();
+        }
+
+        function updateTaskDetailChart() {
+            const h = taskHistory[currentStatsTask];
+            taskDetailChart.data.labels = h.labels;
+            taskDetailChart.data.datasets[0].data = h.cpu;
+            taskDetailChart.data.datasets[1].data = h.mem;
+            taskDetailChart.update();
+        }
+
+        function updateStatus() {
+            fetch('/api/status')
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById('tasks-container');
+                    container.innerHTML = '';
+                    document.getElementById('stat-total').innerText = data.tasks.length;
+                    document.getElementById('stat-running').innerText = data.tasks.filter(t => ['RUNNING', 'EXECUTING', 'STARTING'].includes(t.status)).length;
+                    document.getElementById('stat-failed').innerText = data.tasks.filter(t => t.status == 'FAILED').length;
+                    updateCharts(data);
+                    data.tasks.forEach(task => {
+                        container.innerHTML += `
+                            <tr class="border-b border-zinc-100 hover:bg-zinc-50/50 transition">
+                                <td class="px-6 py-4 font-bold text-zinc-800">${task.name}</td>
+                                <td class="px-6 py-4"><span class="status-badge ${getStatusColor(task.status)}">${task.status}</span></td>
+                                <td class="px-6 py-4 mono text-[11px] text-zinc-400 text-right">${task.resources.cpu.toFixed(1)}%</td>
+                                <td class="px-6 py-4 mono text-[11px] text-zinc-400 text-right">${formatBytes(task.resources.memory)}</td>
+                                <td class="px-6 py-4 text-xs text-zinc-500 font-medium">
+                                    <span class="block text-zinc-800">${new Date(task.last_run).toLocaleString() || '---'}</span>
+                                    <span class="text-indigo-500 opacity-80">${getRelativeTime(task.next_run) ? 'Next run in ' + getRelativeTime(task.next_run) : ''}</span>
+                                </td>
+                                <td class="px-6 py-4 text-center mono text-xs">${task.attempts} <span class="text-zinc-200 mx-1">/</span> <span class="text-rose-500 font-bold">${task.failed_attempts}</span></td>
+                                <td class="px-6 py-4 text-right space-x-1">
+                                    <button onclick="controlTask('${task.name}', 'start')" class="p-1.5 text-zinc-400 hover:text-emerald-600 transition" title="Start"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/></svg></button>
+                                    <button onclick="controlTask('${task.name}', 'stop')" class="p-1.5 text-zinc-400 hover:text-rose-500 transition" title="Stop"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z"/></svg></button>
+                                    <button onclick="openLogs('${task.name}')" class="p-1.5 text-zinc-400 hover:text-indigo-600 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></button>
+                                    <button onclick="openStats('${task.name}')" class="p-1.5 text-zinc-400 hover:text-indigo-600 transition"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zm6-4a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg></button>
+                                </td>
+                            </tr>`;
+                    });
+                    document.getElementById('last-updated').textContent = 'Last Sync: ' + new Date().toLocaleTimeString();
+                });
+        }
+
+        setInterval(updateStatus, 2000);
+        window.onload = function () { initGlobalChart(); initTaskDetailChart(); updateStatus(); };
+    </script>
+</head>
+
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-xl font-bold tracking-tight text-zinc-900">Bansuri<span class="text-indigo-600">
+                        $></span>
+                </h1>
+                <p class="text-xs font-medium text-zinc-400 uppercase tracking-widest">Process Orchestration</p>
+            </div>
+            <div id="last-updated"
+                class="mono text-[10px] text-zinc-400 bg-white border border-zinc-200 px-3 py-1.5 rounded-full shadow-sm">
+                Syncing...</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="card p-5">
+                <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">Registered</div>
+                <div id="stat-total" class="text-2xl font-bold">0</div>
+            </div>
+            <div class="card p-5 border-l-2 border-l-emerald-500">
+                <div class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Active</div>
+                <div id="stat-running" class="text-2xl font-bold">0</div>
+            </div>
+            <div class="card p-5 border-l-2 border-l-rose-500">
+                <div class="text-[10px] font-bold text-rose-600 uppercase tracking-wider mb-1">Failed</div>
+                <div id="stat-failed" class="text-2xl font-bold text-gray-800">0</div>
+            </div>
+            <div class="card p-0 overflow-hidden relative group">
+                <div class="absolute top-3 left-4 text-[9px] font-bold text-zinc-400 uppercase z-10">Global Load</div>
+                <div class="h-full w-full opacity-80 group-hover:opacity-100 transition">
+                    <canvas id="globalChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="card overflow-hidden">
+            <div class="px-6 py-4 bg-zinc-50 border-b border-zinc-200">
+                <h2 class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Task Inventory</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-[10px] uppercase font-bold text-zinc-400 border-b border-zinc-100 bg-white">
+                            <th class="px-6 py-3">Task Name</th>
+                            <th class="px-6 py-3">Status</th>
+                            <th class="px-6 py-3 text-right">CPU</th>
+                            <th class="px-6 py-3 text-right">RAM</th>
+                            <th class="px-6 py-3">Schedule</th>
+                            <th class="px-6 py-3 text-center">Tries / Err</th>
+                            <th class="px-6 py-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tasks-container" class="divide-y divide-zinc-50">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="log-modal"
+        class="fixed inset-0 bg-zinc-900/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col border border-zinc-200">
+            <div class="px-6 py-4 border-b flex justify-between items-center bg-zinc-50/50">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+                    <span id="modal-title" class="mono text-xs font-bold text-zinc-600 uppercase">logs</span>
+                </div>
+                <button onclick="closeModal()"
+                    class="text-zinc-400 hover:text-zinc-900 transition text-2xl">&times;</button>
+            </div>
+            <div class="p-4 bg-white border-b flex gap-2">
+                <button id="btn-stdout" onclick="fetchLogs('stdout', true)">STDOUT</button>
+                <button id="btn-stderr" onclick="fetchLogs('stderr', true)">STDERR</button>
+                <button onclick="fetchLogs(currentType)"
+                    class="ml-auto text-[10px] font-bold text-indigo-600 hover:underline">RECALL +50KB</button>
+            </div>
+            <pre id="log-content"
+                class="flex-1 bg-zinc-900 text-zinc-400 p-6 mono text-[11px] overflow-auto leading-relaxed border-t border-zinc-800"></pre>
+        </div>
+    </div>
+
+    <div id="stats-modal"
+        class="fixed inset-0 bg-zinc-900/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-8 border border-zinc-200">
+            <div class="flex justify-between items-start mb-8">
+                <div>
+                    <h3 id="stats-modal-title" class="text-lg font-bold text-zinc-900">Resource Timeline</h3>
+                    <p class="text-xs text-zinc-400">Granular performance metrics</p>
+                </div>
+                <button onclick="closeStatsModal()"
+                    class="text-zinc-400 hover:text-zinc-900 transition text-2xl">&times;</button>
+            </div>
+            <div class="h-72"><canvas id="taskDetailChart"></canvas></div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -64,11 +64,12 @@ Task with Retry Logic
       "timer": "3600",
       "timeout": "30s",
       "on-fail": "restart",
-      "times": 3,
+      "max-attempts": 3,
+      "notify": "mail",
       "success-codes": [0]
     }
 
-**Behavior**: Runs hourly, retries 3 times on failure, kills if > 30s.
+**Behavior**: Runs hourly, retries 3 times on failure, kills if > 30s, notifies on final failure.
 
 ---
 
@@ -88,10 +89,12 @@ Complete Task Example
           "timer": "86400",
           "timeout": "2h",
           "times": 2,
+          "max-attempts": 3,
           "on-fail": "restart",
           "stdout": "/var/log/maintenance.log",
           "stderr": "combined",
           "notify": "mail",
+          "notify-after": "600s",
           "success-codes": [0],
           "description": "Daily database maintenance"
         }
@@ -133,8 +136,11 @@ Parameter              Default        Description
 =====================  ==========================================
 ``timeout``            None           Max execution time (e.g., "5m")
 ``on-fail``            "stop"         Behavior: "stop" or "restart"
-``times``              1              Max attempts
+``times``              0              Max successful executions (0 = unlimited)
+``max-attempts``       1              Max retry attempts on failure
 ``success-codes``      [0]            Acceptable exit codes (array)
+``notify``             "none"         Notification on fail: "mail" or "none"
+``notify-after``       None           Wait time before notifying (e.g., "300s")
 =====================  ==========================================
 
 Optional Output
