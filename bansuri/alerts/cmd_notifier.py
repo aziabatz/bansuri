@@ -13,9 +13,9 @@ class CommandNotifier(Notifier):
 
     def notify(self, failure_info: FailureInfo) -> bool:
         message = self._build_message(failure_info)
-        command = build_safe_command_array(self.notify_command)
 
         try:
+            command = build_safe_command_array(self.notify_command)
             print(f"Running: {self.notify_command}")
             result = subprocess.run(
                 command,
