@@ -56,7 +56,7 @@ Repository = "https://github.com/aziabatz/bansuri"
 Issues = "https://github.com/aziabatz/bansuri/issues"
 
 [tool.setuptools]
-packages = ["bansuri", "bansuri.base", "bansuri.base.config", "bansuri.base.misc"]
+packages = ["bansuri", "bansuri.base", "bansuri.base.config", "bansuri.base.misc", "bansuri.base.alerts"]
 
 [tool.setuptools.package-data]
 bansuri = ["py.typed"]
