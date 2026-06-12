@@ -1,6 +1,7 @@
 import subprocess
 
 from bansuri.alerts.notifier import FailureInfo, Notifier
+from bansuri.alerts.command_safety import build_safe_command_array
 
 
 class CommandNotifier(Notifier):
@@ -11,15 +12,16 @@ class CommandNotifier(Notifier):
         self.timeout = timeout
 
     def notify(self, failure_info: FailureInfo) -> bool:
-        output_cmd = self._build_output_command(failure_info)
-        full_cmd = f"{self.notify_command} {output_cmd}"
+        message = self._build_message(failure_info)
+        command = build_safe_command_array(self.notify_command)
 
         try:
-            print(f"Running: {full_cmd}")
+            print(f"Running: {self.notify_command}")
             result = subprocess.run(
-                full_cmd,
-                shell=True,
+                command,
                 capture_output=True,
+                input=message,
+                shell=False,
                 text=True,
                 timeout=self.timeout,
             )
@@ -37,10 +39,8 @@ class CommandNotifier(Notifier):
             print(f"Exception: {e}")
             return False
 
-    def _build_output_command(self, info: FailureInfo) -> str:
-        """Build command with message
-        It supports multiline text
-        """
+    def _build_message(self, info: FailureInfo) -> str:
+        """Build the notification message sent to the notify command."""
         lines = [
             f"=== Task Failure ===",
             "",
@@ -66,8 +66,4 @@ class CommandNotifier(Notifier):
 
         lines.extend(["", "---", "This is an automated message from Orchestrator."])
 
-        message = "\\\\n".join(lines)
-        # TODO ESCAPE ALL CHARACTERS!
-
-        full_cmd = f"\\\"printf %b \\\'{message}\\\'\\\""
-        return full_cmd
+        return "\n".join(lines)
