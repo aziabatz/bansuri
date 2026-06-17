@@ -402,7 +402,7 @@ class TaskRunner:
                 stderr_dest = stderr_f
                 self.log(f"Redirecting stderr to {stderr_path}")
 
-            elif self.config.stderr == "combined":
+            elif self.config.stderr in ["combined", "$$combined"]:
                 stderr_dest = subprocess.STDOUT
                 self.log("Redirecting stderr to stdout")
 
