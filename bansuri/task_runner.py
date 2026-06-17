@@ -196,12 +196,15 @@ class TaskRunner:
 
     def _create_notifier(self) -> Optional[Notifier]:
         """Create the appropriate notifier based on config."""
-        if self.config.notify.lower() != "mail":
+        notify_kind = self.config.notify.lower()
+        # just a temporary bypass
+        # TODO implement JSON and notifier subsystem
+        if notify_kind not in ["mail", "command"]:
             return None
 
-        notify_cmd = self.bansuri_config.notify_command
+        notify_cmd = self.config.notify_command or self.bansuri_config.notify_command
         if not notify_cmd:
-            self.log("Notify is 'mail' but no notify_command configured. Notifications disabled.")
+            self.log("Notifications enabled but no notify command configured. Notifications disabled.")
             return None
 
         return CommandNotifier(notify_cmd)
@@ -402,7 +405,7 @@ class TaskRunner:
                 stderr_dest = stderr_f
                 self.log(f"Redirecting stderr to {stderr_path}")
 
-            elif self.config.stderr in ["combined", "$$combined"]:
+            elif self.config.stderr == "$$combined":
                 stderr_dest = subprocess.STDOUT
                 self.log("Redirecting stderr to stdout")
 
