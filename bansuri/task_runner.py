@@ -478,7 +478,7 @@ class TaskRunner:
         except Exception as e:
             self.log(f"Error killing process: {e}")
 
-    def _parse_timeout(self, timeout_str: Optional[str]) -> Optional[int]:
+    def _parse_timeout(self, timeout_str: Optional[str]) -> Optional[float]:
         """Parses a timeout string (e.g., '30s', '5m') into seconds."""
         if not timeout_str:
             return None
@@ -486,8 +486,13 @@ class TaskRunner:
             if str(timeout_str).isdigit():
                 return int(timeout_str)
 
-            unit = timeout_str[-1].lower()
-            value = int(timeout_str[:-1])
+            normalized = str(timeout_str).strip().lower()
+
+            if normalized.endswith("ms"):
+                return int(normalized[:-2]) / 1000
+
+            unit = normalized[-1]
+            value = int(normalized[:-1])
 
             if unit == "s":
                 return value
@@ -495,6 +500,8 @@ class TaskRunner:
                 return value * 60
             if unit == "h":
                 return value * 3600
+            if unit == "d":
+                return value * 86400
         except (ValueError, IndexError):
             self.log(f"Warning: Invalid timeout format '{timeout_str}'. Ignoring.")
         return None
