@@ -4,13 +4,13 @@ import time
 import os
 import signal
 from datetime import datetime, timedelta
-from typing import Optional, Any
+from typing import Any, Optional
 from bansuri.base.config_manager import BansuriConfig, ScriptConfig
 from bansuri.alerts.notifier import FailureInfo, Notifier
 from bansuri.alerts.cmd_notifier import CommandNotifier
 
 try:
-    import psutil
+    import psutil  # type: ignore[import-untyped]
 except ImportError:
     psutil = None
 
@@ -35,16 +35,20 @@ class TaskRunner:
             None  # The thread responsible for spawning the child process
         )
         self.stop_event = threading.Event()  # The event signal for START/STOP the child process
-        self.attempts = 0  # Total successful executions
+        self.times = 0  # Total executions
+        self.successful_times = 0
         self.failed_attempts = 0
         self.watchdog_timeout = 120  # seconds to wait before force killing
         self.notifier: Optional[Notifier] = self._create_notifier()
         self._psutil_proc = None
-        self._children_cache = {}  # cache for children procs
+        self._children_cache: dict[int, Any] = {}  # cache for children procs
+        self._last_stdout = ""
+        self._last_stderr = ""
+        self._last_return_code: Optional[int] = None
 
         self._status = "STOPPED"
-        self._last_run = None
-        self._next_run = None
+        self._last_run: Optional[datetime] = None
+        self._next_run: Optional[datetime] = None
 
     @property
     def status(self):
@@ -57,6 +61,83 @@ class TaskRunner:
     @property
     def next_run(self):
         return self._next_run
+
+    @property
+    def attempts(self):
+        """Backward-compatible alias for the total execution counter."""
+        return self.times
+
+    @attempts.setter
+    def attempts(self, value):
+        self.times = value
+
+    def _has_timer_schedule(self) -> bool:
+        """Return True when timer mode should be used."""
+        return bool(self.config.timer and str(self.config.timer).lower() not in {"none", "0"})
+
+    def _select_execution_loop(self):
+        """Pick the execution loop that matches the current config."""
+        if self.config.schedule_cron:
+            return self._cron_execution_loop
+        if self._has_timer_schedule():
+            return self._timer_execution_loop
+        return self._simple_execution_loop
+
+    def _begin_execution(self):
+        """Record the start of a new execution."""
+        self.times += 1
+        self._status = "EXECUTING"
+        self._last_run = datetime.now()
+
+    def _process_failed(self) -> bool:
+        """Return True when the latest process finished with a failure code."""
+        return bool(self.process and self.process.returncode not in self.config.success_codes)
+
+    def _record_failed_execution(self):
+        """Track a failed execution and trigger notifications if needed."""
+        self.failed_attempts += 1
+        self._maybe_notify_failure()
+
+    def _record_successful_execution(self):
+        """Track a successful execution."""
+        self.successful_times += 1
+        self.failed_attempts = 0
+
+    def _mark_simple_execution_success(self):
+        """Finalize a successful simple execution."""
+        self._record_successful_execution()
+        self.log("Task completed successfully.")
+        self._status = "COMPLETED"
+
+    def _wait_for_restart_delay(self) -> bool:
+        """Wait before retrying a failed execution."""
+        restart_delay = self.config.restart_delay or "5s"
+        restart_delay_seconds = self._parse_timeout(restart_delay) or 5
+        self.log(f"Restarting in {restart_delay}...")
+        self._status = "WAITING_RETRY"
+        return self.stop_event.wait(timeout=restart_delay_seconds)
+
+    def _handle_simple_failure(self) -> bool:
+        """Handle failure policy for the simple execution loop."""
+        self._record_failed_execution()
+
+        if self.config.on_fail.lower() == "ignore":
+            self._status = "COMPLETED"
+            return True
+
+        if self._handle_on_fail():
+            self._status = "FAILED"
+            return True
+
+        return self._wait_for_restart_delay()
+
+    def _handle_scheduled_failure(self) -> bool:
+        """Handle failure policy for timer and cron loops."""
+        self._record_failed_execution()
+        if self._handle_on_fail():
+            self._status = "FAILED"
+            return True
+        return False
 
     def get_resource_usage(self):
         """Returns resource stats from psutil cache"""
@@ -126,7 +207,8 @@ class TaskRunner:
             return
 
         self.stop_event.clear()
-        self.attempts = 0
+        self.times = 0
+        self.successful_times = 0
         self.failed_attempts = 0
         self.thread = threading.Thread(
             target=self._execution_loop, name=f"Runner-{self.config.name}", daemon=False
@@ -153,16 +235,8 @@ class TaskRunner:
         - timer: Fixed interval execution
         """
         try:
-            if self.config.schedule_cron:
-                self._cron_execution_loop()
-                return
-
-            # Check if timer is configured
-            # Treat "0", 0, "none" as service/dameon
-            if self.config.timer and str(self.config.timer).lower() not in ["none", "0"]:
-                self._timer_execution_loop()
-            else:
-                self._simple_execution_loop()
+            execution_loop = self._select_execution_loop()
+            execution_loop()
         finally:
             if self._status not in ["FAILED", "COMPLETED"]:
                 self._status = "STOPPED"
@@ -171,14 +245,14 @@ class TaskRunner:
         """Checks if max successful executions reached. Returns True if should stop.
 
         Applies to all execution modes (simple, timer, cron).
-        times=0 means unlimited executions.
+        times=0 means unlimited successful executions.
         For cron, runs counts are ignored
         """
         if self.config.schedule_cron:
             return False
 
-        if self.config.times > 0 and self.attempts >= self.config.times:
-            self.log(f"Reached max executions ({self.config.times}). Stopping...")
+        if self.config.times > 0 and self.successful_times >= self.config.times:
+            self.log(f"Reached max successful executions ({self.config.times}). Stopping...")
             return True
         return False
 
@@ -188,17 +262,16 @@ class TaskRunner:
         Only for simple mode when on_fail is 'restart'.
         max_attempts=1 means no retries (stop after first failure).
         """
-        if self.failed_attempts >= self.config.max_attempts:
-            self._status = "FAILED"
-            self.log(f"Reached max attempts ({self.config.max_attempts}). Giving up...")
-            return True
-        return False
+        if self.failed_attempts < self.config.max_attempts:
+            return False
+
+        self._status = "FAILED"
+        self.log(f"Reached max attempts ({self.config.max_attempts}). Giving up...")
+        return True
 
     def _create_notifier(self) -> Optional[Notifier]:
         """Create the appropriate notifier based on config."""
         notify_kind = self.config.notify.lower()
-        # just a temporary bypass
-        # TODO implement JSON and notifier subsystem
         if notify_kind not in ["mail", "command"]:
             return None
 
@@ -238,20 +311,51 @@ class TaskRunner:
         else:
             self.log("Failed to send notification")
 
+    def _maybe_notify_failure(self):
+        """Send a failure notification only when the configured mode allows it."""
+        if not self.notifier:
+            return
+
+        notify_mode = self.config.notify_mode.lower()
+        threshold = max(1, self.config.notify_threshold)
+        if notify_mode == "after-fail":
+            should_notify = True
+        elif notify_mode == "after-many":
+            should_notify = self.failed_attempts == threshold
+        elif notify_mode == "on-exhausted":
+            should_notify = (
+                self.failed_attempts >= self.config.max_attempts
+                if self.config.on_fail.lower() == "restart"
+                else True
+            )
+        else:
+            should_notify = False
+
+        if not should_notify:
+            return
+
+        self._handle_notify(
+            self._last_return_code if self._last_return_code is not None else -1,
+            self._last_stdout,
+            self._last_stderr,
+        )
+
     def _handle_on_fail(self) -> bool:
         """Handle on_fail policy after task completion. Returns True if should stop.
 
         Returns True if we should stop (either on_fail != 'restart' or max retries reached).
         """
-        if self.config.on_fail.lower() != "restart":
+        action = self.config.on_fail.lower()
+
+        if action == "ignore":
+            self.log("Task failed. Ignoring failure and continuing.")
+            return False
+
+        if action != "restart":
             self.log(f"Task stopped. No automatic restart set (on_fail='{self.config.on_fail}')")
             return True
 
-        # Check if we've exceeded max failed attempts
-        if self._check_max_failed_attempts():
-            return True
-
-        return False
+        return self._check_max_failed_attempts()
 
     def _simple_execution_loop(self):
         """Simple execution loop without timer"""
@@ -260,28 +364,19 @@ class TaskRunner:
             if self._check_max_executions():
                 break
 
-            self.attempts += 1
-
-            self._status = "EXECUTING"
-            self._last_run = datetime.now()
+            self._begin_execution()
             self._run_process()
 
             if self.stop_event.is_set():
                 break
 
-            if self.process and self.process.returncode not in self.config.success_codes:
-                self.failed_attempts += 1
-                if self._handle_on_fail():
-                    self._status = "FAILED"
+            if self._process_failed():
+                if self._handle_simple_failure():
                     break
-                self.log("Restarting in 5 secs...")
-                self._status = "WAITING_RETRY"
-                if self.stop_event.wait(timeout=5):
-                    break
-            else:
-                self.failed_attempts = 0
-                self.log("Task completed successfully.")
-                self._status = "COMPLETED"
+                continue
+
+            self._mark_simple_execution_success()
+            break
 
     def _timer_execution_loop(self):
         """Timer-based execution loop - runs task at fixed intervals"""
@@ -289,9 +384,10 @@ class TaskRunner:
 
         if not timer_seconds:
             self.log(f"ERROR: Invalid timer format '{self.config.timer}'. Running once.")
-            self._status = "EXECUTING"
-            self._last_run = datetime.now()
+            self._begin_execution()
             self._run_process()
+            if not self._process_failed():
+                self._record_successful_execution()
             self._status = "COMPLETED"
             return
 
@@ -302,18 +398,14 @@ class TaskRunner:
             if self._check_max_executions():
                 break
 
-            self.attempts += 1
-            self._status = "EXECUTING"
-            self._last_run = datetime.now()
+            self._begin_execution()
             self._run_process()
 
-            if self.process and self.process.returncode not in self.config.success_codes:
-                self.failed_attempts += 1
-                if self._handle_on_fail():
-                    self._status = "FAILED"
+            if self._process_failed():
+                if self._handle_scheduled_failure():
                     break
             else:
-                self.failed_attempts = 0
+                self._record_successful_execution()
 
             if self.stop_event.is_set():
                 break
@@ -327,7 +419,7 @@ class TaskRunner:
     def _cron_execution_loop(self):
         """Cron-based execution loop using croniter"""
         try:
-            from croniter import croniter
+            from croniter import croniter  # type: ignore[import-untyped]
         except ImportError:
             self.log("ERROR: 'croniter' library is missing")
             return
@@ -357,28 +449,130 @@ class TaskRunner:
                 if self.stop_event.wait(timeout=delay):
                     break
 
-            self.attempts += 1
-            self._status = "EXECUTING"
-            self._last_run = datetime.now()
+            self._begin_execution()
             self._run_process()
 
-            if self.process and self.process.returncode not in self.config.success_codes:
-                self.failed_attempts += 1
-                if self._handle_on_fail():
-                    self._status = "FAILED"
+            if self._process_failed():
+                if self._handle_scheduled_failure():
                     break
             else:
-                self.failed_attempts = 0
+                self._record_successful_execution()
 
     def _run_process(self):
         """Launches the subprocess or AbstractTask"""
         self._run_command()
         # TODO Smart script (inherits AbstractTask) later -> _run_smart_script...
 
+    def _reset_last_process_result(self):
+        """Reset cached process output before starting a new command."""
+        self._last_stdout = ""
+        self._last_stderr = ""
+        self._last_return_code = None
+
+    def _resolve_log_path(self, path: str, cwd: Optional[str]) -> str:
+        """Resolve relative log paths against the task working directory."""
+        if cwd and not os.path.isabs(path):
+            return os.path.join(cwd, path)
+        return path
+
+    def _open_log_file(self, path: str, stream_name: str, cwd: Optional[str]):
+        """Open and announce a redirected log file."""
+        resolved_path = self._resolve_log_path(path, cwd)
+        log_file = open(resolved_path, "a")
+        self.log(f"Redirecting {stream_name} to {resolved_path}")
+        return log_file
+
+    def _configure_stdout_destination(self, cwd: Optional[str]):
+        """Return the destination and file handle for stdout."""
+        if self.config.stdout == "ignore":
+            self.log("Ignoring stdout")
+            return subprocess.DEVNULL, None
+
+        if not self.config.stdout:
+            return subprocess.PIPE, None
+
+        stdout_file = self._open_log_file(self.config.stdout, "stdout", cwd)
+        return stdout_file, stdout_file
+
+    def _configure_stderr_destination(self, cwd: Optional[str]):
+        """Return the destination and file handle for stderr."""
+        if self.config.stderr == "ignore":
+            self.log("Ignoring stderr")
+            return subprocess.DEVNULL, None
+
+        if self.config.stderr in ["combined", "$$combined"]:
+            self.log("Redirecting stderr to stdout")
+            return subprocess.STDOUT, None
+
+        if not self.config.stderr:
+            return subprocess.PIPE, None
+
+        stderr_file = self._open_log_file(self.config.stderr, "stderr", cwd)
+        return stderr_file, stderr_file
+
+    def _capture_failed_process_output(self, process: subprocess.Popen):
+        """Collect process output for failed executions."""
+        outs, errs = "", ""
+        try:
+            outs, errs = process.communicate(timeout=1)
+            outs = outs or ""
+            errs = errs or ""
+            if outs:
+                self.log(f"Output:\n{outs.strip()}")
+            if errs:
+                self.log(f"Error:\n{errs.strip()}")
+        except Exception:
+            pass
+
+        self._last_stdout = outs
+        self._last_stderr = errs
+
+    def _handle_process_exit(self) -> bool:
+        """Return True once the current process has exited."""
+        process = self.process
+        if not process or process.poll() is None:
+            return False
+
+        self._last_return_code = process.returncode
+        self.log(f"Process finished with code {process.returncode}")
+
+        if process.returncode not in self.config.success_codes:
+            self._capture_failed_process_output(process)
+
+        return True
+
+    def _handle_process_timeout(self, start_time: float, timeout_seconds: Optional[float]) -> bool:
+        """Kill the process when it exceeds the configured timeout."""
+        if not timeout_seconds or time.time() - start_time <= timeout_seconds:
+            return False
+
+        timeout_message = f"Timeout exceeded ({self.config.timeout})"
+        self.log(f"{timeout_message}. Killing process.")
+        self._kill_process()
+        self._last_return_code = -1
+        self._last_stderr = timeout_message
+        return True
+
+    def _wait_for_process_completion(self, start_time: float, timeout_seconds: Optional[float]):
+        """Wait until the process exits, times out, or the runner is stopped."""
+        while not self.stop_event.is_set():
+            if self._handle_process_exit():
+                return
+            if self._handle_process_timeout(start_time, timeout_seconds):
+                return
+            time.sleep(1)
+
+    def _ensure_process_stopped(self):
+        """Stop the process if the monitoring loop exited while it was still running."""
+        if self.process and self.process.poll() is None:
+            self._kill_process()
+
     def _run_command(self):
         """Executes command directly as shell process"""
         cmd = self.config.command
         cwd = self.config.working_directory
+
+        self._reset_last_process_result()
 
         stdout_dest = subprocess.PIPE
         stderr_dest = subprocess.PIPE
@@ -387,27 +581,8 @@ class TaskRunner:
         timeout_seconds = self._parse_timeout(self.config.timeout)
 
         try:
-            if self.config.stdout:
-                stdout_path = self.config.stdout
-                if cwd and not os.path.isabs(stdout_path):
-                    stdout_path = os.path.join(cwd, stdout_path)
-
-                stdout_f = open(stdout_path, "a")
-                stdout_dest = stdout_f
-                self.log(f"Redirecting stdout to {stdout_path}")
-
-            if self.config.stderr and self.config.stderr != "combined":
-                stderr_path = self.config.stderr
-                if cwd and not os.path.isabs(stderr_path):
-                    stderr_path = os.path.join(cwd, stderr_path)
-
-                stderr_f = open(stderr_path, "a")
-                stderr_dest = stderr_f
-                self.log(f"Redirecting stderr to {stderr_path}")
-
-            elif self.config.stderr == "$$combined":
-                stderr_dest = subprocess.STDOUT
-                self.log("Redirecting stderr to stdout")
+            stdout_dest, stdout_f = self._configure_stdout_destination(cwd)
+            stderr_dest, stderr_f = self._configure_stderr_destination(cwd)
 
             self.log(f"Executing shell command: {cmd}")
 
@@ -421,34 +596,8 @@ class TaskRunner:
                 start_new_session=True,
             )
 
-            # Wait while not stopped
-            while not self.stop_event.is_set():
-                if self.process.poll() is not None:
-                    self.log(f"Process finished with code {self.process.returncode}")
-
-                    if self.process.returncode not in self.config.success_codes:
-                        outs, errs = "", ""
-                        try:
-                            outs, errs = self.process.communicate(timeout=1)
-                            if outs:
-                                self.log(f"Output:\n{outs.strip()}")
-                            if errs:
-                                self.log(f"Error:\n{errs.strip()}")
-                        except Exception:
-                            pass
-                        self._handle_notify(self.process.returncode, outs, errs)
-                    break
-
-                if timeout_seconds and (time.time() - start_time > timeout_seconds):
-                    self.log(f"Timeout exceeded ({self.config.timeout}). Killing process.")
-                    self._kill_process()
-                    self._handle_notify(-1, "", f"Timeout exceeded ({self.config.timeout})")
-                    break
-                time.sleep(1)
-
-            # If we exit the loop but the process is still alive (manual stop), kill it
-            if self.process.poll() is None:
-                self._kill_process()
+            self._wait_for_process_completion(start_time, timeout_seconds)
+            self._ensure_process_stopped()
 
         except Exception as e:
             self.log(f"Critical error executing shell command: {e}")
