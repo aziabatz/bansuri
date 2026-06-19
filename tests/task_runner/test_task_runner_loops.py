@@ -51,6 +51,7 @@ def test_simple_execution_loop_retries_then_completes(make_script_config, global
     def fake_run_process():
         code = next(return_codes)
         runner.process = MagicMock(returncode=code)
+        runner._last_return_code = code
 
     with (
         patch.object(runner, "_run_process", side_effect=fake_run_process) as mock_run_process,
