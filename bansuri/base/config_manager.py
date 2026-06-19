@@ -45,8 +45,8 @@ class ScriptConfig:
         """
         Applies differentiated validation rules depending on the script type.
         """
-        if self.name is None:
-            # FIXME log warning and set name to command basename
+        if self.name is None:            
+            self.name = f"{self.command}-{str(datetime.now()):x}"
             pass
 
         if not self.is_smart_script:
