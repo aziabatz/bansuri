@@ -1,4 +1,6 @@
+import signal
 import subprocess
+from unittest.mock import call
 from unittest.mock import MagicMock, patch
 
 from bansuri.task_runner import TaskRunner
@@ -95,3 +97,41 @@ def test_run_command_marks_startup_exception_as_failed(mock_popen, script_config
     assert runner._last_return_code == -1
     assert "boom" in runner._last_stderr
     assert runner._process_failed() is True
+
+
+def test_kill_process_waits_for_graceful_shutdown(script_config, global_config):
+    runner = TaskRunner(script_config, global_config)
+    process = MagicMock()
+    process.pid = 1234
+    process.poll.return_value = None
+    runner.process = process
+
+    with (
+        patch("bansuri.task_runner.os.getpgid", return_value=4321) as mock_getpgid,
+        patch("bansuri.task_runner.os.killpg") as mock_killpg,
+    ):
+        runner._kill_process()
+
+    mock_getpgid.assert_called_once_with(1234)
+    mock_killpg.assert_called_once_with(4321, signal.SIGTERM)
+    process.wait.assert_called_once_with(timeout=runner.watchdog_timeout)
+
+
+def test_kill_process_forces_sigkill_after_timeout(script_config, global_config):
+    runner = TaskRunner(script_config, global_config)
+    process = MagicMock()
+    process.pid = 1234
+    process.poll.return_value = None
+    process.wait.side_effect = subprocess.TimeoutExpired(cmd="task", timeout=120)
+    runner.process = process
+
+    with (
+        patch("bansuri.task_runner.os.getpgid", return_value=4321),
+        patch("bansuri.task_runner.os.killpg") as mock_killpg,
+    ):
+        runner._kill_process()
+
+    assert mock_killpg.call_args_list == [
+        call(4321, signal.SIGTERM),
+        call(4321, signal.SIGKILL),
+    ]
