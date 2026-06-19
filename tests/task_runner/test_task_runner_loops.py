@@ -82,6 +82,27 @@ def test_timer_execution_loop_runs_once_and_waits_for_next_interval(
     assert runner.next_run is not None
 
 
+def test_timer_execution_loop_invalid_timer_marks_failed_when_run_fails(
+    make_script_config,
+    global_config,
+):
+    config = make_script_config(timer="invalid")
+    runner = TaskRunner(config, global_config)
+
+    def fake_run_process():
+        runner.process = MagicMock(returncode=1)
+        runner._last_return_code = 1
+
+    with patch.object(runner, "_run_process", side_effect=fake_run_process) as mock_run_process:
+        runner._timer_execution_loop()
+
+    mock_run_process.assert_called_once()
+    assert runner.times == 1
+    assert runner.successful_times == 0
+    assert runner.failed_attempts == 1
+    assert runner.status == "FAILED"
+
+
 def test_cron_execution_loop_waits_for_next_scheduled_run(make_script_config, global_config):
     config = make_script_config(schedule_cron="* * * * *", timer="0")
     runner = TaskRunner(config, global_config)

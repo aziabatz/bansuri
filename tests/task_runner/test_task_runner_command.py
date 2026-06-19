@@ -82,3 +82,16 @@ def test_run_command_marks_timeout_and_kills_process(mock_popen, make_script_con
     assert mock_kill_process.called
     assert runner._last_return_code == -1
     assert runner._last_stderr == "Timeout exceeded (1s)"
+
+
+@patch("bansuri.task_runner.subprocess.Popen", side_effect=OSError("boom"))
+def test_run_command_marks_startup_exception_as_failed(mock_popen, script_config, global_config):
+    runner = TaskRunner(script_config, global_config)
+
+    runner._run_command()
+
+    assert mock_popen.called
+    assert runner.process is None
+    assert runner._last_return_code == -1
+    assert "boom" in runner._last_stderr
+    assert runner._process_failed() is True
