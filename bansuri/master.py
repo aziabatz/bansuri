@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import os
 import time
 import signal
@@ -162,12 +163,17 @@ class Orchestrator:
                 self._log(f"ERROR in main loop: {e}")
                 time.sleep(self.check_interval)
 
+def main(argv=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-c",
+        "--config",
+        default="scripts.json",
+        help="Path to the configuration file.",
+    )
+    args = parser.parse_args(argv)
 
-# TODO add -c option for specifying configfile
-def main():
-    config_path = os.path.join(os.path.dirname(__file__), "scripts.json")
-
-    orchestrator = Orchestrator(config_file=config_path, check_interval=5)
+    orchestrator = Orchestrator(config_file=args.config, check_interval=5)
     orchestrator.run()
 
 

@@ -1,10 +1,11 @@
 import signal
+import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from bansuri.base.config_manager import BansuriConfig, ScriptConfig
-from bansuri.master import Orchestrator
+from bansuri.master import Orchestrator, main
 
 
 @pytest.fixture
@@ -164,3 +165,29 @@ def test_signal_handler_stops_all_and_exits(orchestrator_factory):
 
     orchestrator.stop_all.assert_called_once()
     mock_exit.assert_called_once_with(0)
+
+
+def test_main_uses_cwd_default_config_path():
+    with (
+        patch("bansuri.master.Orchestrator") as mock_orchestrator_cls,
+        patch.object(sys, "argv", ["bansuri"]),
+    ):
+        orchestrator = mock_orchestrator_cls.return_value
+
+        main()
+
+    mock_orchestrator_cls.assert_called_once_with(config_file="scripts.json", check_interval=5)
+    orchestrator.run.assert_called_once()
+
+
+def test_main_accepts_config_override_from_cli():
+    with (
+        patch("bansuri.master.Orchestrator") as mock_orchestrator_cls,
+        patch.object(sys, "argv", ["bansuri", "-c", "conf.json"]),
+    ):
+        orchestrator = mock_orchestrator_cls.return_value
+
+        main()
+
+    mock_orchestrator_cls.assert_called_once_with(config_file="conf.json", check_interval=5)
+    orchestrator.run.assert_called_once()
