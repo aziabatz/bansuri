@@ -91,7 +91,10 @@ class TaskRunner:
 
     def _process_failed(self) -> bool:
         """Return True when the latest process finished with a failure code."""
-        return bool(self.process and self.process.returncode not in self.config.success_codes)
+        return bool(
+            self._last_return_code is not None
+            and self._last_return_code not in self.config.success_codes
+        )
 
     def _record_failed_execution(self):
         """Track a failed execution and trigger notifications if needed."""
@@ -102,6 +105,19 @@ class TaskRunner:
         """Track a successful execution."""
         self.successful_times += 1
         self.failed_attempts = 0
+
+    def _finalize_single_execution(self):
+        """Finalize a one-shot execution without scheduling another run."""
+        if self.stop_event.is_set():
+            return
+
+        if self._process_failed():
+            self._record_failed_execution()
+            self._status = "FAILED"
+            return
+
+        self._record_successful_execution()
+        self._status = "COMPLETED"
 
     def _mark_simple_execution_success(self):
         """Finalize a successful simple execution."""
@@ -386,9 +402,7 @@ class TaskRunner:
             self.log(f"ERROR: Invalid timer format '{self.config.timer}'. Running once.")
             self._begin_execution()
             self._run_process()
-            if not self._process_failed():
-                self._record_successful_execution()
-            self._status = "COMPLETED"
+            self._finalize_single_execution()
             return
 
         self.log(f"Timer configured: running every {self.config.timer} ({timer_seconds}s)")
@@ -465,6 +479,7 @@ class TaskRunner:
 
     def _reset_last_process_result(self):
         """Reset cached process output before starting a new command."""
+        self.process = None
         self._last_stdout = ""
         self._last_stderr = ""
         self._last_return_code = None
@@ -600,7 +615,11 @@ class TaskRunner:
             self._ensure_process_stopped()
 
         except Exception as e:
-            self.log(f"Critical error executing shell command: {e}")
+            error_message = f"Critical error executing shell command: {e}"
+            self.log(error_message)
+            self._last_return_code = -1
+            self._last_stderr = error_message
+            self._ensure_process_stopped()
         finally:
             if stdout_f:
                 stdout_f.close()
