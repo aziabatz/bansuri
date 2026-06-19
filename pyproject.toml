@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Task orchestration and management system for running and monitoring multiple scripts"
 readme = "README.md"
 requires-python = ">=3.6"
-license = {text = "BSD-3-Clause"}
+license = "BSD-3-Clause"
 authors = [
     {name = "Blackburn"},
     {name = "Blackburn", email = "blackburn.dev@atomicmail.io"}
@@ -18,7 +18,6 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Build Tools",
-    "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
@@ -55,8 +54,8 @@ Documentation = "https://github.com/aziabatz/bansuri/blob/main/README.md"
 Repository = "https://github.com/aziabatz/bansuri"
 Issues = "https://github.com/aziabatz/bansuri/issues"
 
-[tool.setuptools]
-packages = ["bansuri", "bansuri.base", "bansuri.base.config", "bansuri.base.misc", "bansuri.base.alerts"]
+[tool.setuptools.packages.find]
+include = ["bansuri*"]
 
 [tool.setuptools.package-data]
 bansuri = ["py.typed"]
