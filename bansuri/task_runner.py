@@ -233,16 +233,20 @@ class TaskRunner:
         self.thread.start()
         self.log("Runner started.")
 
-    def stop(self):
-        """Sends the termination signal"""
+    def stop(self) -> bool:
+        """Stop the runner and report whether the worker thread fully exited."""
         self.log("Stopping task...")
         self._status = "STOPPING"
         self.stop_event.set()
         self._kill_process()
         if self.thread and self.thread.is_alive():
             self.thread.join(timeout=5)
+        if self.thread and self.thread.is_alive():
+            self.log("Task is still stopping after 5 seconds.")
+            return False
         self.log("Task stopped!")
         self._status = "STOPPED"
+        return True
 
     def _execution_loop(self):
         """Main loop: executes the task and handles job stop-start events

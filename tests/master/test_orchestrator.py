@@ -104,6 +104,27 @@ def test_sync_tasks_restarts_runner_when_configuration_changes(orchestrator_fact
     new_runner.start.assert_called_once()
 
 
+def test_sync_tasks_delays_restart_while_previous_runner_is_still_stopping(orchestrator_factory):
+    orchestrator, _, _, _ = orchestrator_factory(config_file="scripts.json")
+    old_task = ScriptConfig(name="backup", command="echo backup", timer="1m")
+    new_task = ScriptConfig(name="backup", command="echo updated", timer="1m")
+    old_runner = MagicMock()
+    old_runner.config = old_task
+    old_runner.stop.return_value = False
+    orchestrator.runners = {"backup": old_runner}
+    config = BansuriConfig(version="1.0", scripts=[new_task])
+
+    with (
+        patch("bansuri.master.BansuriConfig.load_from_file", return_value=config),
+        patch("bansuri.master.TaskRunner") as mock_runner_cls,
+    ):
+        orchestrator.sync_tasks()
+
+    old_runner.stop.assert_called_once()
+    mock_runner_cls.assert_not_called()
+    assert orchestrator.runners["backup"] is old_runner
+
+
 def test_stop_all_stops_dashboard_and_all_runners(orchestrator_factory):
     orchestrator, dashboard, _, _ = orchestrator_factory()
     orchestrator.runners = {

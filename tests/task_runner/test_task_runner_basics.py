@@ -67,14 +67,29 @@ def test_start_creates_thread_and_stop_joins_existing_thread(script_config, glob
         thread.start.assert_called_once()
 
         runner.thread = thread
-        thread.is_alive.return_value = True
+        thread.is_alive.side_effect = [True, False]
         with patch.object(runner, "_kill_process") as mock_kill_process:
-            runner.stop()
+            stopped = runner.stop()
 
     mock_thread_cls.assert_called_once()
     mock_kill_process.assert_called_once()
     thread.join.assert_called_once_with(timeout=5)
+    assert stopped is True
     assert runner.status == "STOPPED"
+
+
+def test_stop_returns_false_when_thread_still_alive_after_join(script_config, global_config):
+    runner = TaskRunner(script_config, global_config)
+    runner.thread = MagicMock()
+    runner.thread.is_alive.side_effect = [True, True]
+
+    with patch.object(runner, "_kill_process") as mock_kill_process:
+        stopped = runner.stop()
+
+    mock_kill_process.assert_called_once()
+    runner.thread.join.assert_called_once_with(timeout=5)
+    assert stopped is False
+    assert runner.status == "STOPPING"
 
 
 def test_start_does_not_replace_running_thread(script_config, global_config):

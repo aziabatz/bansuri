@@ -99,7 +99,9 @@ class Orchestrator:
 
             if current_runner.config != new_config:
                 self._log(f"Configuration changed for task: {name}. Restarting...")
-                current_runner.stop()
+                if not current_runner.stop():
+                    self._log(f"Task '{name}' is still stopping. Delaying restart until next sync.")
+                    continue
                 del self.runners[name]
                 # It will be re-added in the next loop (actually no, we must add it here or treat it as new)
                 # Better approach: restart it immediately here
