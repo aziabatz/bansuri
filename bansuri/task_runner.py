@@ -641,13 +641,10 @@ class TaskRunner:
         try:
             pgid = os.getpgid(self.process.pid)
             os.killpg(pgid, signal.SIGTERM)
+            self.process.wait(timeout=self.watchdog_timeout)
+            return
 
-            # Simple watchdog
-            for _ in range(self.watchdog_timeout):
-                if self.process.poll() is not None:
-                    return
-                time.sleep(1)
-
+        except subprocess.TimeoutExpired:
             self.log("Forcing shutdown (SIGKILL)...")
             os.killpg(pgid, signal.SIGKILL)
         except Exception as e:
